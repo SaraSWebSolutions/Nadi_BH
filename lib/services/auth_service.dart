@@ -1,0 +1,392 @@
+import 'dart:convert';
+import 'dart:io';
+import 'package:dio/dio.dart';
+import 'package:flutter/material.dart';
+import 'package:nadi_user_app/core/network/dio_client.dart';
+import 'package:nadi_user_app/core/utils/logger.dart';
+import 'package:nadi_user_app/preferences/preferences.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
+class AuthService {
+  final _dio = DioClient.dio;
+
+  // Fetch account type
+  Future<List<Map<String, dynamic>>> acountype() async {
+    try {
+      final response = await _dio.get("account-type");
+      final raw = response.data is Map ? response.data['data'] : response.data;
+      if (raw is List) {
+        return raw
+            .whereType<Map>()
+            .map<Map<String, dynamic>>((e) => Map<String, dynamic>.from(e))
+            .toList();
+      }
+      return [];
+    } catch (e, st) {
+      AppLogger.error("Account type API error: $e\n$st");
+      return [];
+    }
+  }
+
+  Future<bool> selectAccount({required String accountTypeId}) async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      AppLogger.warn("accountTypeId: $accountTypeId");
+      final response = await _dio.post(
+        "user-account",
+        data: {"accountTypeId": accountTypeId},
+      );
+
+      AppLogger.debug("selectAccount response: ${response.data}");
+
+      final userId = response.data["userId"]?.toString();
+      if (userId != null) {
+        await AppPreferences.saveUserId(userId);
+        AppLogger.warn("userId saved: $userId");
+      }
+
+      return true;
+    } catch (e, st) {
+      AppLogger.error("Account type API error: $e\n$st");
+      return false;
+    }
+  }
+
+  // Sign Up Basic INFO
+  Future<Map<String?, dynamic>> basicInfo({
+    required String fullName,
+    required String mobileNumber,
+    required String email,
+    required String password,
+    required String gender,
+    required String userId,
+    required String secondName,
+    required String thirdName,
+    required String fourthName,
+  }) async {
+    try {
+      final response = await _dio.post(
+        "user-account/basic-info",
+        data: {
+          "userId": userId,
+          "fullName": fullName,
+          "secondName": secondName,
+          "thirdName": thirdName,
+          "fourthName": fourthName,
+          "mobileNumber": mobileNumber,
+          "email": email,
+          "password": password,
+          "gender": gender,
+        },
+      );
+      AppLogger.success(response.data.toString());
+      return response.data;
+    } on DioException catch (e) {
+      AppLogger.error("Login ${e.response?.statusCode}");
+      AppLogger.error("Login ${e.response?.data}");
+      rethrow; //  ADD THIS LINE ONLY
+    }
+  }
+
+  //Selected Block
+  Future<List<Map<String, dynamic>>> selectblock() async {
+    try {
+      final response = await _dio.get("block");
+
+      // Ensure proper typing
+      final List<dynamic> rawData = response.data["data"];
+      final blockData = rawData
+          .map((e) => Map<String, dynamic>.from(e))
+          .toList();
+
+      // Print entire JSON nicely
+      final prettyJson = const JsonEncoder.withIndent('  ').convert(blockData);
+
+      print(prettyJson);
+
+      return blockData;
+    } catch (e) {
+      AppLogger.error("SELECTBLOCK Error: $e");
+      return [];
+    }
+  }
+
+  // Adress Details
+  Future<Map<String, dynamic>?> adressdetails({
+    required Map<String, dynamic> body,
+  }) async {
+    try {
+      final response = await _dio.post("user-account/address", data: body);
+
+      AppLogger.success("ADDRESS RESPONSE  ${response.data}");
+      return response.data;
+    } on DioException catch (e) {
+      AppLogger.error("Login ${e.response?.statusCode}");
+      AppLogger.error("Login ${e.response?.data}");
+    }
+    return null;
+  }
+
+  // Add Family Member
+  Future<Map<String, dynamic>?> memberdetails({
+    required Map<String, dynamic> body,
+  }) async {
+    try {
+      /// ✅ PRINT REQUEST BODY (Pretty JSON)
+      AppLogger.info(
+        "📤 REQUEST BODY:\n${const JsonEncoder.withIndent('  ').convert(body)}",
+      );
+
+      final response = await _dio.post(
+        "user-account/add-family-member",
+        data: body,
+      );
+
+      /// ✅ RESPONSE LOG
+      AppLogger.success(
+        "📥 RESPONSE:\n${const JsonEncoder.withIndent('  ').convert(response.data)}",
+      );
+
+      return response.data;
+    } on DioException catch (e) {
+      /// ❌ ERROR LOGS
+      AppLogger.error("❌ STATUS: ${e.response?.statusCode}");
+      AppLogger.error("❌ ERROR DATA: ${e.response?.data}");
+
+      rethrow;
+    }
+  }
+
+  // Upload ID
+  Future<Map<String, dynamic>?> uploadIdProof({
+    required File frontImage,
+    required File backImage,
+    required String userId,
+  }) async {
+    try {
+      final formData = FormData();
+
+      formData.fields.add(MapEntry("userId", userId));
+
+      formData.files.add(
+        MapEntry(
+          "idProof",
+          await MultipartFile.fromFile(
+            frontImage.path,
+            filename: frontImage.path.split('/').last,
+          ),
+        ),
+      );
+
+      formData.files.add(
+        MapEntry(
+          "idProof",
+          await MultipartFile.fromFile(
+            backImage.path,
+            filename: backImage.path.split('/').last,
+          ),
+        ),
+      );
+
+      final response = await _dio.post(
+        "user-account/upload-id",
+        data: formData,
+        options: Options(contentType: "multipart/form-data"),
+      );
+
+      return response.data;
+    } on DioException catch (e) {
+      ///  BACKEND ERROR MESSAGE
+      final message =
+          e.response?.data?["message"] ??
+          e.response?.data?["error"] ??
+          "Upload failed";
+
+      AppLogger.error("Upload idProof DioError: $message");
+
+      /// Pass readable error to UI
+      throw Exception(message);
+    } catch (e, st) {
+      AppLogger.error("Upload idProof error: $e\n$st");
+      throw Exception("Something went wrong");
+    }
+  }
+
+  //Terms & Conditions
+
+  Future<Map<String, dynamic>?> TermsAndSonditions({
+    required String userId,
+    required String fcmToken,
+  }) async {
+    try {
+      // ✅ Log request data
+      AppLogger.info("Terms API Called");
+      AppLogger.info("Sending userId: $userId");
+      AppLogger.info("Sending fcmToken: $fcmToken");
+
+      final response = await _dio.post(
+        "user-account/terms-verify",
+        data: {"userId": userId, "fcmToken": fcmToken},
+      );
+
+      // ✅ Log response
+      AppLogger.info("Terms API Response: ${response.data}");
+
+      return response.data;
+    } catch (e) {
+      AppLogger.error("Terms & Conditions Error: $e");
+      return null;
+    }
+  }
+
+  Future<Map<String, dynamic>> TermsAndConditionlist(String lang) async {
+    try {
+      final response = await _dio.get('terms', queryParameters: {"lang": lang});
+
+      debugPrint("API FULL RESPONSE: ${response.data}");
+
+      return response.data;
+    } on DioException catch (e) {
+      final err = e.response?.data['message'];
+      throw err;
+    }
+  }
+
+  //  Complete User Account
+  Future<Map<String, dynamic>?> CompleteuserAccount({
+    required String userId,
+  }) async {
+    try {
+      final response = await _dio.post(
+        "user-account/complete",
+        data: {"userId": userId},
+      );
+
+      //  LOG OUTPUT
+      AppLogger.success("CompleteuserAccount response: ${response.data}");
+
+      return response.data;
+    } catch (e) {
+      AppLogger.error("CompleteuserAccount error: $e");
+      return null;
+    }
+  }
+
+  Future<Map<String, dynamic>?> SendOTP({required String userId}) async {
+    try {
+      final response = await _dio.post(
+        "user-account/send-otp",
+        data: {"userId": userId},
+      );
+      return response.data;
+    } catch (e) {
+      AppLogger.error("SendOTP******** : $e");
+    }
+    return null;
+  }
+
+  Future<dynamic> Forgetpassword({required String email}) async {
+    try {
+      final response = await _dio.post(
+        "user-account/forgot-password",
+        data: {"email": email},
+      );
+
+      return response.data;
+    } catch (e) {
+      if (e is DioException) {
+        final data = e.response?.data;
+        String msg = "Something went wrong";
+        if (data is Map) {
+          msg = data['message'] ?? msg;
+        } else if (data is String) {
+          msg = data;
+        }
+        throw msg;
+      }
+      throw "Network error";
+    }
+  }
+
+  Future<dynamic> resetPassword({
+    required String token,
+    required String newPassword,
+  }) async {
+    try {
+      final response = await _dio.post(
+        "user/reset-password/$token",
+        data: {"password": newPassword},
+      );
+      return response.data;
+    } catch (e) {
+      if (e is DioException) {
+        final data = e.response?.data;
+        String msg = "Reset failed. Token may be expired.";
+        if (data is Map) {
+          msg = data['message'] ?? msg;
+        } else if (data is String) {
+          msg = data;
+        }
+        throw msg;
+      }
+      throw "Network error";
+    }
+  }
+
+  Future<Map<String, dynamic>?> OTPwithphone({
+    required String mobileNumber,
+    required String fcmToken,
+  }) async {
+    final response = await _dio.post(
+      "user-account/send-signin-otp",
+      data: {"mobileNumber": mobileNumber, "fcmToken": fcmToken},
+    );
+    return response.data;
+  }
+
+  Future<Map<String, dynamic>> OTPphoneverify({
+    required String otp,
+    required String mobileNumber,
+  }) async {
+    final response = await _dio.post(
+      "user-account/signin-otp",
+      data: {"mobileNumber": mobileNumber, "otp": otp},
+    );
+    // Return backend response as-is
+    return response.data;
+  }
+
+  //OTP verfiy
+  Future<Map<String, dynamic>> OTPverify({
+    required String otp,
+    required String userId,
+  }) async {
+    final response = await _dio.post(
+      "user-account/verify-otp",
+      data: {"userId": userId, "otp": otp},
+    );
+
+    // Return backend response as-is
+    return response.data;
+  }
+
+  //Login
+  Future<Map<String, dynamic>?> LoginApi({
+    required String email,
+    required String password,
+    required String fcmToken,
+  }) async {
+    try {
+      print(" fcmToken*******77777777777777 $fcmToken");
+      final response = await _dio.post(
+        "user-account/signin",
+        data: {"email": email, "password": password, "fcmToken": fcmToken},
+      );
+      return response.data;
+    } on DioException catch (e) {
+      AppLogger.error("Login ${e.response?.statusCode}");
+      AppLogger.error("Login ${e.response?.data}");
+      rethrow;
+    }
+  }
+}

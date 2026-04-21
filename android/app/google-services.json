@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "645474708199",
+    "project_id": "nadi-bahrain-a2392",
+    "storage_bucket": "nadi-bahrain-a2392.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:645474708199:android:09b7c750e0c30d723d5042",
+        "android_client_info": {
+          "package_name": "com.hgtech.nadibh"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCGL28asijkLYdX6DhIhDKs99MbYShurTQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
