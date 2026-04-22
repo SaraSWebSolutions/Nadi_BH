@@ -19,6 +19,7 @@ class AppTextField extends StatefulWidget {
   final bool filled;
   final Color? fillColor;
   final FocusNode? focusNode;
+  final TextStyle? textStyle;
   const AppTextField({
     super.key,
     this.controller,
@@ -37,6 +38,8 @@ class AppTextField extends StatefulWidget {
     this.filled = false,
     this.fillColor,
         this.focusNode, // ✅ add here
+          this.textStyle, // 👈 ADD THIS
+
 
   });
   @override
@@ -46,55 +49,97 @@ class _AppTextFieldState extends State<AppTextField> {
   bool _obscure = true;
   @override
   Widget build(BuildContext context) {
-    return TextFormField(
-      readOnly: widget.readonly,
-      enabled: widget.enabled,
-      controller: widget.controller,
-      obscureText: widget.isPassword ? _obscure : false,
-      keyboardType: widget.keyboardType,
-      validator: widget.validator,
-      minLines: widget.minLines,
-      maxLines: widget.maxLines ?? (widget.isPassword ? 1 : 1),
-      maxLength: widget.maxLength,
-      maxLengthEnforcement: MaxLengthEnforcement.enforced,
-      inputFormatters: widget.inputFormatters,
-focusNode: widget.focusNode,
-      buildCounter: widget.maxLength != null
-          ? (_, {required currentLength, required isFocused, maxLength}) =>
-              const SizedBox.shrink()
-          : null,
-      decoration: InputDecoration(
-        labelText: widget.label,
-        prefixText: widget.prefixText,
-        labelStyle: TextStyle(
-          fontSize: 15,
-          color: Colors.grey.shade600,
-          fontWeight: FontWeight.w400,
-        ),
-        floatingLabelStyle: const TextStyle(
-          color: AppColors.btn_primery,
-          fontWeight: FontWeight.w600,
-        ),
-        filled: !widget.enabled ? true : (widget.filled ? true : null),
-        fillColor: !widget.enabled
-            ? Colors.grey.shade200
-            : (widget.filled ? (widget.fillColor ?? Colors.white) : null),
-        prefixIcon: widget.prefixIcon != null
-            ? Icon(widget.prefixIcon, color: Colors.grey.shade500, size: 22)
-            : null,
-        suffixIcon: widget.isPassword
-            ? IconButton(
-                icon: Icon(
-                  _obscure ? Icons.visibility_off_outlined : Icons.visibility_outlined,
-                  color: Colors.grey.shade500,
-                  size: 22,
-                ),
-                onPressed: () {
-                  setState(() => _obscure = !_obscure);
-                },
-              )
-            : null,
+   return TextFormField(
+  readOnly: widget.readonly,
+  enabled: widget.enabled,
+  controller: widget.controller,
+  obscureText: widget.isPassword ? _obscure : false,
+  keyboardType: widget.keyboardType,
+  validator: widget.validator,
+  minLines: widget.minLines,
+  maxLines: widget.maxLines ?? 1,
+  maxLength: widget.maxLength,
+  maxLengthEnforcement: MaxLengthEnforcement.enforced,
+  inputFormatters: widget.inputFormatters,
+  focusNode: widget.focusNode,
+
+  style: widget.textStyle ??
+      TextStyle(
+        color: Theme.of(context).colorScheme.onSurface,
+        fontSize: 15,
       ),
-    );
+
+  buildCounter: widget.maxLength != null
+      ? (_, {required currentLength, required isFocused, maxLength}) =>
+          const SizedBox.shrink()
+      : null,
+
+  decoration: InputDecoration(
+    labelText: widget.label,
+    prefixText: widget.prefixText,
+
+    labelStyle: TextStyle(
+      fontSize: 15,
+      color: Theme.of(context).colorScheme.onSurfaceVariant,
+      fontWeight: FontWeight.w400,
+    ),
+
+    floatingLabelStyle: TextStyle(
+      color: Theme.of(context).colorScheme.primary,
+      fontWeight: FontWeight.w600,
+    ),
+
+    filled: true,
+
+    fillColor: !widget.enabled
+        ? Theme.of(context).colorScheme.surfaceContainerHighest.withOpacity(0.4)
+        : (widget.filled
+            ? (widget.fillColor ??
+                Theme.of(context).colorScheme.surfaceContainerHighest)
+            : Theme.of(context).colorScheme.surface),
+
+    prefixIcon: widget.prefixIcon != null
+        ? Icon(
+            widget.prefixIcon,
+            color: Theme.of(context).colorScheme.onSurfaceVariant,
+            size: 22,
+          )
+        : null,
+
+    suffixIcon: widget.isPassword
+        ? IconButton(
+            icon: Icon(
+              _obscure
+                  ? Icons.visibility_off_outlined
+                  : Icons.visibility_outlined,
+              color: Theme.of(context).colorScheme.onSurfaceVariant,
+              size: 22,
+            ),
+            onPressed: () {
+              setState(() => _obscure = !_obscure);
+            },
+          )
+        : null,
+
+    border: OutlineInputBorder(
+      borderRadius: BorderRadius.circular(12),
+    ),
+
+    enabledBorder: OutlineInputBorder(
+      borderRadius: BorderRadius.circular(12),
+      borderSide: BorderSide(
+        color: Theme.of(context).colorScheme.outlineVariant,
+      ),
+    ),
+
+    focusedBorder: OutlineInputBorder(
+      borderRadius: BorderRadius.circular(12),
+      borderSide: BorderSide(
+        color: Theme.of(context).colorScheme.primary,
+        width: 1.5,
+      ),
+    ),
+  ),
+);
   }
 }

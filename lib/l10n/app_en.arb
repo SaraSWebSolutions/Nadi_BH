@@ -311,5 +311,52 @@
    "deleteAccountTitle": "Delete Account",
   "deleteAccountDescription": "Select a reason before deleting your account:",
   "delete": "Delete",
-  "pleaseSelectReason": "Please select a reason"
+  "pleaseSelectReason": "Please select a reason",
+  
+  "entertheEmail": "Enter the email",
+  "invalidEmail": "Invalid email format",
+  "enterPassword": "Enter the password",
+  "passwordMinLength": "Password must be at least 6 characters",
+  "enterPhone": "Enter the mobile number",
+  "invalidPhoneLength": "Mobile must be 8 digits",
+  "onlyDigitsAllowed": "Only digits allowed",
+  "fullNameRequired": "Full name is required",
+ "addAddressError": "Please add the address details of the member.",
+ "mobileMustBe8Digits": "Mobile must be 8 digits",
+  "enterConfirmPassword": "Enter confirm password",
+  "passwordsDoNotMatch": "Passwords do not match",
+   "enterMobile": "Enter mobile number",
+     "invalidCountryCode": "Invalid country code",
+     "logoutTitle": "Log Out",
+  "logoutMessage": "Are you sure you want to log out of your account?",
+  "notificationUpdateFailed": "Failed to update notification setting",
+  "title": "Delete Notification",
+"message": "Are you sure you want to delete this notification?",
+ 
+"family":"Family",
+"approve": "Approve",
+"reject": "Reject",
+"emailRequired": "Email is required",
+"passwordRequired": "Password is required",
+ "accountDisabled": "Account Disabled",
+  "accountDisabledMsg": "Your account has been disabled. Please contact support.",
+  "accountRejected": "Account Rejected",
+  "accountRejectedMsg": "Your account registration has been rejected.",
+  "invalidCredentials": "Invalid credentials",
+  "ok": "OK",
+  "addMember": "Add Member",
+  "familyMembers": "Family Members",
+  "noFamilyMembers": "No family members yet. Tap \"Add Member\" to invite someone.",
+  "active": "Active",
+    "rejected": "Rejected",
+  "removeMemberTitle": "Remove Family Member",
+  "removeMemberMessage": "Are you sure you want to remove this member from your family? They will no longer be able to share points with the family.",
+  "remove": "Remove",
+  "retry": "Retry",
+  "memberRemoved": "{name} removed from family",
+"@memberRemoved": {
+  "placeholders": {
+    "name": {}
+  }
+}
 }

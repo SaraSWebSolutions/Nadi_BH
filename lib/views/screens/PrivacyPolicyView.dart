@@ -51,17 +51,16 @@ class PrivacyPolicyView extends ConsumerWidget {
                       height: 160,
                       width: double.infinity,
                       decoration: BoxDecoration(
-                        color: AppColors.app_background_clr.withOpacity(0.08),
-                      ),
+ color: Theme.of(context).colorScheme.onPrimary                      ),
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Icon(Icons.privacy_tip_outlined, size: 50, color: AppColors.app_background_clr.withOpacity(0.5)),
+                          Icon(Icons.privacy_tip_outlined, size: 50, color: Theme.of(context).colorScheme.onPrimary),
                           const SizedBox(height: 8),
                           Text(
                             l10n.privacyPolicy,
                             style: TextStyle(
-                              color: AppColors.app_background_clr.withOpacity(0.7),
+    color: Theme.of(context).colorScheme.onPrimary,
                               fontWeight: FontWeight.w600,
                               letterSpacing: 1.1,
                             ),

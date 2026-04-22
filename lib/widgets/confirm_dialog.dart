@@ -77,8 +77,8 @@ Future<bool> showConfirmDialog(
                 child: Text(
                   cancelText ?? AppLocalizations.of(ctx)!.cancel,
                   style: TextStyle(
-                    color: Colors.grey.shade800,
-                    fontWeight: FontWeight.w600,
+ color: Theme.of(ctx).colorScheme.onSurface,
+                     fontWeight: FontWeight.w600,
                   ),
                 ),
               ),

@@ -288,8 +288,17 @@ Future<void> serviceList() async {
 
                       SizedBox(height: 15),
                       DropdownButtonFormField<String>(
+                         style: TextStyle(
+    color: Theme.of(context).textTheme.bodyMedium?.color,
+  ),
+    dropdownColor: Theme.of(context).colorScheme.surface, // 🔥 important
+
                         decoration: InputDecoration(
                           labelText: t.selectServices,
+                          labelStyle: TextStyle(
+      color: Theme.of(context).hintColor,
+    ),
+    
                           floatingLabelStyle: const TextStyle(
                             color: AppColors.app_background_clr,
                           ),
@@ -304,12 +313,14 @@ Future<void> serviceList() async {
                             ),
                           ),
                           filled: true,
-                          fillColor: Colors.white,
+                          fillColor: Theme.of(context).colorScheme.surface,
                         ),
                         items: serviceLst.map((isuse) {
                           return DropdownMenuItem<String>(
                             value: isuse["_id"],
-                            child: Text(isuse["name"]),
+                            child: Text(isuse["name"],  style: TextStyle(
+        color: Theme.of(context).textTheme.bodyMedium?.color,
+      ),),
                           );
                         }).toList(),
                         onChanged: (value) {
@@ -400,9 +411,18 @@ Future<void> serviceList() async {
                       ),
                       SizedBox(height: 15),
                       DropdownButtonFormField<String>(
+                         style: TextStyle(
+    color: Theme.of(context).textTheme.bodyMedium?.color,
+  ),
+    dropdownColor: Theme.of(context).colorScheme.surface, // 🔥 important
+
                         initialValue: selectedIssueId,
                         decoration: InputDecoration(
                           labelText:t.selectIssue,
+                          labelStyle: TextStyle(
+      color: Theme.of(context).hintColor,
+    ),
+    
                           floatingLabelStyle: const TextStyle(
                             color: AppColors.app_background_clr,
                           ),
@@ -417,12 +437,14 @@ Future<void> serviceList() async {
                             ),
                           ),
                           filled: true,
-                          fillColor: Colors.white,
+                          fillColor: Theme.of(context).colorScheme.surface,
                         ),
                         items: issueList.map((issue) {
                           return DropdownMenuItem<String>(
                             value: issue['_id'],
-                            child: Text(issue['issue']),
+                            child: Text(issue['issue'],  style: TextStyle(
+        color: Theme.of(context).textTheme.bodyMedium?.color,
+      ),),
                           );
                         }).toList(),
                         onChanged: (value) {
@@ -433,12 +455,22 @@ Future<void> serviceList() async {
                       ),
                       const SizedBox(height: 20),
                       TextField(
+                          style: TextStyle(
+    color: Theme.of(context).textTheme.bodyMedium?.color,
+  ),
                         controller: descriptionController,
                         minLines: 5,
+                        
                         maxLines: null,
                         keyboardType: TextInputType.multiline,
                         decoration: InputDecoration(
                           labelText:  t.describeIssue,
+                           labelStyle: TextStyle(
+      color: Theme.of(context).hintColor,
+    ),
+    hintStyle: TextStyle(
+      color: Theme.of(context).hintColor,
+    ),
                           floatingLabelStyle: const TextStyle(
                             color: AppColors.app_background_clr,
                           ),
@@ -455,8 +487,7 @@ Future<void> serviceList() async {
                             ),
                           ),
                           filled: true,
-                          fillColor: Colors.white,
-                        ),
+fillColor: Theme.of(context).colorScheme.surface,                        ),
                       ),
 
                       const SizedBox(height: 18),

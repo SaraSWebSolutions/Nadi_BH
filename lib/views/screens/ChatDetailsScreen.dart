@@ -38,7 +38,7 @@ class _ChatDetailsScreenState extends ConsumerState<ChatDetailsScreen>
 
   // Distinct color for admin vs regular user in the AppBar / avatars
   Color get _otherPartyColor =>
-      _isAdmin ? const Color(0xFF0F7757) : AppColors.btn_primery;
+      _isAdmin ? AppColors.app_background_clr  : AppColors.btn_primery;
 
   @override
   void initState() {
@@ -160,8 +160,8 @@ class _ChatDetailsScreenState extends ConsumerState<ChatDetailsScreen>
   }
 
   AppBar _buildAppBar() {
-    return AppBar(
-      backgroundColor: _isAdmin ? const Color(0xFF0F7757) : Colors.white,
+    return AppBar(                                                  
+      backgroundColor: _isAdmin ? AppColors.app_background_clr  : Colors.white,
       elevation: 1,
       leading: IconButton(
         icon: Icon(
@@ -225,7 +225,7 @@ class _ChatDetailsScreenState extends ConsumerState<ChatDetailsScreen>
     if (_isLoading) {
       return Scaffold(
         appBar: AppBar(
-          backgroundColor: _isAdmin ? const Color(0xFF0F7757) : Colors.white,
+          backgroundColor: _isAdmin ? AppColors.app_background_clr  : Colors.white,
           elevation: 1,
           leading: IconButton(
             icon: Icon(Icons.arrow_back,
@@ -358,14 +358,22 @@ class _ChatDetailsScreenState extends ConsumerState<ChatDetailsScreen>
                 messageInputTheme: StreamMessageInputThemeData(
                   inputBackgroundColor: Theme.of(context).colorScheme.surface,
                   borderRadius: BorderRadius.circular(24),
-                  inputDecoration: const InputDecoration(
+                  inputDecoration:  InputDecoration(
                     hintText: "Write a message...",
+                      hintStyle: TextStyle(
+          color: Theme.of(context).hintColor,
+        ),
+        
                     border: InputBorder.none,
                     contentPadding: EdgeInsets.symmetric(
                       horizontal: 16,
                       vertical: 10,
                     ),
+                    
                   ),
+                     // ✅ FIX: icon colors (left & right)
+      actionButtonColor: Theme.of(context).iconTheme.color,
+      sendButtonColor: Theme.of(context).colorScheme.onSurface,
                 ),
               ),
               child: StreamMessageInput(

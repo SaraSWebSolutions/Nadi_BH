@@ -1,23 +1,44 @@
-class Validators{
-  static String? email(String? value){
-    if(value == null || value.isEmpty) return " Enter The Email";
+import 'package:nadi_user_app/l10n/app_localizations.dart';
 
-     final regex = RegExp(r'^[^@]+@[^@]+\.[^@]+$');
-      if(!regex.hasMatch(value)) return " Invalid Email Formet";
-      return null;
-  
+class Validators {
+  static String? email(String? value, AppLocalizations l10n) {
+    if (value == null || value.isEmpty) {
+      return l10n.entertheEmail;
+    }
+
+    final regex = RegExp(r'^[^@]+@[^@]+\.[^@]+$');
+    if (!regex.hasMatch(value)) {
+      return l10n.invalidEmail;
+    }
+
+    return null;
   }
 
-  static String? Password (String? value){
-    if(value == null || value.isEmpty) return "Enter The Password";
-    if(value.length < 6) return "Password must be 6+ chars";
-     return null ;
-  } 
+  static String? password(String? value, AppLocalizations l10n) {
+    if (value == null || value.isEmpty) {
+      return l10n.enterPassword;
+    }
 
-  static String? phonenumber (String? value){
-    if(value == null || value.isEmpty) return "Enter The Number";
-    if(value.length != 8) return "Mobile must be 8 digits";
-    if (!RegExp(r'^[0-9]+$').hasMatch(value)) return "Only digits Allowed";
-    return null ;
+    if (value.length < 6) {
+      return l10n.passwordMinLength;
+    }
+
+    return null;
+  }
+
+  static String? phoneNumber(String? value, AppLocalizations l10n) {
+    if (value == null || value.isEmpty) {
+      return l10n.enterPhone;
+    }
+
+    if (value.length != 8) {
+      return l10n.invalidPhoneLength;
+    }
+
+    if (!RegExp(r'^[0-9]+$').hasMatch(value)) {
+      return l10n.onlyDigitsAllowed;
+    }
+
+    return null;
   }
 }

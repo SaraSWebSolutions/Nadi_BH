@@ -214,7 +214,7 @@ bool _isLoading = false;
                   ),
                    Text(
                     loc.editProfile ,
-                    style: TextStyle(fontWeight: FontWeight.w600, fontSize: 20,color: AppColors.app_background_clr),
+                    style: TextStyle(fontWeight: FontWeight.w600, fontSize: 20,color: Theme.of(context).colorScheme.onSurface, ),
                   ),
                   const Text(""),
                 ],
@@ -341,7 +341,8 @@ bool _isLoading = false;
                       AppTextField(
                         controller: mobileController,
                         keyboardType: TextInputType.phone,
-                        maxLength: 8,
+                        maxLength: 12,
+                         prefixText: "+973 ",
                         inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                         validator: (v) {
                           if (v == null || v.trim().isEmpty) return "Phone number is required";

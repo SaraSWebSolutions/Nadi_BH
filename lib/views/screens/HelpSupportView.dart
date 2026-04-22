@@ -155,19 +155,19 @@ class _HelpSupportViewState extends ConsumerState<HelpSupportView> {
     FilteringTextInputFormatter.allow(RegExp(r'[0-9+]')),
     LengthLimitingTextInputFormatter(12), // +973 (4) + 8 digits = 12
   ],
-                   validator: (value) {
+                validator: (value) {
   if (value == null || value.isEmpty) {
     return loc.phoneValidation;
   }
 
   if (!value.startsWith("+973")) {
-    return "Invalid country code";
+    return loc.invalidCountryCode;
   }
 
-  final digits = value.replaceFirst("+973", "");
+  final digits = value.replaceFirst("+973 ", "");
 
   if (digits.length != 8) {
-    return "Enter valid 8 digit number";
+    return loc.invalidPhoneLength;
   }
 
   return null;

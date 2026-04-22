@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:nadi_user_app/core/utils/validators.dart';
+import 'package:nadi_user_app/l10n/app_localizations.dart';
 
 
 class FamilyMemberController {
@@ -13,18 +14,35 @@ class FamilyMemberController {
 
    //Validation
 
-   String? validatefamilycount(String? value) =>
-         value == null || value.isEmpty ? "Enter Family Count" :  null ;
-         String? validatepassword(String? value) => 
-            value == null || value.isEmpty ? "Enter Password" : null ;
-    String? validatefullname(String? value) =>
-           value == null || value.isEmpty ? "Enter Fulname" : null ;
-    String? validatemobilenumber(String? value) {
-      return Validators.phonenumber(value);
+   
+  String? validatefamilycount(String? value, AppLocalizations l10n) {
+    if (value == null || value.isEmpty) {
+      return l10n.enterFamilyCount;
     }
-    String? validateemail(String? value){
-        return Validators.email(value);
+    return null;
+  }
+
+  String? validatepassword(String? value, AppLocalizations l10n) {
+    if (value == null || value.isEmpty) {
+      return l10n.enterPassword;
     }
+    return null;
+  }
+
+  String? validatefullname(String? value, AppLocalizations l10n) {
+    if (value == null || value.isEmpty) {
+      return l10n.fullNameRequired;
+    }
+    return null;
+  }
+
+  String? validatemobilenumber(String? value, AppLocalizations l10n) {
+    return Validators.phoneNumber(value, l10n);
+  }
+
+  String? validateemail(String? value, AppLocalizations l10n) {
+    return Validators.email(value, l10n);
+  }
        
 
       Map<String, dynamic> getApiFamilyMemberBody({

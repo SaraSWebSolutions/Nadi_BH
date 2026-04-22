@@ -723,4 +723,132 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get pleaseSelectReason => 'Please select a reason';
+
+  @override
+  String get entertheEmail => 'Enter the email';
+
+  @override
+  String get invalidEmail => 'Invalid email format';
+
+  @override
+  String get enterPassword => 'Enter the password';
+
+  @override
+  String get passwordMinLength => 'Password must be at least 6 characters';
+
+  @override
+  String get enterPhone => 'Enter the mobile number';
+
+  @override
+  String get invalidPhoneLength => 'Mobile must be 8 digits';
+
+  @override
+  String get onlyDigitsAllowed => 'Only digits allowed';
+
+  @override
+  String get fullNameRequired => 'Full name is required';
+
+  @override
+  String get addAddressError => 'Please add the address details of the member.';
+
+  @override
+  String get mobileMustBe8Digits => 'Mobile must be 8 digits';
+
+  @override
+  String get enterConfirmPassword => 'Enter confirm password';
+
+  @override
+  String get passwordsDoNotMatch => 'Passwords do not match';
+
+  @override
+  String get enterMobile => 'Enter mobile number';
+
+  @override
+  String get invalidCountryCode => 'Invalid country code';
+
+  @override
+  String get logoutTitle => 'Log Out';
+
+  @override
+  String get logoutMessage =>
+      'Are you sure you want to log out of your account?';
+
+  @override
+  String get notificationUpdateFailed =>
+      'Failed to update notification setting';
+
+  @override
+  String get title => 'Delete Notification';
+
+  @override
+  String get message => 'Are you sure you want to delete this notification?';
+
+  @override
+  String get family => 'Family';
+
+  @override
+  String get approve => 'Approve';
+
+  @override
+  String get reject => 'Reject';
+
+  @override
+  String get emailRequired => 'Email is required';
+
+  @override
+  String get passwordRequired => 'Password is required';
+
+  @override
+  String get accountDisabled => 'Account Disabled';
+
+  @override
+  String get accountDisabledMsg =>
+      'Your account has been disabled. Please contact support.';
+
+  @override
+  String get accountRejected => 'Account Rejected';
+
+  @override
+  String get accountRejectedMsg =>
+      'Your account registration has been rejected.';
+
+  @override
+  String get invalidCredentials => 'Invalid credentials';
+
+  @override
+  String get ok => 'OK';
+
+  @override
+  String get addMember => 'Add Member';
+
+  @override
+  String get familyMembers => 'Family Members';
+
+  @override
+  String get noFamilyMembers =>
+      'No family members yet. Tap \"Add Member\" to invite someone.';
+
+  @override
+  String get active => 'Active';
+
+  @override
+  String get rejected => 'Rejected';
+
+  @override
+  String get removeMemberTitle => 'Remove Family Member';
+
+  @override
+  String get removeMemberMessage =>
+      'Are you sure you want to remove this member from your family? They will no longer be able to share points with the family.';
+
+  @override
+  String get remove => 'Remove';
+
+  @override
+  String get retry => 'Retry';
+
+  @override
+  String memberRemoved(Object name) {
+    return '$name removed from family';
+  }
 }

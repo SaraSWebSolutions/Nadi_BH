@@ -289,8 +289,10 @@ Future<void> updateAppBadge(int count) async {
     final notificationCount = ref.watch(fetchpointsnodification);
     final adAsync = ref.watch(fetchadvertisementprovider);
     final connectivity = ref.watch(connectivityProvider);
-    final data = _ongoing?['data'];
+    final isDark = Theme.of(context).brightness == Brightness.dark;
 
+    final data = _ongoing?['data'];
+final t = AppLocalizations.of(context)!;
     final bool isOngoing = data != null && data['status'] == 'inProgress';
     final aprovetech = _aprovetech?['data'];
 ref.listen(fetchpointsnodification, (previous, next) {
@@ -562,10 +564,10 @@ ref.listen(fetchpointsnodification, (previous, next) {
                                       dashboard.account,
                                       maxLines: 1,
                                       overflow: TextOverflow.ellipsis,
-                                      style: const TextStyle(
+                                      style: TextStyle(
                                         fontWeight: FontWeight.w500,
                                         fontSize: 16,
-                                        color: Colors.black,
+                                           color: isDark ? Colors.white : Colors.black, // 👈 ADD THIS
                                       ),
                                     ),
                                   ),
@@ -707,13 +709,13 @@ ref.listen(fetchpointsnodification, (previous, next) {
               color: Colors.red,
               borderRadius: BorderRadius.circular(30),
             ),
-            child: const Row(
+            child: Row(
               children: [
-                Icon(Icons.close, color: Colors.white, size: 18),
-                SizedBox(width: 6),
+                const Icon(Icons.close, color: Colors.white, size: 18),
+                const SizedBox(width: 6),
                 Text(
-                  "Reject",
-                  style: TextStyle(
+                  t.reject,
+                  style: const TextStyle(
                     color: Colors.white,
                     fontWeight: FontWeight.w600,
                   ),
@@ -740,13 +742,13 @@ ref.listen(fetchpointsnodification, (previous, next) {
               color: Colors.green,
               borderRadius: BorderRadius.circular(30),
             ),
-            child: const Row(
+            child: Row(
               children: [
-                Icon(Icons.check, color: Colors.white, size: 18),
-                SizedBox(width: 6),
+                const Icon(Icons.check, color: Colors.white, size: 18),
+                const SizedBox(width: 6),
                 Text(
-                  "Approve",
-                  style: TextStyle(
+                  t.approve,
+                  style: const TextStyle(
                     color: Colors.white,
                     fontWeight: FontWeight.w600,
                   ),

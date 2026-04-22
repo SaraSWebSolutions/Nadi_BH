@@ -351,9 +351,14 @@ bool _isLoading = false;
 
     // Client-side validation before hitting the API
     setState(() {
-      emailError = email.isEmpty ? "Email is required" : null;
-      passwordError = password.isEmpty ? "Password is required" : null;
-    });
+  emailError = email.isEmpty
+      ? AppLocalizations.of(context)!.emailRequired
+      : null;
+
+  passwordError = password.isEmpty
+      ? AppLocalizations.of(context)!.passwordRequired
+      : null;
+});;
 
     if (emailError != null || passwordError != null) return;
   setState(() => _isLoading = true); // 🔥 START LOADER
@@ -430,10 +435,11 @@ bool _isLoading = false;
               child: Icon(Icons.block, color: Colors.red.shade600, size: 28),
             ),
             const SizedBox(width: 12),
-            const Expanded(
+            Expanded(
               child: Text(
-                "Account Disabled",
-                style: TextStyle(
+               AppLocalizations.of(context)!.accountDisabled
+,
+                style: const TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
                 ),
@@ -445,8 +451,9 @@ bool _isLoading = false;
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
-              "Your account has been disabled. Please contact our support team for assistance.",
+             Text(
+                AppLocalizations.of(context)!.accountDisabledMsg,
+
               style: TextStyle(fontSize: 14, height: 1.5),
             ),
             const SizedBox(height: 20),
@@ -507,7 +514,7 @@ bool _isLoading = false;
                 padding: const EdgeInsets.symmetric(vertical: 12),
               ),
               onPressed: () => Navigator.of(ctx).pop(),
-              child: const Text("OK", style: TextStyle(fontWeight: FontWeight.w600)),
+              child:  Text(AppLocalizations.of(context)!.ok, style: TextStyle(fontWeight: FontWeight.w600)),
             ),
           ),
         ],
@@ -536,9 +543,10 @@ bool _isLoading = false;
               ),
             ),
             const SizedBox(width: 12),
-            const Expanded(
+             Expanded(
               child: Text(
-                "Account Rejected",
+                AppLocalizations.of(context)!.accountRejected,
+
                 style: TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
@@ -551,8 +559,8 @@ bool _isLoading = false;
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
-              "Your account registration has been rejected. Please contact our support team for more information.",
+             Text(
+              AppLocalizations.of(context)!.accountRejectedMsg,
               style: TextStyle(fontSize: 14, height: 1.5),
             ),
             const SizedBox(height: 20),
@@ -613,7 +621,7 @@ bool _isLoading = false;
                 padding: const EdgeInsets.symmetric(vertical: 12),
               ),
               onPressed: () => Navigator.of(ctx).pop(),
-              child: const Text("OK", style: TextStyle(fontWeight: FontWeight.w600)),
+              child:  Text(AppLocalizations.of(context)!.ok, style: TextStyle(fontWeight: FontWeight.w600)),
             ),
           ),
         ],
@@ -702,37 +710,41 @@ bool _isLoading = false;
                                 TextFormField(
                                   controller: controller.email,
                                   keyboardType: TextInputType.emailAddress,
-                                  decoration: InputDecoration(
-                                    labelText:
-                                        AppLocalizations.of(context)!.enterEmail,
-                                    filled: true,
-                                    fillColor: Colors.white,
-                                    floatingLabelStyle: const TextStyle(
-                                      color: AppColors.btn_primery,
-                                    ),
-                                    errorText: emailError,
-                                    border: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(12),
-                                      borderSide: const BorderSide(
-                                        color: Colors.grey,
-                                        width: 1.0,
-                                      ),
-                                    ),
-                                    enabledBorder: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(12),
-                                      borderSide: const BorderSide(
-                                        color: Colors.grey,
-                                        width: 1.0,
-                                      ),
-                                    ),
-                                    focusedBorder: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(12),
-                                      borderSide: const BorderSide(
-                                        color: AppColors.btn_primery,
-                                        width: 1.5,
-                                      ),
-                                    ),
-                                  ),
+                                 decoration: InputDecoration(
+  labelText: AppLocalizations.of(context)!.enterEmail,
+
+  filled: true,
+  fillColor: Theme.of(context).colorScheme.surface,
+
+  labelStyle: TextStyle(
+    color: Theme.of(context).colorScheme.onSurfaceVariant,
+  ),
+
+  floatingLabelStyle: TextStyle(
+    color: Theme.of(context).colorScheme.primary,
+  ),
+
+  errorText: emailError,
+
+  border: OutlineInputBorder(
+    borderRadius: BorderRadius.circular(12),
+  ),
+
+  enabledBorder: OutlineInputBorder(
+    borderRadius: BorderRadius.circular(12),
+    borderSide: BorderSide(
+      color: Theme.of(context).colorScheme.outline,
+    ),
+  ),
+
+  focusedBorder: OutlineInputBorder(
+    borderRadius: BorderRadius.circular(12),
+    borderSide: BorderSide(
+      color: Theme.of(context).colorScheme.primary,
+      width: 1.5,
+    ),
+  ),
+),
                                 ),
 
                                 const SizedBox(height: 15),
@@ -741,47 +753,57 @@ bool _isLoading = false;
                                 TextFormField(
                                   controller: controller.password,
                                   obscureText: _obscure,
-                                  decoration: InputDecoration(
-                                    labelText:
-                                        AppLocalizations.of(context)!.password,
-                                    filled: true,
-                                    fillColor: Colors.white,
-                                    floatingLabelStyle: const TextStyle(
-                                      color: AppColors.btn_primery,
-                                    ),
-                                    errorText: passwordError,
-                                    border: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(12),
-                                      borderSide: const BorderSide(
-                                        color: Colors.grey,
-                                        width: 1.0,
-                                      ),
-                                    ),
-                                    enabledBorder: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(12),
-                                      borderSide: const BorderSide(
-                                        color: Colors.grey,
-                                        width: 1.0,
-                                      ),
-                                    ),
-                                    focusedBorder: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(12),
-                                      borderSide: const BorderSide(
-                                        color: AppColors.btn_primery,
-                                        width: 1.5,
-                                      ),
-                                    ),
-                                    suffixIcon: IconButton(
-                                      icon: Icon(
-                                        _obscure
-                                            ? Icons.visibility_off
-                                            : Icons.visibility,
-                                      ),
-                                      onPressed: () {
-                                        setState(() => _obscure = !_obscure);
-                                      },
-                                    ),
-                                  ),
+                                 decoration: InputDecoration(
+  labelText: AppLocalizations.of(context)!.password,
+
+  filled: true,
+  fillColor: Theme.of(context).colorScheme.surface,
+
+  labelStyle: TextStyle(
+    color: Theme.of(context).colorScheme.onSurfaceVariant,
+  ),
+
+  floatingLabelStyle: TextStyle(
+    color: Theme.of(context).colorScheme.primary,
+    fontWeight: FontWeight.w600,
+  ),
+
+  errorText: passwordError,
+
+  border: OutlineInputBorder(
+    borderRadius: BorderRadius.circular(12),
+    borderSide: BorderSide(
+      color: Theme.of(context).colorScheme.outline,
+    ),
+  ),
+
+  enabledBorder: OutlineInputBorder(
+    borderRadius: BorderRadius.circular(12),
+    borderSide: BorderSide(
+      color: Theme.of(context).colorScheme.outline,
+    ),
+  ),
+
+  focusedBorder: OutlineInputBorder(
+    borderRadius: BorderRadius.circular(12),
+    borderSide: BorderSide(
+      color: Theme.of(context).colorScheme.primary,
+      width: 1.5,
+    ),
+  ),
+
+  suffixIcon: IconButton(
+    icon: Icon(
+      _obscure
+          ? Icons.visibility_off_outlined
+          : Icons.visibility_outlined,
+      color: Theme.of(context).colorScheme.onSurfaceVariant,
+    ),
+    onPressed: () {
+      setState(() => _obscure = !_obscure);
+    },
+  ),
+),
                                 ),
 
                                 const SizedBox(height: 10),
@@ -893,7 +915,7 @@ bool _isLoading = false;
                                         ),
                                         const SizedBox(width: 6),
                                         Text(
-                                          "Help & Support",
+                                        AppLocalizations.of(context)!.helpSupport,
                                           style: TextStyle(
                                             fontWeight: FontWeight.w600,
                                             color: AppColors.app_background_clr,

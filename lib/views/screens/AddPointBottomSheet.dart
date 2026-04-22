@@ -176,7 +176,7 @@ class _AddPointBottomSheetContentState
                         contentPadding: EdgeInsets.zero,
                         materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
                         title: Text(
-                          t.friend,
+                          t.family,
                           style: TextStyle(
                             color:
                                 Theme.of(context).textTheme.bodyMedium?.color,

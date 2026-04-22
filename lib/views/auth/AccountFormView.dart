@@ -142,7 +142,7 @@ Row(
       child: AppTextField(
         controller: controller.firstName,
         label: "First Name *",
-        validator: (value) => controller.validateName(value),
+        validator: (value) => controller.validateName(value,l10n),
       ),
     ),
     const SizedBox(width: 12),
@@ -181,7 +181,7 @@ Row(
             controller: controller.mobile,
             keyboardType: TextInputType.phone,
             label: l10n.mobileNumber,
-            validator: (value) => controller.validateMobile(value),
+            validator: (value) => controller.validateMobile(value,l10n),
             prefixText: "+973 ",
             maxLength: 8,
             inputFormatters: [FilteringTextInputFormatter.digitsOnly],
@@ -192,7 +192,7 @@ Row(
           AppTextField(
             controller: controller.email,
             label: "${l10n.emailAddress}*",
-            validator: (value) => controller.validateEmail(value),
+            validator: (value) => controller.validateEmail(value,l10n),
           ),
           const SizedBox(height: 17),
 
@@ -213,7 +213,7 @@ Row(
             controller: controller.password,
             label: l10n.createPassword,
             isPassword: true,
-            validator: (value) => controller.validatePassword(value),
+            validator: (value) => controller.validatePassword(value,l10n),
           ),
           const SizedBox(height: 17),
 
@@ -221,7 +221,7 @@ Row(
             controller: controller.confirmPassword,
             label: l10n.confirmPassword,
             isPassword: true,
-            validator: (value) => controller.validateConfirmPassword(value),
+            validator: (value) => controller.validateConfirmPassword(value,l10n),
           ),
           const SizedBox(height: 40),
 

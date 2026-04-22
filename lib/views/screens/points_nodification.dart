@@ -64,10 +64,10 @@ class _PointsNodificationState extends ConsumerState<PointsNodification> {
               onPressed: () async {
                 final confirmed = await showConfirmDialog(
                   context,
-                  title: "Clear All Notifications",
-                  message:
-                      "This will permanently remove all your notifications. This action cannot be undone.",
-                  confirmText: "Clear All",
+                  title: AppLocalizations.of(context)!.title,
+message: AppLocalizations.of(context)!.message,
+confirmText: AppLocalizations.of(context)!.delete,
+                 
                   icon: Icons.delete_sweep_rounded,
                   destructive: true,
                 );

@@ -1477,6 +1477,246 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Please select a reason'**
   String get pleaseSelectReason;
+
+  /// No description provided for @entertheEmail.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter the email'**
+  String get entertheEmail;
+
+  /// No description provided for @invalidEmail.
+  ///
+  /// In en, this message translates to:
+  /// **'Invalid email format'**
+  String get invalidEmail;
+
+  /// No description provided for @enterPassword.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter the password'**
+  String get enterPassword;
+
+  /// No description provided for @passwordMinLength.
+  ///
+  /// In en, this message translates to:
+  /// **'Password must be at least 6 characters'**
+  String get passwordMinLength;
+
+  /// No description provided for @enterPhone.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter the mobile number'**
+  String get enterPhone;
+
+  /// No description provided for @invalidPhoneLength.
+  ///
+  /// In en, this message translates to:
+  /// **'Mobile must be 8 digits'**
+  String get invalidPhoneLength;
+
+  /// No description provided for @onlyDigitsAllowed.
+  ///
+  /// In en, this message translates to:
+  /// **'Only digits allowed'**
+  String get onlyDigitsAllowed;
+
+  /// No description provided for @fullNameRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Full name is required'**
+  String get fullNameRequired;
+
+  /// No description provided for @addAddressError.
+  ///
+  /// In en, this message translates to:
+  /// **'Please add the address details of the member.'**
+  String get addAddressError;
+
+  /// No description provided for @mobileMustBe8Digits.
+  ///
+  /// In en, this message translates to:
+  /// **'Mobile must be 8 digits'**
+  String get mobileMustBe8Digits;
+
+  /// No description provided for @enterConfirmPassword.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter confirm password'**
+  String get enterConfirmPassword;
+
+  /// No description provided for @passwordsDoNotMatch.
+  ///
+  /// In en, this message translates to:
+  /// **'Passwords do not match'**
+  String get passwordsDoNotMatch;
+
+  /// No description provided for @enterMobile.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter mobile number'**
+  String get enterMobile;
+
+  /// No description provided for @invalidCountryCode.
+  ///
+  /// In en, this message translates to:
+  /// **'Invalid country code'**
+  String get invalidCountryCode;
+
+  /// No description provided for @logoutTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Log Out'**
+  String get logoutTitle;
+
+  /// No description provided for @logoutMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to log out of your account?'**
+  String get logoutMessage;
+
+  /// No description provided for @notificationUpdateFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to update notification setting'**
+  String get notificationUpdateFailed;
+
+  /// No description provided for @title.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete Notification'**
+  String get title;
+
+  /// No description provided for @message.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to delete this notification?'**
+  String get message;
+
+  /// No description provided for @family.
+  ///
+  /// In en, this message translates to:
+  /// **'Family'**
+  String get family;
+
+  /// No description provided for @approve.
+  ///
+  /// In en, this message translates to:
+  /// **'Approve'**
+  String get approve;
+
+  /// No description provided for @reject.
+  ///
+  /// In en, this message translates to:
+  /// **'Reject'**
+  String get reject;
+
+  /// No description provided for @emailRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Email is required'**
+  String get emailRequired;
+
+  /// No description provided for @passwordRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Password is required'**
+  String get passwordRequired;
+
+  /// No description provided for @accountDisabled.
+  ///
+  /// In en, this message translates to:
+  /// **'Account Disabled'**
+  String get accountDisabled;
+
+  /// No description provided for @accountDisabledMsg.
+  ///
+  /// In en, this message translates to:
+  /// **'Your account has been disabled. Please contact support.'**
+  String get accountDisabledMsg;
+
+  /// No description provided for @accountRejected.
+  ///
+  /// In en, this message translates to:
+  /// **'Account Rejected'**
+  String get accountRejected;
+
+  /// No description provided for @accountRejectedMsg.
+  ///
+  /// In en, this message translates to:
+  /// **'Your account registration has been rejected.'**
+  String get accountRejectedMsg;
+
+  /// No description provided for @invalidCredentials.
+  ///
+  /// In en, this message translates to:
+  /// **'Invalid credentials'**
+  String get invalidCredentials;
+
+  /// No description provided for @ok.
+  ///
+  /// In en, this message translates to:
+  /// **'OK'**
+  String get ok;
+
+  /// No description provided for @addMember.
+  ///
+  /// In en, this message translates to:
+  /// **'Add Member'**
+  String get addMember;
+
+  /// No description provided for @familyMembers.
+  ///
+  /// In en, this message translates to:
+  /// **'Family Members'**
+  String get familyMembers;
+
+  /// No description provided for @noFamilyMembers.
+  ///
+  /// In en, this message translates to:
+  /// **'No family members yet. Tap \"Add Member\" to invite someone.'**
+  String get noFamilyMembers;
+
+  /// No description provided for @active.
+  ///
+  /// In en, this message translates to:
+  /// **'Active'**
+  String get active;
+
+  /// No description provided for @rejected.
+  ///
+  /// In en, this message translates to:
+  /// **'Rejected'**
+  String get rejected;
+
+  /// No description provided for @removeMemberTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove Family Member'**
+  String get removeMemberTitle;
+
+  /// No description provided for @removeMemberMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to remove this member from your family? They will no longer be able to share points with the family.'**
+  String get removeMemberMessage;
+
+  /// No description provided for @remove.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove'**
+  String get remove;
+
+  /// No description provided for @retry.
+  ///
+  /// In en, this message translates to:
+  /// **'Retry'**
+  String get retry;
+
+  /// No description provided for @memberRemoved.
+  ///
+  /// In en, this message translates to:
+  /// **'{name} removed from family'**
+  String memberRemoved(Object name);
 }
 
 class _AppLocalizationsDelegate

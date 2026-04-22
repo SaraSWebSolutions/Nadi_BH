@@ -716,4 +716,128 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get pleaseSelectReason => 'يرجى اختيار سبب';
+
+  @override
+  String get entertheEmail => 'أدخل البريد الإلكتروني';
+
+  @override
+  String get invalidEmail => 'تنسيق البريد الإلكتروني غير صالح';
+
+  @override
+  String get enterPassword => 'أدخل كلمة المرور';
+
+  @override
+  String get passwordMinLength => 'يجب أن تكون كلمة المرور 6 أحرف على الأقل';
+
+  @override
+  String get enterPhone => 'أدخل رقم الهاتف';
+
+  @override
+  String get invalidPhoneLength => 'يجب أن يكون رقم الهاتف 8 أرقام';
+
+  @override
+  String get onlyDigitsAllowed => 'يسمح بالأرقام فقط';
+
+  @override
+  String get fullNameRequired => 'الاسم الكامل مطلوب';
+
+  @override
+  String get addAddressError => 'يرجى إضافة عنوان العضو';
+
+  @override
+  String get mobileMustBe8Digits => 'يجب أن يكون رقم الجوال 8 أرقام';
+
+  @override
+  String get enterConfirmPassword => 'أدخل تأكيد كلمة المرور';
+
+  @override
+  String get passwordsDoNotMatch => 'كلمات المرور غير متطابقة';
+
+  @override
+  String get enterMobile => 'أدخل رقم الجوال';
+
+  @override
+  String get invalidCountryCode => 'رمز الدولة غير صحيح';
+
+  @override
+  String get logoutTitle => 'تسجيل الخروج';
+
+  @override
+  String get logoutMessage => 'هل أنت متأكد أنك تريد تسجيل الخروج من حسابك؟';
+
+  @override
+  String get notificationUpdateFailed => 'فشل في تحديث إعدادات الإشعارات';
+
+  @override
+  String get title => 'حذف الإشعار';
+
+  @override
+  String get message => 'هل أنت متأكد أنك تريد حذف هذا الإشعار؟';
+
+  @override
+  String get family => 'عائلة';
+
+  @override
+  String get approve => 'موافقة';
+
+  @override
+  String get reject => 'رفض';
+
+  @override
+  String get emailRequired => 'البريد الإلكتروني مطلوب';
+
+  @override
+  String get passwordRequired => 'كلمة المرور مطلوبة';
+
+  @override
+  String get accountDisabled => 'تم تعطيل الحساب';
+
+  @override
+  String get accountDisabledMsg => 'تم تعطيل حسابك. يرجى التواصل مع الدعم.';
+
+  @override
+  String get accountRejected => 'تم رفض الحساب';
+
+  @override
+  String get accountRejectedMsg => 'تم رفض تسجيل حسابك. يرجى التواصل مع الدعم.';
+
+  @override
+  String get invalidCredentials => 'بيانات الدخول غير صحيحة';
+
+  @override
+  String get ok => 'حسناً';
+
+  @override
+  String get addMember => 'إضافة عضو';
+
+  @override
+  String get familyMembers => 'أفراد العائلة';
+
+  @override
+  String get noFamilyMembers =>
+      'لا يوجد أفراد عائلة حتى الآن. اضغط على \"إضافة عضو\" لدعوة شخص.';
+
+  @override
+  String get active => 'نشط';
+
+  @override
+  String get rejected => 'مرفوض';
+
+  @override
+  String get removeMemberTitle => 'إزالة فرد من العائلة';
+
+  @override
+  String get removeMemberMessage =>
+      'هل أنت متأكد أنك تريد إزالة هذا العضو من العائلة؟ لن يتمكن بعد الآن من مشاركة النقاط مع العائلة.';
+
+  @override
+  String get remove => 'إزالة';
+
+  @override
+  String get retry => 'إعادة المحاولة';
+
+  @override
+  String memberRemoved(Object name) {
+    return 'تمت إزالة $name من العائلة';
+  }
 }

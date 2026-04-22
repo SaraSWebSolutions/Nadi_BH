@@ -291,6 +291,8 @@ class Myprofile extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final profileAsyncValue = ref.watch(profileprovider);
     final loc = AppLocalizations.of(context)!;
+        final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: profileAsyncValue.when(
@@ -503,8 +505,8 @@ class Myprofile extends ConsumerWidget {
                                   borderRadius: BorderRadius.circular(12),
                                 ),
                               ),
-                              child: const Text(
-                                "Add Member",
+                              child: Text(
+  loc.addMember,
                                 style: TextStyle(
                                   fontSize: 16,
                                   fontWeight: FontWeight.w600,
@@ -519,6 +521,7 @@ class Myprofile extends ConsumerWidget {
                           style: TextStyle(
                             fontSize: 14,
                             fontWeight: FontWeight.w600,
+                            // color: Theme.of(context).textTheme.bodyLarge?.color,
                           ),
                         ),
                         const SizedBox(height: 4), // reduced
@@ -526,6 +529,9 @@ class Myprofile extends ConsumerWidget {
                           controller: nameCtrl,
                           readonly: true,
                           enabled: false,
+                         textStyle: TextStyle(
+    // color: Theme.of(context).textTheme.bodyLarge?.color,
+  ),
                         ),
                         const SizedBox(height: 10), // reduced
                         Text(
@@ -540,10 +546,13 @@ class Myprofile extends ConsumerWidget {
                           controller: emailCtrl,
                           readonly: true,
                           enabled: false,
+                          textStyle: TextStyle(
+    // color: Theme.of(context).textTheme.bodyLarge?.color,
+  ),
                         ),
                         const SizedBox(height: 10),
                         Text(
-                          "+973 ${loc.phoneNumber}",
+                          "${loc.phoneNumber}",
                           style: TextStyle(
                             fontSize: 14,
                             fontWeight: FontWeight.w600,
@@ -551,9 +560,13 @@ class Myprofile extends ConsumerWidget {
                         ),
                         const SizedBox(height: 4),
                         AppTextField(
-                          controller: phoneCtrl,
+                           prefixText: "+973 ",
+                          controller:  phoneCtrl,
                           readonly: true,
                           enabled: false,
+                          textStyle: TextStyle(
+    // color: Theme.of(context).textTheme.bodyLarge?.color,
+  ),
                         ),
                         const SizedBox(height: 10),
                         Text(
@@ -561,6 +574,7 @@ class Myprofile extends ConsumerWidget {
                           style: TextStyle(
                             fontSize: 14,
                             fontWeight: FontWeight.w600,
+                            
                           ),
                         ),
                         const SizedBox(height: 4),
@@ -570,6 +584,9 @@ class Myprofile extends ConsumerWidget {
                           controller: addressCtrl,
                           readonly: true,
                           enabled: false,
+                          textStyle: TextStyle(
+    // color: Theme.of(context).textTheme.bodyLarge?.color,
+  ),
                         ),
                       ],
                     ),
@@ -647,11 +664,12 @@ Widget _statusCountPill({
 class _FamilyMembersListSection extends ConsumerWidget {
   const _FamilyMembersListSection();
 
-  Widget _header(int count) {
+Widget _header(BuildContext context, int count) {
+
     return Row(
       children: [
-        const Text(
-          "Family Members",
+       Text(
+  AppLocalizations.of(context)!.familyMembers,
           style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
         ),
         const SizedBox(width: 8),
@@ -690,12 +708,14 @@ class _FamilyMembersListSection extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+      final loc = AppLocalizations.of(context)!; // ✅ ADD THIS
+
 final membersAsync = ref.watch(familyMembersVerifiedProvider);
     return membersAsync.when(
       loading: () => Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _header(0),
+         _header(context, 0),
           _infoBox(
             child: const Center(
               child: SizedBox(
@@ -710,7 +730,7 @@ final membersAsync = ref.watch(familyMembersVerifiedProvider);
       error: (err, _) => Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _header(0),
+          _header(context, 0),
           _infoBox(
             child: Row(
               children: [
@@ -718,7 +738,7 @@ final membersAsync = ref.watch(familyMembersVerifiedProvider);
                 const SizedBox(width: 10),
                 Expanded(
                   child: Text(
-                    "Couldn't load family members",
+                   AppLocalizations.of(context)!.errorLoadingProfile,
                     style: TextStyle(
                       fontSize: 13,
                       color: Colors.grey.shade800,
@@ -728,7 +748,7 @@ final membersAsync = ref.watch(familyMembersVerifiedProvider);
                 TextButton(
                   onPressed: () =>
                       ref.invalidate(familyMembersListProvider),
-                  child: const Text("Retry"),
+                  child:  Text(AppLocalizations.of(context)!.retry),
                 ),
               ],
             ),
@@ -740,7 +760,7 @@ final membersAsync = ref.watch(familyMembersVerifiedProvider);
           return Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              _header(0),
+             _header(context, 0),
               _infoBox(
                 child: Row(
                   children: [
@@ -751,7 +771,7 @@ final membersAsync = ref.watch(familyMembersVerifiedProvider);
                     const SizedBox(width: 10),
                     Expanded(
                       child: Text(
-                        "No family members yet. Tap 'Add Member' below to invite one.",
+                        AppLocalizations.of(context)!.noFamilyMembers,
                         style: TextStyle(
                           fontSize: 13,
                           color: Colors.grey.shade700,
@@ -770,6 +790,8 @@ final membersAsync = ref.watch(familyMembersVerifiedProvider);
         int rejected = 0;
         for (final m in members) {
           final status = _memberStatus(m);
+            final loc = AppLocalizations.of(context)!;
+
           switch (status) {
             case 'Rejected':
               rejected++;
@@ -785,26 +807,26 @@ final membersAsync = ref.watch(familyMembersVerifiedProvider);
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _header(members.length),
+            _header(context,members.length),
             const SizedBox(height: 10),
             Wrap(
               spacing: 8,
               runSpacing: 8,
               children: [
                 _statusCountPill(
-                  label: "Active",
+                  label: loc.active,
                   count: active,
                   color: Colors.green.shade700,
                   bg: Colors.green.shade50,
                 ),
                 _statusCountPill(
-                  label: "Pending",
+                  label: loc.pending,
                   count: pending,
                   color: Colors.orange.shade800,
                   bg: Colors.orange.shade50,
                 ),
                 _statusCountPill(
-                  label: "Rejected",
+                  label: loc.rejected,
                   count: rejected,
                   color: Colors.red.shade700,
                   bg: Colors.red.shade50,
@@ -867,15 +889,15 @@ class _FamilyMemberTileState extends ConsumerState<_FamilyMemberTile> {
 
   Future<void> _remove() async {
     final memberId = widget.member['_id']?.toString();
+    final loc = AppLocalizations.of(context)!;
     if (memberId == null || memberId.isEmpty) return;
 
     final name = widget.member['basicInfo']?['fullName']?.toString() ?? 'this member';
     final confirmed = await showConfirmDialog(
       context,
-      title: "Remove Family Member",
-      message:
-          "Are you sure you want to remove $name from your family? They will no longer be able to share points with the family.",
-      confirmText: "Remove",
+    title: loc.removeMemberTitle,
+message: loc.removeMemberMessage,
+confirmText: loc.remove,
       icon: Icons.person_remove_alt_1_rounded,
       destructive: true,
     );
@@ -886,8 +908,9 @@ class _FamilyMemberTileState extends ConsumerState<_FamilyMemberTile> {
     try {
       await ref.read(familyMembersManageServiceProvider).removeFamilyMember(memberId);
       if (!mounted) return;
-      SnackbarHelper.ShowSuccess(context, "$name removed from family");
-      widget.onRemoved();
+SnackbarHelper.ShowSuccess(
+  context,
+loc.memberRemoved(name));      widget.onRemoved();
     } catch (e) {
       if (!mounted) return;
       SnackbarHelper.showError(context, e.toString());
@@ -904,6 +927,7 @@ class _FamilyMemberTileState extends ConsumerState<_FamilyMemberTile> {
     final image = basic['image']?.toString() ?? '';
     final relation = widget.member['relation']?.toString();
     final badge = _statusBadge();
+final loc = AppLocalizations.of(context)!;
 
     return Container(
       margin: const EdgeInsets.only(bottom: 10),

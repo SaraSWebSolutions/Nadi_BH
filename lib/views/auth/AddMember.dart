@@ -476,8 +476,9 @@ WidgetsBinding.instance.addPostFrameCallback((_) {
                             borderSide: const BorderSide(color: Colors.black26),
                           ),
                         ),
-                        validator: controller.validatefamilycount,
-                        onChanged: (val) {
+                        
+
+validator: (value) => controller.validatefamilycount(value, l10n),                        onChanged: (val) {
                           final count = int.tryParse(val);
                           if (count != null && count > 0) {
                             setState(() {
@@ -540,8 +541,8 @@ WidgetsBinding.instance.addPostFrameCallback((_) {
                   controller: controller.fullName,
                   label: l10n.memberFullName,
                     focusNode: _nameFocus, // ✅ add this
+                    validator: (value) => controller.validatefullname(value,l10n),
 
-                  validator: (value) => controller.validatefullname(value),
                 ),
                 const SizedBox(height: 15),
 
@@ -573,7 +574,7 @@ WidgetsBinding.instance.addPostFrameCallback((_) {
                   prefixText: "+973 ",
                   maxLength: 8,
                   inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                  validator: (value) => controller.validatemobilenumber(value),
+                  validator: (value) => controller.validatemobilenumber(value,l10n),
                 ),
 
                 const SizedBox(height: 15),
@@ -590,7 +591,7 @@ WidgetsBinding.instance.addPostFrameCallback((_) {
                   controller: controller.email,
                   keyboardType: TextInputType.emailAddress,
                   label: '${l10n.emailAddress}*',
-                  validator: (value) => controller.validateemail(value),
+                  validator: (value) => controller.validateemail(value,l10n),
                 ),
                 const SizedBox(height: 15),
                 AppDropdown(

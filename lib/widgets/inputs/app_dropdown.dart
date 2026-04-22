@@ -22,39 +22,50 @@ class AppDropdown extends StatelessWidget {
     return DropdownButtonFormField<String>(
       initialValue: value,
       decoration: InputDecoration(
-        labelText: label,
-        contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-          labelStyle: const TextStyle(
-          fontSize: 14,
-          color: Color(0xFF79747E),
-        ),
-        floatingLabelStyle: const TextStyle(
-          color: AppColors.btn_primery,
-          fontWeight: FontWeight.w600,
-        ),
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-        ),
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(
-            color: Colors.grey
-          )
-        ),
-          focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(
-            color: AppColors.app_background_clr,
-            width: 1.5
-          )
-        ),
-        filled: true,
-        fillColor: Colors.white,
-      ),
+  labelText: label,
+
+  contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+
+  // ✅ Dynamic label color
+  labelStyle: TextStyle(
+    fontSize: 14,
+    color: Theme.of(context).colorScheme.onSurfaceVariant,
+  ),
+
+  floatingLabelStyle: TextStyle(
+    color: Theme.of(context).colorScheme.primary,
+    fontWeight: FontWeight.w600,
+  ),
+
+  border: OutlineInputBorder(
+    borderRadius: BorderRadius.circular(12),
+  ),
+
+  enabledBorder: OutlineInputBorder(
+    borderRadius: BorderRadius.circular(12),
+    borderSide: BorderSide(
+      color: Theme.of(context).colorScheme.outline,
+    ),
+  ),
+
+  focusedBorder: OutlineInputBorder(
+    borderRadius: BorderRadius.circular(12),
+    borderSide: BorderSide(
+      color: Theme.of(context).colorScheme.primary,
+      width: 1.2,
+    ),
+  ),
+
+  // ✅ VERY IMPORTANT (fix background issue)
+  filled: true,
+  fillColor: Theme.of(context).colorScheme.surface,
+),
       items: items
           .map((e) => DropdownMenuItem(
                 value: e,
-                child: Text(e),
+                child: Text(e, style: TextStyle(
+      color: Theme.of(context).colorScheme.onSurface, // ✅ FIX
+    )),
               ))
           .toList(),
       onChanged: onChanged,

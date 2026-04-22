@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:nadi_user_app/models/SignupModel.dart';
 
 import 'package:nadi_user_app/core/utils/validators.dart';
+import 'package:nadi_user_app/l10n/app_localizations.dart';
 
 class SignupController {
   // Text controllers
@@ -35,36 +36,42 @@ class SignupController {
   SignupModel? signupData;
 
   // Validators
-  String? validateName(String? v) =>
-      v == null || v.isEmpty ? "Enter full name" : null;
+String? validateName(String? v, AppLocalizations l10n) {
+  if (v == null || v.isEmpty) {
+    return l10n.fullNameRequired;
+  }
+  return null;
+}
 
-  String? validateMobile(String? v) {
-    if (v == null || v.isEmpty) return "Enter mobile number";
-    if (v.length != 8) return "Mobile must be 8 digits";
-    if (!RegExp(r'^[0-9]+$').hasMatch(v)) return "Only digits allowed";
-    return null;
+ String? validateMobile(String? v, AppLocalizations l10n) {
+  if (v == null || v.isEmpty) return l10n.enterMobile;
+  if (v.length != 8) return l10n.mobileMustBe8Digits;
+  if (!RegExp(r'^[0-9]+$').hasMatch(v)) return l10n.onlyDigitsAllowed;
+  return null;
+}
+
+   String? validateEmail(String? value, AppLocalizations l10n) {
+    return Validators.email(value, l10n);
   }
 
-  String? validateEmail(String? value) {
-    return Validators.email(value);
+  /// Password validation
+  String? validatePassword(String? value, AppLocalizations l10n) {
+    return Validators.password(value, l10n);
   }
 
-  String? validatePassword(String? value) {
-    return Validators.Password(value);
+  String? validateConfirmPassword(String? v, AppLocalizations l10n) {
+  if (v == null || v.isEmpty) {
+    return l10n.enterConfirmPassword;
   }
-
-  String? validateConfirmPassword(String? v) {
-    if (v == null || v.isEmpty) {
-      return "Enter confirm password";
-    }
-    if (v != password.text) {
-      return "Passwords do not match";
-    }
-    return null;
+  if (v != password.text) {
+    return l10n.passwordsDoNotMatch;
   }
+  return null;
+}
 
-  String? validateGender(String? v) => v == null ? "Select gender" : null;
-
+String? validateGender(String? v, AppLocalizations l10n) {
+  return v == null ? l10n.selectGender : null;
+}
   // Save all the data into a model
 void saveToModel() {
   signupData = SignupModel(

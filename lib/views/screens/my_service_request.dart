@@ -35,7 +35,11 @@ class _MyServiceRequestState extends ConsumerState<MyServiceRequest> {
     super.initState();
     myserviceslist();
   }
-
+// @override
+// void didChangeDependencies() {
+//   super.didChangeDependencies();
+//   myserviceslist();
+// }
   String formatDate(String date) {
     if (date.isEmpty) return "";
 
@@ -128,6 +132,9 @@ class _MyServiceRequestState extends ConsumerState<MyServiceRequest> {
                 Divider(),
 
                 Expanded(
+                child:   RefreshIndicator(
+  color: AppColors.app_background_clr,
+  onRefresh: myserviceslist,
                   child: isLoading
                       ? ListView.builder(
                           itemCount: 6,
@@ -196,6 +203,7 @@ class _MyServiceRequestState extends ConsumerState<MyServiceRequest> {
                               );
                             },
                           ),
+                        ),
                         ),
                 ),
               ],

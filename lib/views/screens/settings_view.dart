@@ -174,6 +174,7 @@ class _SettingsViewState extends ConsumerState<SettingsView> {
   }
   @override
   Widget build(BuildContext context) {
+      final l10n = AppLocalizations.of(context)!; // ✅ ADD THIS
     Future<void> logout(BuildContext context) async {
       try {
         ///  get FCM token
@@ -618,10 +619,10 @@ class _SettingsViewState extends ConsumerState<SettingsView> {
                           onTap: () async {
                             final confirmed = await showConfirmDialog(
                               context,
-                              title: "Log Out",
+                              title: l10n.logoutTitle,
                               message:
-                                  "Are you sure you want to log out of your account?",
-                              confirmText: "Log Out",
+                                  l10n.logoutMessage,
+                              confirmText:l10n.logout,
                               icon: Icons.logout_rounded,
                               destructive: true,
                             );

@@ -148,6 +148,7 @@ class _AdminQuestionerviewState extends ConsumerState<AdminQuestionerview>
   @override
   Widget build(BuildContext context) {
     final adminRequest = ref.watch(fetchadminquestionrequestprovider);
+final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(
       appBar: AppBar(
@@ -251,17 +252,17 @@ class _AdminQuestionerviewState extends ConsumerState<AdminQuestionerview>
                                         ),
                                         decoration: BoxDecoration(
                                           color: isSelected
-                                              ? AppColors.gold_coin.withOpacity(
-                                                  0.1,
-                                                )
-                                              : Colors.white,
+      ? AppColors.gold_coin.withOpacity(isDark ? 0.25 : 0.1)
+      : (isDark
+          ? Theme.of(context).colorScheme.surface
+          : Colors.white),
                                           borderRadius: BorderRadius.circular(
                                             12,
                                           ),
                                           border: Border.all(
-                                            color: isSelected
-                                                ? AppColors.gold_coin
-                                                : Colors.grey.shade300,
+                                          color: isSelected
+        ? AppColors.gold_coin
+        : (isDark ? Colors.grey.shade700 : Colors.grey.shade300),
                                             width: 1.5,
                                           ),
                                         ),
@@ -275,6 +276,7 @@ class _AdminQuestionerviewState extends ConsumerState<AdminQuestionerview>
                                                   fontWeight: isSelected
                                                       ? FontWeight.w600
                                                       : FontWeight.w400,
+                                                      color:Theme.of(context).textTheme.bodyLarge?.color
                                                 ),
                                               ),
                                             ),
