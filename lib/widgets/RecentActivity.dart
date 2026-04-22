@@ -5,6 +5,7 @@ import 'package:nadi_user_app/core/network/dio_client.dart';
 import 'package:nadi_user_app/core/utils/CommonNetworkImage.dart';
 import 'package:nadi_user_app/core/utils/Time_Date.dart';
 import 'package:nadi_user_app/core/utils/logger.dart';
+import 'package:nadi_user_app/l10n/app_localizations.dart';
 import 'package:nadi_user_app/models/UserLogModel%20.dart';
 import 'package:nadi_user_app/services/logs_service.dart';
 import 'package:shimmer/shimmer.dart';
@@ -103,7 +104,7 @@ class _RecentActivityState extends State<RecentActivity> {
       return _buildSimmer();
     }
     if (logs.isEmpty) {
-      return Center(child: Text("No recent activity"));
+      return Center(child: Text(AppLocalizations.of(context)!.noRecentActivity));
     }
     final displaylog = widget.limitLogs
         ? (logs.length > 5 ? logs.sublist(0, 5) : logs)
@@ -158,7 +159,11 @@ class _RecentActivityState extends State<RecentActivity> {
                         ),
                         const SizedBox(height: 4),
                         Text(
-                          formatIsoDateForUI(log.time.toString()),
+                          // formatIsoDateForUI(
+                          //   log.time.toString(),
+                          //   locale: Localizations.localeOf(context).toString(),
+                          // ),
+                                                    formatIsoDateForUI(log.time.toString()),
                           style: const TextStyle(
                             color: Colors.grey,
                             fontSize: 12,

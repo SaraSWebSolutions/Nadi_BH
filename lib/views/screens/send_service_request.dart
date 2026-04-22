@@ -128,11 +128,12 @@ Future<void> issuseList() async {
   }
 
   Future<void> SendRequest() async {
+    final t = AppLocalizations.of(context)!;
     if (selectedIssueId == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           backgroundColor: Colors.red,
-          content: Text(AppLocalizations.of(context)!.selectServiceIssue),
+          content: Text(t.selectServiceIssue),
         ),
       );
       return;
@@ -168,7 +169,7 @@ Future<void> issuseList() async {
         }
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text("Something went wrong")),
+          SnackBar(content: Text(t.somethingWentWrong)),
         );
       }
     } catch (e) {
@@ -307,8 +308,8 @@ Future<void> issuseList() async {
                                     const SizedBox(height: 2),
                                     Text(
                                       widget.points == 0
-                                          ? "Service Free"
-                                          : "${widget.points} Points",
+                                          ? t.serviceFree
+                                          : t.pointsLabel(widget.points.toString()),
                                       style: const TextStyle(
                                         fontSize: 18,
                                         fontWeight: FontWeight.bold,
@@ -438,7 +439,7 @@ Future<void> issuseList() async {
 
                         const SizedBox(height: 3),
                         Text(
-                          "${selectedImages.length} / 10 images selected",
+                          t.imagesSelectedCount(selectedImages.length.toString()),
                           style: TextStyle(
                             fontSize: 12,
                             color: selectedImages.length == 10
@@ -487,7 +488,7 @@ Future<void> issuseList() async {
                         const SizedBox(height: 15),
                         // ACTION BUTTONS
                         AppButton(
-                          text: "Send Request",
+                          text: t.sendRequest,
                           onPressed: () {
                             SendRequest();
                           },
@@ -525,7 +526,7 @@ Future<void> issuseList() async {
                   color: Theme.of(context).textTheme.bodyMedium?.color,
                 ),
                 title: Text(
-                  "Camera",
+                  AppLocalizations.of(context)!.camera,
                   style: TextStyle(
                     color: Theme.of(context).textTheme.bodyMedium?.color,
                   ),
@@ -537,7 +538,7 @@ Future<void> issuseList() async {
               ),
               ListTile(
                 leading: const Icon(Icons.photo_library),
-                title: const Text("Gallery"),
+                title: Text(AppLocalizations.of(context)!.gallery),
                 onTap: () {
                   Navigator.pop(context);
                   pickImage(ImageSource.gallery);

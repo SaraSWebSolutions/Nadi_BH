@@ -1717,6 +1717,504 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'{name} removed from family'**
   String memberRemoved(Object name);
+
+  /// No description provided for @feedbackSubmittedSuccessfully.
+  ///
+  /// In en, this message translates to:
+  /// **'Feedback submitted successfully'**
+  String get feedbackSubmittedSuccessfully;
+
+  /// No description provided for @failedToSubmitFeedback.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to submit feedback'**
+  String get failedToSubmitFeedback;
+
+  /// No description provided for @writeYourFeedback.
+  ///
+  /// In en, this message translates to:
+  /// **'Write your feedback...'**
+  String get writeYourFeedback;
+
+  /// No description provided for @somethingWentWrongTryAgain.
+  ///
+  /// In en, this message translates to:
+  /// **'Something went wrong. Please try again.'**
+  String get somethingWentWrongTryAgain;
+
+  /// No description provided for @unexpectedErrorOccurred.
+  ///
+  /// In en, this message translates to:
+  /// **'Unexpected error occurred'**
+  String get unexpectedErrorOccurred;
+
+  /// No description provided for @chat.
+  ///
+  /// In en, this message translates to:
+  /// **'Chat'**
+  String get chat;
+
+  /// No description provided for @couldNotLoadChat.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not load chat'**
+  String get couldNotLoadChat;
+
+  /// No description provided for @checkConnectionTryAgain.
+  ///
+  /// In en, this message translates to:
+  /// **'Please check your connection and try again.'**
+  String get checkConnectionTryAgain;
+
+  /// No description provided for @writeMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Write a message...'**
+  String get writeMessage;
+
+  /// No description provided for @block.
+  ///
+  /// In en, this message translates to:
+  /// **'Block'**
+  String get block;
+
+  /// No description provided for @thisMember.
+  ///
+  /// In en, this message translates to:
+  /// **'this member'**
+  String get thisMember;
+
+  /// No description provided for @saveChangesTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Save changes?'**
+  String get saveChangesTitle;
+
+  /// No description provided for @saveChangesMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to save the changes to your profile?'**
+  String get saveChangesMessage;
+
+  /// No description provided for @selectFamilyMember.
+  ///
+  /// In en, this message translates to:
+  /// **'Select Family Member'**
+  String get selectFamilyMember;
+
+  /// No description provided for @noFamilyMembersFound.
+  ///
+  /// In en, this message translates to:
+  /// **'No family members found'**
+  String get noFamilyMembersFound;
+
+  /// No description provided for @chooseMember.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose a member'**
+  String get chooseMember;
+
+  /// No description provided for @pleaseSelectFamilyMember.
+  ///
+  /// In en, this message translates to:
+  /// **'Please select a family member'**
+  String get pleaseSelectFamilyMember;
+
+  /// No description provided for @pleaseAnswerBeforeNext.
+  ///
+  /// In en, this message translates to:
+  /// **'Please answer before moving next'**
+  String get pleaseAnswerBeforeNext;
+
+  /// No description provided for @qaConversation.
+  ///
+  /// In en, this message translates to:
+  /// **'Q & A Conversation'**
+  String get qaConversation;
+
+  /// No description provided for @noAdminQuestions.
+  ///
+  /// In en, this message translates to:
+  /// **'No admin questions'**
+  String get noAdminQuestions;
+
+  /// No description provided for @noQuestionsAvailable.
+  ///
+  /// In en, this message translates to:
+  /// **'No questions available'**
+  String get noQuestionsAvailable;
+
+  /// No description provided for @questionProgress.
+  ///
+  /// In en, this message translates to:
+  /// **'Question {current} of {total}'**
+  String questionProgress(Object current, Object total);
+
+  /// No description provided for @enterYourAnswer.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter your answer'**
+  String get enterYourAnswer;
+
+  /// No description provided for @previous.
+  ///
+  /// In en, this message translates to:
+  /// **'Previous'**
+  String get previous;
+
+  /// No description provided for @next.
+  ///
+  /// In en, this message translates to:
+  /// **'Next'**
+  String get next;
+
+  /// No description provided for @success.
+  ///
+  /// In en, this message translates to:
+  /// **'Success!'**
+  String get success;
+
+  /// No description provided for @pointsEarnedLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'+ {points} Points Earned'**
+  String pointsEarnedLabel(Object points);
+
+  /// No description provided for @totalPointsLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Total Points: {total}'**
+  String totalPointsLabel(Object total);
+
+  /// No description provided for @done.
+  ///
+  /// In en, this message translates to:
+  /// **'Done'**
+  String get done;
+
+  /// No description provided for @completedExclamation.
+  ///
+  /// In en, this message translates to:
+  /// **'Completed!'**
+  String get completedExclamation;
+
+  /// No description provided for @discardSignUpTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Discard Sign Up?'**
+  String get discardSignUpTitle;
+
+  /// No description provided for @discardSignUpMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to leave? Any information you\'ve entered will be lost.'**
+  String get discardSignUpMessage;
+
+  /// No description provided for @discard.
+  ///
+  /// In en, this message translates to:
+  /// **'Discard'**
+  String get discard;
+
+  /// No description provided for @member.
+  ///
+  /// In en, this message translates to:
+  /// **'Member'**
+  String get member;
+
+  /// No description provided for @account.
+  ///
+  /// In en, this message translates to:
+  /// **'Account'**
+  String get account;
+
+  /// No description provided for @accountTypeStepperTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'{accountType} Account'**
+  String accountTypeStepperTitle(Object accountType);
+
+  /// No description provided for @memberAddedSuccessfully.
+  ///
+  /// In en, this message translates to:
+  /// **'Member added successfully'**
+  String get memberAddedSuccessfully;
+
+  /// No description provided for @connectionTimeoutTryAgain.
+  ///
+  /// In en, this message translates to:
+  /// **'Connection timeout. Please check your internet and try again.'**
+  String get connectionTimeoutTryAgain;
+
+  /// No description provided for @noInternetTryAgain.
+  ///
+  /// In en, this message translates to:
+  /// **'No internet connection. Please try again.'**
+  String get noInternetTryAgain;
+
+  /// No description provided for @sessionEnded.
+  ///
+  /// In en, this message translates to:
+  /// **'Session Ended'**
+  String get sessionEnded;
+
+  /// No description provided for @sessionEndedMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Your session has ended. Please sign in again.'**
+  String get sessionEndedMessage;
+
+  /// No description provided for @accountDisabledSupportMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Your account has been disabled. Please contact our support team for assistance.'**
+  String get accountDisabledSupportMessage;
+
+  /// No description provided for @accountRejectedSupportMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Your account has been rejected. Please contact our support team for assistance.'**
+  String get accountRejectedSupportMessage;
+
+  /// No description provided for @noContent.
+  ///
+  /// In en, this message translates to:
+  /// **'No content'**
+  String get noContent;
+
+  /// No description provided for @noContentAvailable.
+  ///
+  /// In en, this message translates to:
+  /// **'No content available'**
+  String get noContentAvailable;
+
+  /// No description provided for @versionLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Version {version}'**
+  String versionLabel(Object version);
+
+  /// No description provided for @noChatsFound.
+  ///
+  /// In en, this message translates to:
+  /// **'No chats found'**
+  String get noChatsFound;
+
+  /// No description provided for @chats.
+  ///
+  /// In en, this message translates to:
+  /// **'Chats'**
+  String get chats;
+
+  /// No description provided for @searchMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Search Message...'**
+  String get searchMessage;
+
+  /// No description provided for @resetEmailSentCheckInbox.
+  ///
+  /// In en, this message translates to:
+  /// **'Reset email sent! Please check your inbox.'**
+  String get resetEmailSentCheckInbox;
+
+  /// No description provided for @passwordResetSuccessful.
+  ///
+  /// In en, this message translates to:
+  /// **'Password reset successful! Please log in.'**
+  String get passwordResetSuccessful;
+
+  /// No description provided for @resetPasswordTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Reset Password'**
+  String get resetPasswordTitle;
+
+  /// No description provided for @resetPasswordInstructions.
+  ///
+  /// In en, this message translates to:
+  /// **'Open the reset email you received, copy the token at the end of the link, and paste it below.'**
+  String get resetPasswordInstructions;
+
+  /// No description provided for @resetTokenFromEmail.
+  ///
+  /// In en, this message translates to:
+  /// **'Reset Token (from email)'**
+  String get resetTokenFromEmail;
+
+  /// No description provided for @enterResetTokenFromEmail.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter the reset token from email'**
+  String get enterResetTokenFromEmail;
+
+  /// No description provided for @newPassword.
+  ///
+  /// In en, this message translates to:
+  /// **'New Password'**
+  String get newPassword;
+
+  /// No description provided for @confirmPasswordLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm Password'**
+  String get confirmPasswordLabel;
+
+  /// No description provided for @back.
+  ///
+  /// In en, this message translates to:
+  /// **'Back'**
+  String get back;
+
+  /// No description provided for @photo.
+  ///
+  /// In en, this message translates to:
+  /// **'Photo'**
+  String get photo;
+
+  /// No description provided for @takePhoto.
+  ///
+  /// In en, this message translates to:
+  /// **'Take Photo'**
+  String get takePhoto;
+
+  /// No description provided for @uploadGallery.
+  ///
+  /// In en, this message translates to:
+  /// **'Upload Gallery'**
+  String get uploadGallery;
+
+  /// No description provided for @englishShort.
+  ///
+  /// In en, this message translates to:
+  /// **'Eng'**
+  String get englishShort;
+
+  /// No description provided for @arabicShort.
+  ///
+  /// In en, this message translates to:
+  /// **'عربي'**
+  String get arabicShort;
+
+  /// No description provided for @recording.
+  ///
+  /// In en, this message translates to:
+  /// **'Recording...'**
+  String get recording;
+
+  /// No description provided for @recordVoice.
+  ///
+  /// In en, this message translates to:
+  /// **'Record Voice'**
+  String get recordVoice;
+
+  /// No description provided for @recordedVoice.
+  ///
+  /// In en, this message translates to:
+  /// **'Recorded Voice'**
+  String get recordedVoice;
+
+  /// No description provided for @noServiceRequestIdFound.
+  ///
+  /// In en, this message translates to:
+  /// **'No Service Request ID found'**
+  String get noServiceRequestIdFound;
+
+  /// No description provided for @noRequestsFound.
+  ///
+  /// In en, this message translates to:
+  /// **'No requests found'**
+  String get noRequestsFound;
+
+  /// No description provided for @enterPointsValue.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter points'**
+  String get enterPointsValue;
+
+  /// No description provided for @send.
+  ///
+  /// In en, this message translates to:
+  /// **'Send'**
+  String get send;
+
+  /// No description provided for @noRecentActivity.
+  ///
+  /// In en, this message translates to:
+  /// **'No recent activity'**
+  String get noRecentActivity;
+
+  /// No description provided for @errorLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Error'**
+  String get errorLabel;
+
+  /// No description provided for @notAvailable.
+  ///
+  /// In en, this message translates to:
+  /// **'N/A'**
+  String get notAvailable;
+
+  /// No description provided for @spouse.
+  ///
+  /// In en, this message translates to:
+  /// **'Spouse'**
+  String get spouse;
+
+  /// No description provided for @pleaseSelectOption.
+  ///
+  /// In en, this message translates to:
+  /// **'Please select an option'**
+  String get pleaseSelectOption;
+
+  /// No description provided for @pleaseEnterYourAnswer.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter your answer'**
+  String get pleaseEnterYourAnswer;
+
+  /// No description provided for @individual.
+  ///
+  /// In en, this message translates to:
+  /// **'Individual'**
+  String get individual;
+
+  /// No description provided for @firstName.
+  ///
+  /// In en, this message translates to:
+  /// **'First Name'**
+  String get firstName;
+
+  /// No description provided for @secondName.
+  ///
+  /// In en, this message translates to:
+  /// **'Second Name'**
+  String get secondName;
+
+  /// No description provided for @thirdName.
+  ///
+  /// In en, this message translates to:
+  /// **'Third Name'**
+  String get thirdName;
+
+  /// No description provided for @fourthName.
+  ///
+  /// In en, this message translates to:
+  /// **'Fourth Name'**
+  String get fourthName;
+
+  /// No description provided for @requiredField.
+  ///
+  /// In en, this message translates to:
+  /// **'Required'**
+  String get requiredField;
+
+  /// No description provided for @failedToAddMemberTryAgain.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to add member. Please try again.'**
+  String get failedToAddMemberTryAgain;
 }
 
 class _AppLocalizationsDelegate

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:nadi_user_app/l10n/app_localizations.dart';
 import 'package:nadi_user_app/models/Questioner_Model.dart';
 import 'package:nadi_user_app/services/Questioner_Service.dart';
 
@@ -34,6 +35,7 @@ class _QuestionerViewState extends ConsumerState<QuestionerView> {
   }
 
 Widget questionUI() {
+  final loc = AppLocalizations.of(context)!;
   final questions = widget.questionerDatum.questions;
   final question = questions[currentIndex];
   final isLast = currentIndex == questions.length - 1;
@@ -45,7 +47,10 @@ Widget questionUI() {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          "Question ${currentIndex + 1} of ${questions.length}",
+          loc.questionProgress(
+            (currentIndex + 1).toString(),
+            questions.length.toString(),
+          ),
           style: const TextStyle(fontWeight: FontWeight.w500),
         ),
         const SizedBox(height: 20),
@@ -104,9 +109,9 @@ Widget questionUI() {
         /// INPUT TYPE
         if (question.type == "input")
           TextField(
-            decoration: const InputDecoration(
-              hintText: "Type your answer",
-              border: OutlineInputBorder(),
+            decoration: InputDecoration(
+              hintText: loc.enterYourAnswer,
+              border: const OutlineInputBorder(),
             ),
             onChanged: (val) {
               inputAnswers[currentIndex] = val;
@@ -135,7 +140,7 @@ Widget questionUI() {
                             currentIndex)) {
                       setState(() =>
                           errorText =
-                              "Please select an option");
+                              loc.pleaseSelectOption);
                       return;
                     }
 
@@ -147,7 +152,7 @@ Widget questionUI() {
                                 .isEmpty)) {
                       setState(() =>
                           errorText =
-                              "Please enter your answer");
+                              loc.pleaseEnterYourAnswer);
                       return;
                     }
 
@@ -158,7 +163,7 @@ Widget questionUI() {
 
                     await submit();
                   },
-            child: Text(isLast ? "Submit" : "Next"),
+            child: Text(isLast ? loc.submit : loc.next),
           ),
         ),
       ],
@@ -167,6 +172,7 @@ Widget questionUI() {
 }
 
   Widget successUI() {
+    final loc = AppLocalizations.of(context)!;
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(24),
@@ -176,16 +182,16 @@ Widget questionUI() {
             const Icon(Icons.check_circle,
                 color: Colors.green, size: 80),
             const SizedBox(height: 20),
-            const Text(
-              "Success!",
+            Text(
+              loc.success,
               style:
                   TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 10),
             Text(successMessage),
             const SizedBox(height: 10),
-            Text("Points Earned: $pointsEarned"),
-            Text("Total Points: $totalPoints"),
+            Text(loc.pointsEarnedLabel(pointsEarned)),
+            Text(loc.totalPointsLabel(totalPoints)),
             const SizedBox(height: 20),
             ElevatedButton(
              onPressed: () async {
@@ -194,7 +200,7 @@ Widget questionUI() {
     Navigator.pop(context); // ignore: use_build_context_synchronously
   }
 },
-              child: const Text("Done"),
+              child: Text(loc.done),
             )
           ],
         ),

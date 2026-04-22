@@ -314,6 +314,17 @@ final Map<String, String> genderMap = {
 };
   int _totalMembers = 0;
   int _currentMemberIndex = 1;
+
+  String _localizedAccountType(AppLocalizations l10n) {
+    switch (widget.accountType) {
+      case "Family":
+        return l10n.family;
+      case "Individual":
+        return l10n.individual;
+      default:
+        return widget.accountType;
+    }
+  }
 @override
 void dispose() {
   _scrollController.dispose();
@@ -321,11 +332,12 @@ void dispose() {
   super.dispose();
 }
   Future<void> _addMember() async {
+    final l10n = AppLocalizations.of(context)!;
     final memberValid = widget.formKey.currentState?.validate() ?? false;
   
 
     if (!_isAddress) {
-      SnackbarHelper.showError(context, "Please add the address details of the member.");
+      SnackbarHelper.showError(context, l10n.addAddressError);
       return;
     }
 
@@ -373,7 +385,7 @@ void dispose() {
         });
 
         // ignore: use_build_context_synchronously
-        SnackbarHelper.ShowSuccess(context, "All members added successfully");
+        SnackbarHelper.ShowSuccess(context, l10n.allMembersAdded);
 
         // Delay slightly so user sees the snackbar
         Future.delayed(const Duration(seconds: 1), () {
@@ -399,7 +411,7 @@ WidgetsBinding.instance.addPostFrameCallback((_) {
     } on DioException catch (e) {
       if (!mounted) return;
       setState(() => _isLoading = false);
-      String errorMsg = 'Failed to add member. Please try again.';
+      String errorMsg = l10n.failedToAddMemberTryAgain;
       if (e.response?.data != null) {
         final data = e.response!.data;
         if (data is Map) {
@@ -416,15 +428,15 @@ WidgetsBinding.instance.addPostFrameCallback((_) {
         }
       } else if (e.type == DioExceptionType.connectionTimeout ||
           e.type == DioExceptionType.receiveTimeout) {
-        errorMsg = 'Connection timeout. Please check your internet and try again.';
+        errorMsg = l10n.connectionTimeoutTryAgain;
       } else if (e.type == DioExceptionType.connectionError) {
-        errorMsg = 'No internet connection. Please try again.';
+        errorMsg = l10n.noInternetTryAgain;
       }
       SnackbarHelper.showError(context, errorMsg);
     } catch (e) {
       if (!mounted) return;
       setState(() => _isLoading = false);
-      SnackbarHelper.showError(context, 'Something went wrong: ${e.toString()}');
+      SnackbarHelper.showError(context, '${l10n.somethingWentWrong}: ${e.toString()}');
     }
   }
 
@@ -526,7 +538,7 @@ validator: (value) => controller.validatefamilycount(value, l10n),              
  if (_totalMembers > 0)
                   Text(
                     l10n.addMemberTitle(
-                      widget.accountType,
+                      _localizedAccountType(l10n),
                       _currentMemberIndex.toString(),
                       _totalMembers.toString(),
                     ),
@@ -645,8 +657,8 @@ validator: (value) => controller.validatefamilycount(value, l10n),              
           if (!_hideBottomButton)
             AppButton(
               text: _currentMemberIndex < _totalMembers
-                  ? "Add Member"
-                  : "Finish",
+                  ? l10n.addMember
+                  : l10n.finish,
               isLoading: _isLoading,
               onPressed: _addMember,
               color: AppColors.btn_primery,

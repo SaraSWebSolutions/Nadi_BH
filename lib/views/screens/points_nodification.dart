@@ -84,7 +84,11 @@ confirmText: AppLocalizations.of(context)!.delete,
       ),
       body: asyncNotifications.when(
         loading: () => const Center(child: CircularProgressIndicator()),
-        error: (err, _) => Center(child: Text("Error: $err")),
+        error: (err, _) => Center(
+          child: Text(
+            "${AppLocalizations.of(context)!.errorLabel}: $err",
+          ),
+        ),
         data: (response) {
           final notifications = response.data;
 
@@ -135,10 +139,9 @@ confirmText: AppLocalizations.of(context)!.delete,
                   confirmDismiss: (direction) async {
                     return await showConfirmDialog(
                       context,
-                      title: "Delete Notification",
-                      message:
-                          "Are you sure you want to delete this notification?",
-                      confirmText: "Delete",
+                      title: AppLocalizations.of(context)!.title,
+                      message: AppLocalizations.of(context)!.message,
+                      confirmText: AppLocalizations.of(context)!.delete,
                       icon: Icons.delete_outline_rounded,
                       destructive: true,
                     );
@@ -223,7 +226,7 @@ confirmText: AppLocalizations.of(context)!.delete,
   String formatIsoDateForUI(DateTime dateTime) {
     try {
       final localDateTime = dateTime.toLocal();
-      return DateFormat("dd/MM/yyyy, h:mm a").format(localDateTime);
+      return DateFormat("dd/MM/yyyy, h:mm a", "en_US").format(localDateTime);
     } catch (e) {
       return "-";
     }

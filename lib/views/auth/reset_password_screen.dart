@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:nadi_user_app/core/constants/app_consts.dart';
+import 'package:nadi_user_app/l10n/app_localizations.dart';
 import 'package:nadi_user_app/routing/app_router.dart';
 import 'package:nadi_user_app/services/auth_service.dart';
 import 'package:nadi_user_app/widgets/buttons/primary_button.dart';
@@ -30,6 +31,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
   }
 
   Future<void> _submit() async {
+    final loc = AppLocalizations.of(context)!;
     if (!_formKey.currentState!.validate()) return;
 
     setState(() => _isLoading = true);
@@ -42,8 +44,8 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Password reset successful! Please log in.'),
+          SnackBar(
+            content: Text(loc.passwordResetSuccessful),
             backgroundColor: Colors.green,
           ),
         );
@@ -62,6 +64,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context)!;
     return Scaffold(
       body: Container(
         decoration: const BoxDecoration(
@@ -96,8 +99,8 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Text(
-                            'Reset Password',
+                          Text(
+                            loc.resetPasswordTitle,
                             style: TextStyle(
                               fontSize: 22,
                               fontWeight: FontWeight.bold,
@@ -105,7 +108,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                           ),
                           const SizedBox(height: 8),
                           Text(
-                            'Open the reset email you received, copy the token at the end of the link, and paste it below.',
+                            loc.resetPasswordInstructions,
                             style: TextStyle(
                                 color: Colors.grey[600], fontSize: 13),
                           ),
@@ -113,11 +116,11 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
 
                           /// Reset token
                           AppTextField(
-                            label: 'Reset Token (from email)',
+                            label: loc.resetTokenFromEmail,
                             controller: _tokenCtrl,
                             validator: (v) {
                               if (v == null || v.trim().isEmpty) {
-                                return 'Please enter the reset token from email';
+                                return loc.enterResetTokenFromEmail;
                               }
                               return null;
                             },
@@ -126,12 +129,12 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
 
                           /// New password
                           AppTextField(
-                            label: 'New Password',
+                            label: loc.newPassword,
                             controller: _passwordCtrl,
                             isPassword: true,
                             validator: (v) {
                               if (v == null || v.trim().length < 6) {
-                                return 'Password must be at least 6 characters';
+                                return loc.passwordMinLength;
                               }
                               return null;
                             },
@@ -140,12 +143,12 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
 
                           /// Confirm password
                           AppTextField(
-                            label: 'Confirm Password',
+                            label: loc.confirmPasswordLabel,
                             controller: _confirmCtrl,
                             isPassword: true,
                             validator: (v) {
                               if (v != _passwordCtrl.text) {
-                                return 'Passwords do not match';
+                                return loc.passwordsDoNotMatch;
                               }
                               return null;
                             },
@@ -159,7 +162,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                                   height: 48,
                                   width: double.infinity,
                                   color: AppColors.btn_primery,
-                                  text: 'Reset Password',
+                                  text: loc.resetPasswordTitle,
                                   
                                   onPressed: _submit,
                                 ),
@@ -169,8 +172,8 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                           Center(
                             child: TextButton(
                               onPressed: () => context.pop(),
-                              child: const Text(
-                                'Back',
+                              child: Text(
+                                loc.back,
                                 style: TextStyle(
                                   color: AppColors.btn_primery,
                                   fontWeight: FontWeight.w600,

@@ -33,9 +33,12 @@ class _ForgotpasswordState extends State<Forgotpassword> {
       final response = await _authService.Forgetpassword(email: email);
 
       if (mounted) {
+        final loc = AppLocalizations.of(context)!;
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(response['message'] ?? 'Reset email sent! Please check your inbox.'),
+            content: Text(
+              response['message'] ?? loc.resetEmailSentCheckInbox,
+            ),
             backgroundColor: AppColors.btn_primery,
             duration: const Duration(seconds: 4),
           ),
@@ -60,6 +63,7 @@ class _ForgotpasswordState extends State<Forgotpassword> {
     final size = MediaQuery.of(context).size;
     final isLandscape = size.width > size.height;
     final isRTL = Directionality.of(context) == TextDirection.rtl;
+    final loc = AppLocalizations.of(context)!;
 
 return Scaffold(
   body: Stack(
@@ -118,13 +122,15 @@ return Scaffold(
                                   const SizedBox(height: 15),
         
                                   AppTextField(
-                                    label: "Enter Email",
+                                    label: loc.enterEmail,
                                     keyboardType: TextInputType.emailAddress,
                                     controller: _emailCtrl,
                                     validator: (v) {
-                                      if (v == null || v.trim().isEmpty) return "Email is required";
+                                      if (v == null || v.trim().isEmpty) {
+                                        return loc.emailRequired;
+                                      }
                                       if (!RegExp(r'^[\w.-]+@[\w.-]+\.\w+$').hasMatch(v.trim())) {
-                                        return "Enter a valid email";
+                                        return loc.emailInvalid;
                                       }
                                       return null;
                                     },
@@ -136,7 +142,7 @@ return Scaffold(
                                     height: 48,
                                     width: double.infinity,
                                     color: AppColors.btn_primery,
-                                    text: "Send Email",
+                                    text: loc.sendEmail,
                                     isLoading: _isLoading,
                                     onPressed: () {
                                       if (_formKey.currentState!.validate()) {

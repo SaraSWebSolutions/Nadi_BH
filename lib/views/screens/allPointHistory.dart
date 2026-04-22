@@ -38,7 +38,7 @@ class _AllPointHistoryState extends ConsumerState<AllPointHistory> {
           final data = response.data;
 
           if (data.isEmpty) {
-            return const Center(child: Text("No History Found"));
+            return Center(child: Text(l10n.noHistoryFound));
           }
 
           return ListView.builder(
@@ -50,7 +50,9 @@ class _AllPointHistoryState extends ConsumerState<AllPointHistory> {
               return Padding(
                 padding: const EdgeInsets.only(bottom: 10),
                 child: IndividualPointsCard(
-                  date: formatIsoDateForUI(item.updatedAt.toString()),
+                  date: formatIsoDateForUI(
+                    item.updatedAt.toString()
+                  ),
                   text: item.history,
                   status: item.status,
                   points: item.points.toString(),

@@ -490,7 +490,9 @@ class _TimelineTile extends StatelessWidget {
               if (data["time"] != null) ...[
                 const SizedBox(height: 6),
                 Text(
-                  formatIsoDateForUI(data["time"]),
+                  formatIsoDateForUI(
+                    data["time"]
+                  ),
                   style: TextStyle(fontSize: 11, color: Colors.grey.shade500),
                 ),
               ],
@@ -625,6 +627,7 @@ class _FeedbackSectionState extends State<_FeedbackSection> {
   }
 
   Future<void> _submit() async {
+    final l10n = AppLocalizations.of(context)!;
     final text = _controller.text.trim();
     if (text.isEmpty) return;
 
@@ -643,12 +646,12 @@ class _FeedbackSectionState extends State<_FeedbackSection> {
         if (res != null && res["success"] == true) {
           _isSubmitted = true;
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text("Feedback submitted successfully")),
+            SnackBar(content: Text(l10n.feedbackSubmittedSuccessfully)),
           );
         } else {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text(res?["message"] ?? "Failed to submit feedback"),
+              content: Text(res?["message"] ?? l10n.failedToSubmitFeedback),
             ),
           );
         }
@@ -683,7 +686,7 @@ class _FeedbackSectionState extends State<_FeedbackSection> {
           AppTextField(
             controller: _controller,
             maxLines: 4,
-            label: "Write your feedback...",
+            label: AppLocalizations.of(context)!.writeYourFeedback,
           ),
           const SizedBox(height: 16),
           SizedBox(
@@ -707,9 +710,9 @@ class _FeedbackSectionState extends State<_FeedbackSection> {
                         strokeWidth: 2,
                       ),
                     )
-                  : const Text(
-                      "Submit",
-                      style: TextStyle(color: Colors.white, fontSize: 16),
+                  : Text(
+                      AppLocalizations.of(context)!.submit,
+                      style: const TextStyle(color: Colors.white, fontSize: 16),
                     ),
             ),
           ),

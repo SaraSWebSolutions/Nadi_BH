@@ -86,7 +86,10 @@ class _AddressState extends State<Address> {
       _hideBottomButton = true;
     });
 
-    SnackbarHelper.ShowSuccess(context, "Account created successfully");
+    SnackbarHelper.ShowSuccess(
+      context,
+      AppLocalizations.of(context)!.accountCreatedSuccessfully,
+    );
 
     Future.delayed(const Duration(seconds: 1), () {
       if (context.mounted) context.push(RouteNames.accountverfy);
@@ -96,7 +99,10 @@ class _AddressState extends State<Address> {
     } catch (e) {
       if (!context.mounted) return;
       setState(() => _isLoading = false);
-      SnackbarHelper.showError(context, "Submit failed: $e");
+      SnackbarHelper.showError(
+        context,
+        "${AppLocalizations.of(context)!.submitFailed}: $e",
+      );
     }
   }
 
@@ -188,7 +194,7 @@ onTap: () {
           AppTextField(
             controller: controller.building,
             label: l10n.enterBuilding,
-            validator: (value) => controller.validateBuilding(value),
+            validator: (value) => controller.validateBuilding(value, l10n),
           ),
           SizedBox(height: 17),
           if (selected != l10n.villa) ...[
@@ -200,7 +206,7 @@ onTap: () {
                   controller: controller.aptNo,
                   keyboardType: TextInputType.number,
                   label: l10n.enterAptNo,
-                  validator: (value) => controller.validateAptNo(value),
+                  validator: (value) => controller.validateAptNo(value, l10n),
                 ),
               ),
               SizedBox(width: 10),
@@ -209,7 +215,7 @@ onTap: () {
                   controller: controller.floor,
                   keyboardType: TextInputType.number,
                   label: l10n.enterFloorNo,
-                  validator: (value) => controller.validateFloor(value),
+                  validator: (value) => controller.validateFloor(value, l10n),
                 ),
               ),
             ],
@@ -245,7 +251,7 @@ onTap: () {
                           });
                         },
                         validator: (val) =>
-                            val == null ? "Please select a block" : null,
+                            val == null ? l10n.pleaseSelectBlock : null,
                       ),
 
                       SizedBox(height: 15),
@@ -267,13 +273,13 @@ onTap: () {
                           });
                         },
                         validator: (val) =>
-                            val == null ? "Please select a road" : null,
+                            val == null ? l10n.pleaseSelectRoad : null,
                       ),
                     ],
                   );
                 },
                 loading: () => const CircularProgressIndicator(),
-                error: (e, _) => Text("Failed to load blocks: $e"),
+                error: (e, _) => Text("${l10n.failedToLoadBlocks}: $e"),
               );
             },
           ),

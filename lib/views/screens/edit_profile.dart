@@ -293,7 +293,7 @@ bool _isLoading = false;
 
                       // Full Name
                        Text(
-                      loc.fullName ?? "",
+                      loc.fullName,
                         style: TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.w600,
@@ -303,7 +303,9 @@ bool _isLoading = false;
                       AppTextField(
                         controller: fullNameController,
                         validator: (v) =>
-                            (v == null || v.trim().isEmpty) ? "Full name is required" : null,
+                            (v == null || v.trim().isEmpty)
+                                ? loc.fullNameRequired
+                                : null,
                       ),
                       const SizedBox(height: 15),
 
@@ -320,9 +322,11 @@ bool _isLoading = false;
                         controller: emailController,
                         keyboardType: TextInputType.emailAddress,
                         validator: (v) {
-                          if (v == null || v.trim().isEmpty) return "Email is required";
+                          if (v == null || v.trim().isEmpty) {
+                            return loc.emailRequired;
+                          }
                           if (!RegExp(r'^[\w.-]+@[\w.-]+\.\w+$').hasMatch(v.trim())) {
-                            return "Enter a valid email";
+                            return loc.emailInvalid;
                           }
                           return null;
                         },
@@ -331,7 +335,7 @@ bool _isLoading = false;
 
                       // Phone Number
                        Text(
-                         loc.phoneNumber ?? "",
+                         loc.phoneNumber,
                         style: TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.w600,
@@ -345,8 +349,12 @@ bool _isLoading = false;
                          prefixText: "+973 ",
                         inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                         validator: (v) {
-                          if (v == null || v.trim().isEmpty) return "Phone number is required";
-                          if (v.trim().length != 8) return "Enter a valid 8-digit number";
+                          if (v == null || v.trim().isEmpty) {
+                            return loc.mobileNumberRequired;
+                          }
+                          if (v.trim().length != 8) {
+                            return loc.phoneMustBe8Digits;
+                          }
                           return null;
                         },
                       ),
@@ -354,7 +362,7 @@ bool _isLoading = false;
 
                       // Building (Single field)
                        Text(
-                         loc.building ?? "",
+                         loc.building,
                         style: TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.w600,
@@ -371,7 +379,7 @@ bool _isLoading = false;
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                  Text(
-                                  loc.city ?? "",
+                                  loc.city,
                                   style: TextStyle(
                                     fontSize: 14,
                                     fontWeight: FontWeight.w600,
@@ -405,7 +413,7 @@ bool _isLoading = false;
 
                       // More fields
                        Text(
-                          loc.apartment ?? "",
+                          loc.apartment,
                         style: TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.w600,
@@ -416,7 +424,7 @@ bool _isLoading = false;
                       const SizedBox(height: 15),
 
                        Text(
-                          loc.additionalInfo ?? "",
+                          loc.additionalInfo,
                         style: TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.w600,
@@ -433,7 +441,7 @@ bool _isLoading = false;
                         children: [
                           Expanded(
                             child: AppButton(
-                              text: loc.cancel ?? "",
+                              text: loc.cancel,
                               onPressed: () {
                                 context.pop();
                               },
@@ -451,9 +459,9 @@ bool _isLoading = false;
                                 if (!_formKey.currentState!.validate()) return;
                                 final confirmed = await showConfirmDialog(
                                   context,
-                                  title: "Save Changes?",
+                                  title: loc.saveChangesTitle,
                                   message:
-                                      "Are you sure you want to save the changes to your profile?",
+                                      loc.saveChangesMessage,
                                   confirmText: loc.save,
                                   icon: Icons.save_outlined,
                                 );

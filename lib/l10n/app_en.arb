@@ -358,5 +358,118 @@
   "placeholders": {
     "name": {}
   }
-}
+},
+  "feedbackSubmittedSuccessfully": "Feedback submitted successfully",
+  "failedToSubmitFeedback": "Failed to submit feedback",
+  "writeYourFeedback": "Write your feedback...",
+  "somethingWentWrongTryAgain": "Something went wrong. Please try again.",
+  "unexpectedErrorOccurred": "Unexpected error occurred",
+
+  "chat": "Chat",
+  "couldNotLoadChat": "Could not load chat",
+  "checkConnectionTryAgain": "Please check your connection and try again.",
+  "writeMessage": "Write a message...",
+
+  "block": "Block",
+  "thisMember": "this member",
+
+  "saveChangesTitle": "Save changes?",
+  "saveChangesMessage": "Are you sure you want to save the changes to your profile?",
+  "selectFamilyMember": "Select Family Member",
+  "noFamilyMembersFound": "No family members found",
+  "chooseMember": "Choose a member",
+  "pleaseSelectFamilyMember": "Please select a family member",
+  "pleaseAnswerBeforeNext": "Please answer before moving next",
+  "qaConversation": "Q & A Conversation",
+  "noAdminQuestions": "No admin questions",
+  "noQuestionsAvailable": "No questions available",
+  "questionProgress": "Question {current} of {total}",
+  "@questionProgress": {
+    "placeholders": {
+      "current": {},
+      "total": {}
+    }
+  },
+  "enterYourAnswer": "Enter your answer",
+  "previous": "Previous",
+  "next": "Next",
+  "success": "Success!",
+  "pointsEarnedLabel": "+ {points} Points Earned",
+  "@pointsEarnedLabel": {
+    "placeholders": {
+      "points": {}
+    }
+  },
+  "totalPointsLabel": "Total Points: {total}",
+  "@totalPointsLabel": {
+    "placeholders": {
+      "total": {}
+    }
+  },
+  "done": "Done",
+  "completedExclamation": "Completed!",
+  "discardSignUpTitle": "Discard Sign Up?",
+  "discardSignUpMessage": "Are you sure you want to leave? Any information you've entered will be lost.",
+  "discard": "Discard",
+  "member": "Member",
+  "account": "Account",
+  "accountTypeStepperTitle": "{accountType} Account",
+  "@accountTypeStepperTitle": {
+    "placeholders": {
+      "accountType": {}
+    }
+  },
+  "memberAddedSuccessfully": "Member added successfully",
+  "connectionTimeoutTryAgain": "Connection timeout. Please check your internet and try again.",
+  "noInternetTryAgain": "No internet connection. Please try again.",
+  "sessionEnded": "Session Ended",
+  "sessionEndedMessage": "Your session has ended. Please sign in again.",
+  "accountDisabledSupportMessage": "Your account has been disabled. Please contact our support team for assistance.",
+  "accountRejectedSupportMessage": "Your account has been rejected. Please contact our support team for assistance.",
+  "noContent": "No content",
+  "noContentAvailable": "No content available",
+  "versionLabel": "Version {version}",
+  "@versionLabel": {
+    "placeholders": {
+      "version": {}
+    }
+  },
+  "noChatsFound": "No chats found",
+  "chats": "Chats",
+  "searchMessage": "Search Message...",
+  "resetEmailSentCheckInbox": "Reset email sent! Please check your inbox.",
+  "passwordResetSuccessful": "Password reset successful! Please log in.",
+  "resetPasswordTitle": "Reset Password",
+  "resetPasswordInstructions": "Open the reset email you received, copy the token at the end of the link, and paste it below.",
+  "resetTokenFromEmail": "Reset Token (from email)",
+  "enterResetTokenFromEmail": "Please enter the reset token from email",
+  "newPassword": "New Password",
+  "confirmPasswordLabel": "Confirm Password",
+  "back": "Back",
+  "photo": "Photo",
+  "takePhoto": "Take Photo",
+  "uploadGallery": "Upload Gallery",
+  "englishShort": "Eng",
+  "arabicShort": "عربي",
+  "recording": "Recording...",
+  "recordVoice": "Record Voice",
+  "recordedVoice": "Recorded Voice",
+  "noServiceRequestIdFound": "No Service Request ID found",
+  "noRequestsFound": "No requests found",
+  "enterPointsValue": "Enter points",
+  "send": "Send",
+  "noRecentActivity": "No recent activity",
+  "errorLabel": "Error",
+  "notAvailable": "N/A",
+  "spouse": "Spouse",
+  "pleaseSelectOption": "Please select an option",
+  "pleaseEnterYourAnswer": "Please enter your answer"
+  ,
+  "individual": "Individual",
+  "firstName": "First Name",
+  "secondName": "Second Name",
+  "thirdName": "Third Name",
+  "fourthName": "Fourth Name",
+  "requiredField": "Required",
+  "failedToAddMemberTryAgain": "Failed to add member. Please try again."
 }

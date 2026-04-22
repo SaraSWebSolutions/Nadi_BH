@@ -13,24 +13,6 @@ class ServiceRequestCard extends StatelessWidget {
   final String serviceStatus;
   final String serviceLogo;
   final VoidCallback onViewDetails;
-String getStatusLabel(String status) {
-  switch (status) {
-    case "technicianAssigned":
-      return "Assigned";
-    case "inProgress":
-      return "In Progress";
-    case "accepted":
-      return "Accepted";
-    case "completed":
-      return "Completed";
-    case "submitted":
-      return "Submitted";
-    case "paymentInProgress":
-      return "Tech work completed"; // ✅ YOUR CHANGE
-    default:
-      return status;
-  }
-}
   const ServiceRequestCard({
     super.key,
     required this.title,
@@ -43,6 +25,24 @@ String getStatusLabel(String status) {
   @override
   Widget build(BuildContext context) {
     final t = AppLocalizations.of(context)!;
+    String getStatusLabel(String status) {
+      switch (status) {
+        case "technicianAssigned":
+          return t.technicianAssigned;
+        case "inProgress":
+          return t.inProgress;
+        case "accepted":
+          return t.accepted;
+        case "completed":
+          return t.completed;
+        case "submitted":
+          return t.submitted;
+        case "paymentInProgress":
+          return t.paymentInProgress;
+        default:
+          return status;
+      }
+    }
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: Column(
@@ -104,7 +104,8 @@ String getStatusLabel(String status) {
                               ),
                               const SizedBox(height: 4),
                               Text(
-                                formatIsoDateForUI(date),
+                                formatIsoDateForUI(date
+                                ),
                                 style: TextStyle(
                                   fontSize: AppFontSizes.small,
                                   color: AppColors.borderGrey,

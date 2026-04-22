@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:nadi_user_app/controllers/address_controller.dart';
 import 'package:nadi_user_app/core/constants/app_consts.dart';
+import 'package:nadi_user_app/l10n/app_localizations.dart';
 import 'package:nadi_user_app/views/auth/AccountFormView.dart';
 import 'package:nadi_user_app/views/auth/AddMember.dart';
 import 'package:nadi_user_app/views/auth/Address.dart';
@@ -22,7 +23,19 @@ class _AccountStepperState extends State<AccountStepper> {
   final _formKeyAddress = GlobalKey<FormState>();
   final _formKeyAddMember = GlobalKey<FormState>();
   final addressController = AddressController();
+
+  String _localizedAccountType(AppLocalizations loc) {
+    switch (widget.accountType) {
+      case "Family":
+        return loc.family;
+      case "Individual":
+        return loc.individual;
+      default:
+        return widget.accountType;
+    }
+  }
   Widget _buildStep() {
+    final loc = AppLocalizations.of(context)!;
     switch (_currentStep) {
       case 0:
         return AccountFormView(
@@ -49,9 +62,7 @@ class _AccountStepperState extends State<AccountStepper> {
                   _currentStep = 2;
                 } else {
                   ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text("Account created successfully"),
-                    ),
+                    SnackBar(content: Text(loc.accountCreatedSuccessfully)),
                   );
                 }
               });
@@ -68,7 +79,7 @@ class _AccountStepperState extends State<AccountStepper> {
             if (_formKeyAddMember.currentState!.validate()) {
               ScaffoldMessenger.of(
                 context,
-              ).showSnackBar(const SnackBar(content: Text("Completed!")));
+              ).showSnackBar(SnackBar(content: Text(loc.completedExclamation)));
             }
           },
         );
@@ -79,12 +90,12 @@ class _AccountStepperState extends State<AccountStepper> {
   }
 
   Future<bool> _confirmExit() async {
+    final loc = AppLocalizations.of(context)!;
     return await showConfirmDialog(
       context,
-      title: "Discard Sign Up?",
-      message:
-          "Are you sure you want to leave? Any information you've entered will be lost.",
-      confirmText: "Discard",
+      title: loc.discardSignUpTitle,
+      message: loc.discardSignUpMessage,
+      confirmText: loc.discard,
       icon: Icons.warning_amber_rounded,
       destructive: true,
     );
@@ -92,9 +103,10 @@ class _AccountStepperState extends State<AccountStepper> {
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context)!;
     List<String> stepTitles = widget.accountType == "Family"
-        ? ["Family", "Address", " Member"]
-        : ["Account", "Address"];
+        ? [loc.family, loc.address, loc.member]
+        : [loc.account, loc.address];
 
     return PopScope(
       canPop: false,
@@ -107,7 +119,10 @@ class _AccountStepperState extends State<AccountStepper> {
       },
       child: Scaffold(
       appBar: AppBar(
-        title: Text("${widget.accountType} Account",style: TextStyle(color: Colors.white),),
+        title: Text(
+          loc.accountTypeStepperTitle(_localizedAccountType(loc)),
+          style: const TextStyle(color: Colors.white),
+        ),
           backgroundColor: AppColors.app_background_clr,
         iconTheme: const IconThemeData(color: Colors.white),
         elevation: 0,

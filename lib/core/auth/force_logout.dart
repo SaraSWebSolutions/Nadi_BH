@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:nadi_user_app/core/constants/app_consts.dart';
+import 'package:nadi_user_app/l10n/app_localizations.dart';
 import 'package:nadi_user_app/preferences/preferences.dart';
 import 'package:nadi_user_app/routing/app_router.dart';
 import 'package:nadi_user_app/routing/route_names.dart';
@@ -39,19 +40,20 @@ class ForceLogout {
   }
 
   static void _showReasonDialog(BuildContext context, ForceLogoutReason reason) {
+    final loc = AppLocalizations.of(context)!;
     final isDisabled = reason == ForceLogoutReason.disabled;
     final isRejected = reason == ForceLogoutReason.rejected;
 
     final title = isDisabled
-        ? "Account Disabled"
+        ? loc.accountDisabled
         : isRejected
-            ? "Account Rejected"
-            : "Session Ended";
+            ? loc.accountRejected
+            : loc.sessionEnded;
     final message = isDisabled
-        ? "Your account has been disabled. Please contact our support team for assistance."
+        ? loc.accountDisabledSupportMessage
         : isRejected
-            ? "Your account has been rejected. Please contact our support team for assistance."
-            : "Your session has ended. Please sign in again.";
+            ? loc.accountRejectedSupportMessage
+            : loc.sessionEndedMessage;
     final iconData = isDisabled
         ? Icons.block
         : isRejected
@@ -113,7 +115,7 @@ class ForceLogout {
                 padding: const EdgeInsets.symmetric(vertical: 14),
               ),
               onPressed: () => Navigator.of(ctx).pop(),
-              child: const Text("OK"),
+              child: Text(loc.ok),
             ),
           ),
         ],

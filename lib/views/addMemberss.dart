@@ -14,6 +14,7 @@ import 'package:nadi_user_app/views/auth/Address.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:nadi_user_app/providers/profile_provider.dart';
+import 'package:nadi_user_app/l10n/app_localizations.dart';
 
 class Addmemberss extends ConsumerStatefulWidget {
   const Addmemberss({super.key});
@@ -36,12 +37,13 @@ class _AddmemberssState extends ConsumerState<Addmemberss> {
 
   // ADD MEMBER API
   Future<void> _addMember() async {
+    final loc = AppLocalizations.of(context)!;
     final isValid = _formKey.currentState!.validate();
     
     if (!_showAddress) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text("Please add the address details of the member.", style: TextStyle(fontFamily: 'Poppins')),
+        SnackBar(
+          content: Text(loc.addAddressError, style: const TextStyle(fontFamily: 'Poppins')),
           backgroundColor: Colors.red,
         ),
       );
@@ -56,12 +58,10 @@ class _AddmemberssState extends ConsumerState<Addmemberss> {
     // BUILD BODY (CORRECT FORMAT)
     final body = {
       "userId": userId,
-      "accountTypeId": "693175a0976ca992c877f99b", 
+      "accountTypeId": "693175af976ca992c877f99d", 
       "fullName": nameCtrl.text,
       "relation": relation?.toLowerCase(),
-      "mobile": mobileCtrl.text.startsWith('+973')
-          ? mobileCtrl.text
-          : '+973${mobileCtrl.text.replaceAll(' ', '')}',
+      "mobile": mobileCtrl.text,
       "email": emailCtrl.text,
       "password": "123456", 
       "gender": gender?.toLowerCase(),
@@ -87,8 +87,8 @@ class _AddmemberssState extends ConsumerState<Addmemberss> {
       
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text("✅ Member Added Successfully", style: TextStyle(fontFamily: 'Poppins')),
+        SnackBar(
+          content: Text(loc.memberAddedSuccessfully, style: const TextStyle(fontFamily: 'Poppins')),
           backgroundColor: Colors.green,
         ),
       );
@@ -119,9 +119,9 @@ class _AddmemberssState extends ConsumerState<Addmemberss> {
         }
       } else if (e.type == DioExceptionType.connectionTimeout ||
           e.type == DioExceptionType.receiveTimeout) {
-        errorMsg = 'Connection timeout. Please check your internet and try again.';
+        errorMsg = loc.connectionTimeoutTryAgain;
       } else if (e.type == DioExceptionType.connectionError) {
-        errorMsg = 'No internet connection. Please try again.';
+        errorMsg = loc.noInternetTryAgain;
       }
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -134,7 +134,7 @@ class _AddmemberssState extends ConsumerState<Addmemberss> {
       setState(() => _isLoading = false);
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Something went wrong: ${e.toString()}',
+          content: Text('${loc.somethingWentWrong}: ${e.toString()}',
               style: const TextStyle(fontFamily: 'Poppins')),
           backgroundColor: Colors.red,
         ),
@@ -152,9 +152,10 @@ class _AddmemberssState extends ConsumerState<Addmemberss> {
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context)!;
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Add Member"),
+        title: Text(loc.addMember),
         backgroundColor: AppColors.app_background_clr,
       ),
       body: Form(
@@ -167,48 +168,56 @@ class _AddmemberssState extends ConsumerState<Addmemberss> {
               /// FULL NAME
               AppTextField(
                 controller: nameCtrl,
-                label: "Full Name*",
-                validator: (v) => v!.isEmpty ? "Enter name" : null,
+                label: loc.memberFullName,
+                validator: (v) => v!.isEmpty ? loc.nameValidation : null,
               ),
               const SizedBox(height: 15),
 
               /// RELATIONSHIP
               AppDropdown(
-                label: "Relationship*",
-                items: const ["Spouse",  "Father", "Mother","Son", "Daughter","Husband","Wife"],
+                label: loc.relationship,
+                items: [
+                  loc.spouse,
+                  loc.father,
+                  loc.mother,
+                  loc.son,
+                  loc.daughter,
+                  loc.husband,
+                  loc.wife,
+                ],
                 value: relation,
                 onChanged: (val) => setState(() => relation = val),
-                validator: (v) => v == null ? "Select relationship" : null,
+                validator: (v) => v == null ? loc.selectRelationship : null,
               ),
               const SizedBox(height: 15),
 
               /// MOBILE
               AppTextField(
                 controller: mobileCtrl,
-                label: "Mobile Number*",
+                label: loc.mobileNumber,
                 keyboardType: TextInputType.phone,
                 prefixText: '+973 ',
                 maxLength: 8,
                 inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                validator: (v) => v == null || v.isEmpty ? "Enter mobile number" : null,
+                validator: (v) => v == null || v.isEmpty ? loc.enterMobile : null,
               ),
               const SizedBox(height: 15),
 
               /// EMAIL
               AppTextField(
                 controller: emailCtrl,
-                label: "Email Address*",
-                validator: (v) => v!.isEmpty ? "Enter email" : null,
+                label: loc.emailAddress,
+                validator: (v) => v!.isEmpty ? loc.enterEmail : null,
               ),
               const SizedBox(height: 15),
 
               /// GENDER
               AppDropdown(
-                label: "Gender*",
-                items: const ["Male", "Female"],
+                label: loc.gender,
+                items: [loc.male, loc.female],
                 value: gender,
                 onChanged: (val) => setState(() => gender = val),
-                validator: (v) => v == null ? "Select gender" : null,
+                validator: (v) => v == null ? loc.selectGender : null,
               ),
 
               const SizedBox(height: 20),
@@ -223,7 +232,7 @@ class _AddmemberssState extends ConsumerState<Addmemberss> {
                     });
                   },
                   child: Text(
-                    _showAddress ? "Hide Address" : "Add Address",
+                    _showAddress ? loc.hideAddress : loc.addAddress,
                     style: TextStyle(color: AppColors.btn_primery),
                   ),
                 ),
@@ -245,7 +254,7 @@ class _AddmemberssState extends ConsumerState<Addmemberss> {
 
               /// SUBMIT BUTTON
               AppButton(
-                text: "Add Member",
+                text: loc.addMember,
                 isLoading: _isLoading,
                 onPressed: _addMember,
                 color: AppColors.btn_primery,

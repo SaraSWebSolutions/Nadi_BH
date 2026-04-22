@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:nadi_user_app/l10n/app_localizations.dart';
 
 class AddressController {
   TextEditingController building = TextEditingController();
@@ -75,12 +76,12 @@ List<Map<String, dynamic>> roadsForSelectedBlock = [];
   }
 
   // Validators
-  String? validateBuilding(String? val) =>
-      (val == null || val.isEmpty) ? "Required" : null;
+  String? validateBuilding(String? val, AppLocalizations l10n) =>
+      (val == null || val.isEmpty) ? l10n.requiredField : null;
 
-  String? validateAptNo(String? val) =>
-      (val == null || val.isEmpty) ? "Required" : null;
+  String? validateAptNo(String? val, AppLocalizations l10n) =>
+      (val == null || val.isEmpty) ? l10n.requiredField : null;
 
-  String? validateFloor(String? val) =>
-      (val == null || val.isEmpty) ? "Required" : null;
+  String? validateFloor(String? val, AppLocalizations l10n) =>
+      (val == null || val.isEmpty) ? l10n.requiredField : null;
 }

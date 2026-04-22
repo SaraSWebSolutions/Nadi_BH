@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:nadi_user_app/core/constants/app_consts.dart';
+import 'package:nadi_user_app/l10n/app_localizations.dart';
 import 'package:nadi_user_app/providers/AdminQuestionRequest_Provider.dart';
 import 'package:nadi_user_app/providers/AdminQuestioner_Provider.dart';
 import 'package:nadi_user_app/providers/pointshistory_provider.dart';
@@ -73,8 +74,9 @@ class _AdminQuestionerviewState extends ConsumerState<AdminQuestionerview>
     }
 
     if (!isValid) {
+      final loc = AppLocalizations.of(context)!;
       setState(() {
-        errorMessage = "Please answer before moving next";
+        errorMessage = loc.pleaseAnswerBeforeNext;
       });
       return;
     }
@@ -148,13 +150,14 @@ class _AdminQuestionerviewState extends ConsumerState<AdminQuestionerview>
   @override
   Widget build(BuildContext context) {
     final adminRequest = ref.watch(fetchadminquestionrequestprovider);
-final isDark = Theme.of(context).brightness == Brightness.dark;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final loc = AppLocalizations.of(context)!;
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text(
-          "Q & A Conversation",
-          style: TextStyle(color: Colors.white),
+        title: Text(
+          loc.qaConversation,
+          style: const TextStyle(color: Colors.white),
         ),
         backgroundColor: AppColors.gold_coin,
         iconTheme: const IconThemeData(color: Colors.white),
@@ -166,7 +169,7 @@ final isDark = Theme.of(context).brightness == Brightness.dark;
                 final adminList = response.data;
 
                 if (adminList.isEmpty) {
-                  return const Center(child: Text("No admin questions"));
+                  return Center(child: Text(loc.noAdminQuestions));
                 }
 
                 // Filter only items that have questionnaire
@@ -175,13 +178,13 @@ final isDark = Theme.of(context).brightness == Brightness.dark;
                     .toList();
 
                 if (validItems.isEmpty) {
-                  return const Center(child: Text("No questions available"));
+                  return Center(child: Text(loc.noQuestionsAvailable));
                 }
 
                 final questionnaire = validItems.first.questionnaireId!;
 
                 if (questionnaire.questions.isEmpty) {
-                  return const Center(child: Text("No questions available"));
+                  return Center(child: Text(loc.noQuestionsAvailable));
                 }
 
                 final questions = questionnaire.questions;
@@ -194,7 +197,10 @@ final isDark = Theme.of(context).brightness == Brightness.dark;
                   child: Column(
                     children: [
                       Text(
-                        "Question ${currentQuestionIndex + 1} of $totalQuestions",
+                        loc.questionProgress(
+                          (currentQuestionIndex + 1).toString(),
+                          totalQuestions.toString(),
+                        ),
                         style: const TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.bold,
@@ -310,7 +316,7 @@ final isDark = Theme.of(context).brightness == Brightness.dark;
                                     minLines: 3, // starting height
                                     maxLines: null, // grows automatically
                                     decoration: InputDecoration(
-                                      hintText: "Enter your answer",
+                                      hintText: loc.enterYourAnswer,
                                       border: OutlineInputBorder(
                                         borderRadius: BorderRadius.circular(12),
                                       ),
@@ -339,7 +345,7 @@ final isDark = Theme.of(context).brightness == Brightness.dark;
                             Expanded(
                               child: AppButton(
                                 height: 47,
-                                text: "Previous",
+                                text: loc.previous,
                                 color: Colors.grey,
                                 width: double.infinity,
                                 onPressed: previousQuestion,
@@ -371,8 +377,8 @@ final isDark = Theme.of(context).brightness == Brightness.dark;
                                     text:
                                         currentQuestionIndex ==
                                             totalQuestions - 1
-                                        ? "Submit"
-                                        : "Next",
+                                        ? loc.submit
+                                        : loc.next,
                                     width: double.infinity,
                                     color: AppColors.gold_coin,
                                     onPressed: () {
@@ -401,6 +407,7 @@ final isDark = Theme.of(context).brightness == Brightness.dark;
   }
 
   Widget successUI() {
+    final loc = AppLocalizations.of(context)!;
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(20),
@@ -413,15 +420,15 @@ final isDark = Theme.of(context).brightness == Brightness.dark;
               children: [
                 const Icon(Icons.check_circle, size: 90, color: Colors.green),
                 const SizedBox(height: 20),
-                const Text(
-                  "Success!",
+                Text(
+                  loc.success,
                   style: TextStyle(fontSize: 26, fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(height: 10),
                 Text(successMessage, textAlign: TextAlign.center),
                 const SizedBox(height: 20),
                 Text(
-                  "+ $pointsEarned Points Earned",
+                  loc.pointsEarnedLabel(pointsEarned),
                   style: const TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
@@ -430,12 +437,12 @@ final isDark = Theme.of(context).brightness == Brightness.dark;
                 ),
                 const SizedBox(height: 6),
                 Text(
-                  "Total Points: $totalUserPoints",
+                  loc.totalPointsLabel(totalUserPoints),
                   style: const TextStyle(fontSize: 15),
                 ),
                 const SizedBox(height: 30),
                 AppButton(
-                  text: "Done",
+                  text: loc.done,
                   color: AppColors.gold_coin,
                   onPressed: () => context.pop(),
                   width: double.infinity,

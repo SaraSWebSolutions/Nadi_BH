@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:nadi_user_app/core/constants/app_consts.dart';
+import 'package:nadi_user_app/l10n/app_localizations.dart';
 import 'package:record/record.dart';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:path_provider/path_provider.dart';
@@ -112,6 +113,7 @@ class _RecordWidgetState extends State<RecordWidget> {
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context)!;
     return Column(
       children: [
         GestureDetector(
@@ -129,7 +131,7 @@ class _RecordWidgetState extends State<RecordWidget> {
                 Icon(isRecording ? Icons.stop : Icons.mic, color: Colors.white),
                 SizedBox(width: 8),
                 Text(
-                  isRecording ? "Recording..." : "Record Voice",
+                  isRecording ? loc.recording : loc.recordVoice,
                   style: TextStyle(color: Colors.white, fontSize: 16),
                 ),
               ],
@@ -160,7 +162,7 @@ class _RecordWidgetState extends State<RecordWidget> {
                     icon: Icon(isPlaying ? Icons.pause : Icons.play_arrow ,color: Theme.of(context).textTheme.bodyMedium?.color ,),
                     onPressed: playPauseVoice,
                   ),
-                  const Text("Recorded Voice"),
+                  Text(loc.recordedVoice),
                   const Spacer(),
                   IconButton(
                     icon: Icon(Icons.delete, color: Colors.red),

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:nadi_user_app/l10n/app_localizations.dart';
 import 'package:nadi_user_app/routing/app_router.dart';
 import 'package:nadi_user_app/views/addMemberss.dart';
 import 'package:nadi_user_app/views/auth/forgotpassword.dart';
@@ -84,7 +85,11 @@ final appRouter = GoRouter(
         final serviceRequestId = state.extra as String?;
         if (serviceRequestId == null) {
           return Scaffold(
-            body: Center(child: Text("No Service Request ID found")),
+            body: Center(
+              child: Text(
+                AppLocalizations.of(context)!.noServiceRequestIdFound,
+              ),
+            ),
           );
         }
         return Requestcreatesucess(serviceRequestId: serviceRequestId);

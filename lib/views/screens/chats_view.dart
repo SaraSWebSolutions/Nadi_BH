@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:nadi_user_app/core/constants/app_consts.dart';
+import 'package:nadi_user_app/l10n/app_localizations.dart';
 import 'package:nadi_user_app/providers/Chats_List_Provider.dart';
 import 'package:nadi_user_app/providers/connectivity_provider.dart';
 import 'package:nadi_user_app/providers/stream_unread_provider.dart';
@@ -44,6 +45,7 @@ class _ChatsViewState extends ConsumerState<ChatsView> {
     final chatlist = ref.watch(fetchchatslistprovider);
     final unreadCounts = ref.watch(streamUnreadCountsProvider);
     final connectivity = ref.watch(connectivityProvider);
+    final loc = AppLocalizations.of(context)!;
 
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
@@ -64,8 +66,8 @@ class _ChatsViewState extends ConsumerState<ChatsView> {
                         icon: Icons.arrow_back,
                         onPressed: () => context.pop(),
                       ),
-                      const Text(
-                        "Chats",
+                      Text(
+                        loc.chats,
                         style: TextStyle(
                           fontWeight: FontWeight.w600,
                           fontSize: 20,
@@ -96,11 +98,11 @@ class _ChatsViewState extends ConsumerState<ChatsView> {
                       onChanged: (value) {
                         setState(() => searchText = value);
                       },
-                      decoration: const InputDecoration(
-                        hintText: "Search Message...",
-                        prefixIcon: Icon(Icons.search, color: Colors.grey, size: 22),
+                      decoration: InputDecoration(
+                        hintText: loc.searchMessage,
+                        prefixIcon: const Icon(Icons.search, color: Colors.grey, size: 22),
                         border: InputBorder.none,
-                        contentPadding: EdgeInsets.symmetric(vertical: 15),
+                        contentPadding: const EdgeInsets.symmetric(vertical: 15),
                       ),
                     ),
                   ),
@@ -136,9 +138,9 @@ class _ChatsViewState extends ConsumerState<ChatsView> {
                         if (filteredChats.isEmpty) {
                           return ListView(
                             physics: const AlwaysScrollableScrollPhysics(),
-                            children: const [
-                              SizedBox(height: 120),
-                              Center(child: Text("No chats found")),
+                            children: [
+                              const SizedBox(height: 120),
+                              Center(child: Text(loc.noChatsFound)),
                             ],
                           );
                         }

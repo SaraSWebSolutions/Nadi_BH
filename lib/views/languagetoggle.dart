@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:nadi_user_app/l10n/app_localizations.dart';
 import '../providers/language_provider.dart';
 
 class LanguageView extends ConsumerWidget {
@@ -10,6 +11,7 @@ class LanguageView extends ConsumerWidget {
 
     final locale = ref.watch(languageProvider);
     final isEnglish = locale.languageCode == 'en';
+    final loc = AppLocalizations.of(context)!;
 
     return Container(
       height: 27,
@@ -41,7 +43,7 @@ class LanguageView extends ConsumerWidget {
                 borderRadius: BorderRadius.circular(30),
               ),
               child: Text(
-                "Eng",
+                loc.englishShort,
                 style: TextStyle(
                   color: isEnglish
                       ? const Color(0xFF206A56)
@@ -62,7 +64,7 @@ class LanguageView extends ConsumerWidget {
                 color: !isEnglish ? Colors.white : Colors.transparent,
                 borderRadius: BorderRadius.circular(30),
               ),
-              child: const Text("عربي"),
+              child: Text(loc.arabicShort),
             ),
           ),
         ],

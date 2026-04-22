@@ -41,7 +41,7 @@ class _ViewAllLogsState extends State<ViewAllLogs> {
                       fontSize: AppFontSizes.large,
                     ),
                   ),
-                const  Text(""),
+                const SizedBox(width: 1),
                 ],
               ),
             ),

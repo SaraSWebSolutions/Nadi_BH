@@ -17,6 +17,7 @@ import 'package:nadi_user_app/routing/app_router.dart';
 import 'package:nadi_user_app/widgets/app_back.dart';
 import 'package:nadi_user_app/widgets/family_points_card.dart';
 import 'package:nadi_user_app/widgets/individual_points_card.dart';
+import 'package:app_badge_plus/app_badge_plus.dart';
 
 class PointDetails extends ConsumerStatefulWidget {
   const PointDetails({super.key});
@@ -32,12 +33,15 @@ class _PointDetailsState extends ConsumerState<PointDetails> {
   String userImage = "";
   // 🔥 ADD THESE TWO LINES
   bool isExpanded = false;
+  DateTime? _lastSeenTime;
   final int initialCount = 7;
 
   @override
   void initState() {
     super.initState();
     _loadUserData();
+     _loadLastSeenTime(); // ✅ ADD THIS
+
     Future.microtask(() {
       ref.refresh(pointshistoryprovider);
       ref.refresh(fetchpointsnodification);
@@ -47,7 +51,14 @@ class _PointDetailsState extends ConsumerState<PointDetails> {
       ref.refresh(fetchadminquestionerprovider);
     });
   }
-
+Future<void> _loadLastSeenTime() async {
+  final time = await AppPreferences.getLastSeenNotificationTime();
+  if (mounted) {
+    setState(() {
+      _lastSeenTime = time;
+    });
+  }
+}
   Future<void> _loadUserData() async {
     final type = await AppPreferences.getaccounttype();
     final name = await AppPreferences.getusername();
@@ -63,7 +74,17 @@ class _PointDetailsState extends ConsumerState<PointDetails> {
       userImage = image ?? "";
     });
   }
-
+Future<void> updateAppBadge(int count) async {
+  try {
+    if (count > 0) {
+      await AppBadgePlus.updateBadge(count);
+    } else {
+      await AppBadgePlus.updateBadge(0); // clears badge
+    }
+  } catch (e) {
+    debugPrint("❌ Badge not supported: $e");
+  }
+}
   Future<void> _peopledetails(
     BuildContext context,
     String peopleId,
@@ -91,6 +112,7 @@ class _PointDetailsState extends ConsumerState<PointDetails> {
     final requestedpointspeoplelist = ref.watch(fetchrequestpeoplelistprovider);
     final dashboardAsync = ref.watch(userdashboardprovider);
     final adminquestionlist = ref.watch(fetchadminquestionerprovider);
+   
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: SingleChildScrollView(
@@ -140,7 +162,34 @@ class _PointDetailsState extends ConsumerState<PointDetails> {
                       ),
 
                       InkWell(
-                        onTap: () => context.push(RouteNames.pointnodification),
+                        onTap: () async {
+                                      DateTime seenTime = DateTime.now().toUtc();
+                                      final currentNotifications = ref.read(fetchpointsnodification).value?.data;
+                                      if (currentNotifications != null && currentNotifications.isNotEmpty) {
+                                        // Find the newest notification time from the server data
+                                        seenTime = currentNotifications
+                                            .map((n) => n.time)
+                                            .reduce((a, b) => a.isAfter(b) ? a : b);
+                                      }
+                                      
+                                      await AppPreferences.saveLastSeenNotificationTime(seenTime);
+                                      if (mounted) setState(() => _lastSeenTime = seenTime);
+                                      
+                                      if (context.mounted) {
+                                      context.push(RouteNames.pointnodification).then((_) async {
+  final val = await AppPreferences.getLastSeenNotificationTime();
+
+  if (mounted) {
+    setState(() {
+      _lastSeenTime = val;
+    });
+  }
+
+  ref.invalidate(fetchpointsnodification); // 🔥 IMPORTANT
+});
+                                      }
+                                      await updateAppBadge(0); // ✅ CLEAR APP ICON BADGE
+                                    },
                         child: Stack(
                           children: [
                             Container(
@@ -158,8 +207,22 @@ class _PointDetailsState extends ConsumerState<PointDetails> {
                             ),
                             notificationCount.when(
                               data: (response) {
-                                final count = response.data.length;
-                                final countText = count > 99 ? "99+" : "$count";
+                               final notifications = response.data;
+
+int unreadCount = 0;
+
+if (_lastSeenTime == null) {
+  unreadCount = notifications.length;
+} else {
+  unreadCount = notifications
+      .where((n) => n.time.isAfter(_lastSeenTime!))
+      .length;
+}
+
+// 👉 hide badge if 0
+if (unreadCount == 0) return const SizedBox();
+
+final countText = unreadCount > 99 ? "99+" : "$unreadCount";
                                 return Positioned(
                                   top: 0,
                                   right: 5,
@@ -613,7 +676,7 @@ class _PointDetailsState extends ConsumerState<PointDetails> {
                           data: (response) {
                             final data = response.data;
                             if (data.isEmpty) {
-                              return  Text("No History Found");
+                              return Text(AppLocalizations.of(context)!.noHistoryFound);
                             }
                             final limitedList = data.take(5).toList();
                             return ListView.builder(

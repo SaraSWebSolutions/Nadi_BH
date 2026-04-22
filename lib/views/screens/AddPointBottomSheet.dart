@@ -66,7 +66,10 @@ class _AddPointBottomSheetContentState
         await _pointsRequest.sendtoadmin(points: points);
         if (!mounted) return;
         setState(() => isLoading = false);
-        SnackbarHelper.ShowSuccess(context, "Points request sent successfully");
+        SnackbarHelper.ShowSuccess(
+          context,
+          AppLocalizations.of(context)!.pointsRequestSuccess,
+        );
         Navigator.pop(context);
       } catch (e) {
         AppLogger.error("API ERROR: $e");
@@ -86,7 +89,10 @@ class _AddPointBottomSheetContentState
         );
         if (!mounted) return;
         setState(() => isLoading = false);
-        SnackbarHelper.ShowSuccess(context, "Points request sent successfully");
+        SnackbarHelper.ShowSuccess(
+          context,
+          AppLocalizations.of(context)!.pointsRequestSuccess,
+        );
         Navigator.pop(context);
       } catch (e) {
         AppLogger.error("API ERROR: $e");
@@ -218,7 +224,7 @@ class _AddPointBottomSheetContentState
                           value: _selectedMember,
                           isExpanded: true,
                           decoration: InputDecoration(
-                            labelText: "Select Family Member",
+                            labelText: t.selectFamilyMember,
                             floatingLabelStyle: const TextStyle(
                                 color: AppColors.app_background_clr),
                             contentPadding: const EdgeInsets.symmetric(
@@ -245,8 +251,8 @@ class _AddPointBottomSheetContentState
                             ),
                           ),
                           hint: _familyMembers.isEmpty
-                              ? const Text("No family members found")
-                              : const Text("Choose a member"),
+                              ? Text(t.noFamilyMembersFound)
+                              : Text(t.chooseMember),
                           items: _familyMembers.map((member) {
                             final name =
                                 member['basicInfo']?['fullName'] ?? "Unknown";
@@ -269,7 +275,7 @@ class _AddPointBottomSheetContentState
                           validator: (_) {
                             if (_familyMembers.isEmpty) return null;
                             if (_selectedMember == null) {
-                              return "Please select a family member";
+                              return t.pleaseSelectFamilyMember;
                             }
                             return null;
                           },

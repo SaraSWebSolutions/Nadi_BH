@@ -291,7 +291,7 @@ class Myprofile extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final profileAsyncValue = ref.watch(profileprovider);
     final loc = AppLocalizations.of(context)!;
-        final isDark = Theme.of(context).brightness == Brightness.dark;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
@@ -299,7 +299,7 @@ class Myprofile extends ConsumerWidget {
         data: (profileResponse) {
           if (profileResponse == null) {
             AppLogger.error("Profile response is null");
-            return const Center(child: Text("No profile data"));
+            return Center(child: Text(loc.noProfileData));
           }
           final basicData =
               profileResponse['data'] as Map<String, dynamic>? ?? {};
@@ -323,10 +323,10 @@ class Myprofile extends ConsumerWidget {
               parts.add(label == null ? v : "$label $v");
             }
             add(null, addr['building']);
-            add("Block", addr['block']);
+            add(loc.block, addr['block']);
             add(null, addr['city']);
-            add("Floor", addr['floor']);
-            add("Apt", addr['aptNo']);
+            add(loc.floor, addr['floor']);
+            add(loc.apartment, addr['aptNo']);
             add(null, addr['additionalInfo']);
             return parts.join(", ");
           }
@@ -429,7 +429,7 @@ class Myprofile extends ConsumerWidget {
                                   Text(
                                     nameCtrl.text.isNotEmpty
                                         ? nameCtrl.text
-                                        : "Loading...",
+                                        : loc.loading,
                                     style: const TextStyle(
                                       color: Colors.white,
                                       fontSize: 15,
@@ -477,7 +477,13 @@ class Myprofile extends ConsumerWidget {
               ),
               // Body
               Expanded(
+                 child: RefreshIndicator(
+    onRefresh: () async {
+      ref.invalidate(profileprovider); // reload profile
+      ref.invalidate(familyMembersListProvider); // reload members
+    },
                 child: SingleChildScrollView(
+                  physics: AlwaysScrollableScrollPhysics(),
                   child: Padding(
                     padding: const EdgeInsets.symmetric(
                       horizontal: 15,
@@ -592,6 +598,7 @@ class Myprofile extends ConsumerWidget {
                     ),
                   ),
                 ),
+                 ),
               ),
             ],
           );
@@ -599,7 +606,7 @@ class Myprofile extends ConsumerWidget {
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (err, stack) {
           AppLogger.error("Riverpod profileprovider error: $err");
-          return const Center(child: Text("Error loading profile"));
+          return Center(child: Text(loc.errorLoadingProfile));
         },
       ),
     );
@@ -863,24 +870,25 @@ class _FamilyMemberTile extends ConsumerStatefulWidget {
 class _FamilyMemberTileState extends ConsumerState<_FamilyMemberTile> {
   bool _removing = false;
 
-  ({String label, Color color, Color bg}) _statusBadge() {
+  ({String label, Color color, Color bg}) _statusBadge(BuildContext context) {
+    final loc = AppLocalizations.of(context)!;
     final status = _memberStatus(widget.member);
     switch (status) {
       case 'Rejected':
         return (
-          label: 'Rejected',
+          label: loc.rejected,
           color: Colors.red.shade700,
           bg: Colors.red.shade50,
         );
       case 'Pending':
         return (
-          label: 'Pending',
+          label: loc.pending,
           color: Colors.orange.shade800,
           bg: Colors.orange.shade50,
         );
       default:
         return (
-          label: 'Active',
+          label: loc.active,
           color: Colors.green.shade700,
           bg: Colors.green.shade50,
         );
@@ -892,12 +900,13 @@ class _FamilyMemberTileState extends ConsumerState<_FamilyMemberTile> {
     final loc = AppLocalizations.of(context)!;
     if (memberId == null || memberId.isEmpty) return;
 
-    final name = widget.member['basicInfo']?['fullName']?.toString() ?? 'this member';
+    final name =
+        widget.member['basicInfo']?['fullName']?.toString() ?? loc.thisMember;
     final confirmed = await showConfirmDialog(
       context,
-    title: loc.removeMemberTitle,
-message: loc.removeMemberMessage,
-confirmText: loc.remove,
+      title: loc.removeMemberTitle,
+      message: loc.removeMemberMessage,
+      confirmText: loc.remove,
       icon: Icons.person_remove_alt_1_rounded,
       destructive: true,
     );
@@ -910,7 +919,8 @@ confirmText: loc.remove,
       if (!mounted) return;
 SnackbarHelper.ShowSuccess(
   context,
-loc.memberRemoved(name));      widget.onRemoved();
+          loc.memberRemoved(name));
+      widget.onRemoved();
     } catch (e) {
       if (!mounted) return;
       SnackbarHelper.showError(context, e.toString());
@@ -926,8 +936,8 @@ loc.memberRemoved(name));      widget.onRemoved();
     final phone = basic['mobileNumber']?.toString() ?? '';
     final image = basic['image']?.toString() ?? '';
     final relation = widget.member['relation']?.toString();
-    final badge = _statusBadge();
-final loc = AppLocalizations.of(context)!;
+    final badge = _statusBadge(context);
+    final loc = AppLocalizations.of(context)!;
 
     return Container(
       margin: const EdgeInsets.only(bottom: 10),
@@ -1009,7 +1019,7 @@ final loc = AppLocalizations.of(context)!;
                   child: CircularProgressIndicator(strokeWidth: 2),
                 )
               : IconButton(
-                  tooltip: "Remove",
+                  tooltip: loc.remove,
                   onPressed: _remove,
                   padding: EdgeInsets.zero,
                   constraints: const BoxConstraints(

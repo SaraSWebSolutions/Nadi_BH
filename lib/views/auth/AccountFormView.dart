@@ -33,6 +33,17 @@ class _AccountFormViewState extends State<AccountFormView> {
   final AuthService _basicInfo = AuthService();
   bool _isLoading = false;
   final String name = "";
+
+  String _localizedAccountType(AppLocalizations l10n) {
+    switch (widget.accountType) {
+      case "Family":
+        return l10n.family;
+      case "Individual":
+        return l10n.individual;
+      default:
+        return widget.accountType;
+    }
+  }
   Future<void> submitBasicInfo(BuildContext context) async {
     if (!widget.formKey.currentState!.validate()) return;
 
@@ -92,7 +103,7 @@ class _AccountFormViewState extends State<AccountFormView> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            "${widget.accountType} ",
+            _localizedAccountType(l10n),
             style: const TextStyle(fontSize: 22, fontWeight: FontWeight.w600),
           ),
           const SizedBox(height: 20),
@@ -141,7 +152,7 @@ Row(
     Expanded(
       child: AppTextField(
         controller: controller.firstName,
-        label: "First Name *",
+        label: "${l10n.firstName} *",
         validator: (value) => controller.validateName(value,l10n),
       ),
     ),
@@ -149,7 +160,7 @@ Row(
     Expanded(
       child: AppTextField(
         controller: controller.secondName,
-        label: "Second Name",
+        label: l10n.secondName,
       ),
     ),
   ],
@@ -162,14 +173,14 @@ Row(
     Expanded(
       child: AppTextField(
         controller: controller.thirdName,
-        label: "Third Name",
+        label: l10n.thirdName,
       ),
     ),
     const SizedBox(width: 12),
     Expanded(
       child: AppTextField(
         controller: controller.fourthName,
-        label: "Fourth Name",
+        label: l10n.fourthName,
       ),
     ),
   ],

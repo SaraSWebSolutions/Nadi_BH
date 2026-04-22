@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:nadi_user_app/core/constants/app_consts.dart';
+import 'package:nadi_user_app/l10n/app_localizations.dart';
 import 'package:nadi_user_app/preferences/preferences.dart';
 import 'package:nadi_user_app/providers/active_chat_provider.dart';
 import 'package:stream_chat_flutter/stream_chat_flutter.dart';
@@ -144,8 +145,7 @@ class _ChatDetailsScreenState extends ConsumerState<ChatDetailsScreen>
       if (mounted) {
         setState(() {
           _isLoading = false;
-          _errorMessage =
-              'Failed to load chat. Please try again.\n${e.toString()}';
+          _errorMessage = e.toString();
         });
       }
     }
@@ -160,6 +160,7 @@ class _ChatDetailsScreenState extends ConsumerState<ChatDetailsScreen>
   }
 
   AppBar _buildAppBar() {
+    final loc = AppLocalizations.of(context)!;
     return AppBar(                                                  
       backgroundColor: _isAdmin ? AppColors.app_background_clr  : Colors.white,
       elevation: 1,
@@ -194,7 +195,7 @@ class _ChatDetailsScreenState extends ConsumerState<ChatDetailsScreen>
               mainAxisSize: MainAxisSize.min,
               children: [
                 Text(
-                  widget.adminName ?? 'Chat',
+                  widget.adminName ?? loc.chat,
                   style: TextStyle(
                     color: _isAdmin ? Colors.white : Colors.black,
                     fontSize: 15,
@@ -222,6 +223,7 @@ class _ChatDetailsScreenState extends ConsumerState<ChatDetailsScreen>
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context)!;
     if (_isLoading) {
       return Scaffold(
         appBar: AppBar(
@@ -233,7 +235,7 @@ class _ChatDetailsScreenState extends ConsumerState<ChatDetailsScreen>
             onPressed: () => Navigator.pop(context),
           ),
           title: Text(
-            widget.adminName ?? 'Chat',
+            widget.adminName ?? loc.chat,
             style: TextStyle(
               color: _isAdmin ? Colors.white : Colors.black,
               fontSize: 16,
@@ -255,7 +257,7 @@ class _ChatDetailsScreenState extends ConsumerState<ChatDetailsScreen>
             onPressed: () => Navigator.pop(context),
           ),
           title: Text(
-            widget.adminName ?? 'Chat',
+            widget.adminName ?? loc.chat,
             style: const TextStyle(
                 color: Colors.black, fontSize: 16, fontWeight: FontWeight.w600),
           ),
@@ -269,14 +271,13 @@ class _ChatDetailsScreenState extends ConsumerState<ChatDetailsScreen>
                 const Icon(Icons.chat_bubble_outline,
                     size: 60, color: Colors.grey),
                 const SizedBox(height: 16),
-                const Text(
-                  'Could not load chat',
-                  style:
-                      TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+                Text(
+                  loc.couldNotLoadChat,
+                  style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  'Please check your connection and try again.',
+                  loc.checkConnectionTryAgain,
                   textAlign: TextAlign.center,
                   style: TextStyle(color: Colors.grey[600], fontSize: 14),
                 ),
@@ -284,7 +285,7 @@ class _ChatDetailsScreenState extends ConsumerState<ChatDetailsScreen>
                 ElevatedButton.icon(
                   onPressed: _initializeChat,
                   icon: const Icon(Icons.refresh),
-                  label: const Text('Retry'),
+                  label: Text(loc.retry),
                 ),
               ],
             ),
@@ -359,7 +360,7 @@ class _ChatDetailsScreenState extends ConsumerState<ChatDetailsScreen>
                   inputBackgroundColor: Theme.of(context).colorScheme.surface,
                   borderRadius: BorderRadius.circular(24),
                   inputDecoration:  InputDecoration(
-                    hintText: "Write a message...",
+                    hintText: loc.writeMessage,
                       hintStyle: TextStyle(
           color: Theme.of(context).hintColor,
         ),

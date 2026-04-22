@@ -23,7 +23,9 @@ class AboutsView extends ConsumerWidget {
         error: (e, _) => Center(child: Text(e.toString())),
         data: (about) {
           if (about.data.isEmpty) {
-            return const Center(child: Text("No content available"));
+            return Center(
+              child: Text(AppLocalizations.of(context)!.noContentAvailable),
+            );
           }
           final item = about.data.first;
           return Padding(
@@ -34,9 +36,12 @@ class AboutsView extends ConsumerWidget {
                   child: SingleChildScrollView(
                     child: Column(
                       children: item.content.isEmpty
-                          ? [const Padding(
+                          ? [Padding(
                               padding: EdgeInsets.only(bottom: 10),
-                              child: Text("No content available", textAlign: TextAlign.center),
+                              child: Text(
+                                AppLocalizations.of(context)!.noContentAvailable,
+                                textAlign: TextAlign.center,
+                              ),
                             )]
                           : item.content
                               .map(
@@ -51,7 +56,7 @@ class AboutsView extends ConsumerWidget {
                 ),
                 const SizedBox(height: 20),
                 Text(
-                  "Version ${item.version}",
+                  AppLocalizations.of(context)!.versionLabel(item.version),
                   style: const TextStyle(color: Colors.grey),
                 ),
               ],

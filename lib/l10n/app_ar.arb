@@ -324,6 +324,117 @@
   "placeholders": {
     "name": {}
   }
-}
+},
+  "feedbackSubmittedSuccessfully": "تم إرسال الملاحظات بنجاح",
+  "failedToSubmitFeedback": "فشل إرسال الملاحظات",
+  "writeYourFeedback": "اكتب ملاحظاتك...",
+  "somethingWentWrongTryAgain": "حدث خطأ ما. يرجى المحاولة مرة أخرى.",
+  "unexpectedErrorOccurred": "حدث خطأ غير متوقع",
 
+  "chat": "الدردشة",
+  "couldNotLoadChat": "تعذر تحميل الدردشة",
+  "checkConnectionTryAgain": "يرجى التحقق من الاتصال والمحاولة مرة أخرى.",
+  "writeMessage": "اكتب رسالة...",
+
+  "block": "بلوك",
+  "thisMember": "هذا العضو",
+
+  "saveChangesTitle": "حفظ التغييرات؟",
+  "saveChangesMessage": "هل أنت متأكد أنك تريد حفظ التغييرات على ملفك الشخصي؟",
+  "selectFamilyMember": "اختر فرد العائلة",
+  "noFamilyMembersFound": "لم يتم العثور على أفراد عائلة",
+  "chooseMember": "اختر عضوًا",
+  "pleaseSelectFamilyMember": "يرجى اختيار فرد من العائلة",
+  "pleaseAnswerBeforeNext": "يرجى الإجابة قبل الانتقال للسؤال التالي",
+  "qaConversation": "محادثة الأسئلة والأجوبة",
+  "noAdminQuestions": "لا توجد أسئلة من الإدارة",
+  "noQuestionsAvailable": "لا توجد أسئلة متاحة",
+  "questionProgress": "السؤال {current} من {total}",
+  "@questionProgress": {
+    "placeholders": {
+      "current": {},
+      "total": {}
+    }
+  },
+  "enterYourAnswer": "أدخل إجابتك",
+  "previous": "السابق",
+  "next": "التالي",
+  "success": "تم بنجاح!",
+  "pointsEarnedLabel": "+ {points} نقطة مكتسبة",
+  "@pointsEarnedLabel": {
+    "placeholders": {
+      "points": {}
+    }
+  },
+  "totalPointsLabel": "إجمالي النقاط: {total}",
+  "@totalPointsLabel": {
+    "placeholders": {
+      "total": {}
+    }
+  },
+  "done": "تم",
+  "completedExclamation": "اكتمل!",
+  "discardSignUpTitle": "إلغاء التسجيل؟",
+  "discardSignUpMessage": "هل أنت متأكد أنك تريد المغادرة؟ ستفقد جميع المعلومات التي أدخلتها.",
+  "discard": "إلغاء",
+  "member": "عضو",
+  "account": "الحساب",
+  "accountTypeStepperTitle": "حساب {accountType}",
+  "@accountTypeStepperTitle": {
+    "placeholders": {
+      "accountType": {}
+    }
+  },
+  "memberAddedSuccessfully": "تمت إضافة العضو بنجاح",
+  "connectionTimeoutTryAgain": "انتهت مهلة الاتصال. يرجى التحقق من الإنترنت والمحاولة مرة أخرى.",
+  "noInternetTryAgain": "لا يوجد اتصال بالإنترنت. يرجى المحاولة مرة أخرى.",
+  "sessionEnded": "انتهت الجلسة",
+  "sessionEndedMessage": "انتهت جلستك. يرجى تسجيل الدخول مرة أخرى.",
+  "accountDisabledSupportMessage": "تم تعطيل حسابك. يرجى التواصل مع فريق الدعم للمساعدة.",
+  "accountRejectedSupportMessage": "تم رفض حسابك. يرجى التواصل مع فريق الدعم للمساعدة.",
+  "noContent": "لا يوجد محتوى",
+  "noContentAvailable": "لا يوجد محتوى متاح",
+  "versionLabel": "الإصدار {version}",
+  "@versionLabel": {
+    "placeholders": {
+      "version": {}
+    }
+  },
+  "noChatsFound": "لا توجد محادثات",
+  "chats": "المحادثات",
+  "searchMessage": "ابحث في الرسائل...",
+  "resetEmailSentCheckInbox": "تم إرسال رسالة إعادة التعيين! يرجى التحقق من بريدك الوارد.",
+  "passwordResetSuccessful": "تمت إعادة تعيين كلمة المرور بنجاح! يرجى تسجيل الدخول.",
+  "resetPasswordTitle": "إعادة تعيين كلمة المرور",
+  "resetPasswordInstructions": "افتح رسالة إعادة التعيين التي وصلتك، ثم انسخ الرمز الموجود في نهاية الرابط والصقه أدناه.",
+  "resetTokenFromEmail": "رمز إعادة التعيين (من البريد الإلكتروني)",
+  "enterResetTokenFromEmail": "يرجى إدخال رمز إعادة التعيين من البريد الإلكتروني",
+  "newPassword": "كلمة المرور الجديدة",
+  "confirmPasswordLabel": "تأكيد كلمة المرور",
+  "back": "رجوع",
+  "photo": "صورة",
+  "takePhoto": "التقاط صورة",
+  "uploadGallery": "رفع من المعرض",
+  "englishShort": "Eng",
+  "arabicShort": "عربي",
+  "recording": "جارٍ التسجيل...",
+  "recordVoice": "تسجيل صوت",
+  "recordedVoice": "الصوت المسجل",
+  "noServiceRequestIdFound": "لم يتم العثور على رقم طلب الخدمة",
+  "noRequestsFound": "لا توجد طلبات",
+  "enterPointsValue": "أدخل النقاط",
+  "send": "إرسال",
+  "noRecentActivity": "لا يوجد نشاط حديث",
+  "errorLabel": "خطأ",
+  "notAvailable": "غير متوفر",
+  "spouse": "الزوج/الزوجة",
+  "pleaseSelectOption": "يرجى اختيار أحد الخيارات",
+  "pleaseEnterYourAnswer": "يرجى إدخال إجابتك",
+  "individual": "فردي",
+  "firstName": "الاسم الأول",
+  "secondName": "الاسم الثاني",
+  "thirdName": "الاسم الثالث",
+  "fourthName": "اسم العائلة",
+  "requiredField": "مطلوب",
+  "failedToAddMemberTryAgain": "فشل إضافة العضو. يرجى المحاولة مرة أخرى."
 }

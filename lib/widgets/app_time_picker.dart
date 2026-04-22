@@ -66,7 +66,7 @@ class AppTimePicker extends StatelessWidget {
     );
   }
 
-  // Ensures clean 12-hour format with AM / PM
+  // Keep time text in English regardless app language.
   String _formatTime(TimeOfDay time) {
     final hour = time.hourOfPeriod == 0 ? 12 : time.hourOfPeriod;
     final minute = time.minute.toString().padLeft(2, '0');

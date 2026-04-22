@@ -332,8 +332,8 @@ class _SettingsViewState extends ConsumerState<SettingsView> {
 
         if (context.mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text("Failed to update notification setting"),
+            SnackBar(
+              content: Text(AppLocalizations.of(context)!.notificationUpdateFailed),
             ),
           );
         }

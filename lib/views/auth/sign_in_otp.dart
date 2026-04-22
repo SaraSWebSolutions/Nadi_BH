@@ -471,7 +471,10 @@ bool _isLoading = false;
                 padding: const EdgeInsets.symmetric(vertical: 12),
               ),
               onPressed: () => Navigator.of(ctx).pop(),
-              child: const Text("OK", style: TextStyle(fontWeight: FontWeight.w600)),
+              child: Text(
+                AppLocalizations.of(context)!.ok,
+                style: const TextStyle(fontWeight: FontWeight.w600),
+              ),
             ),
           ),
         ],
@@ -577,7 +580,10 @@ bool _isLoading = false;
                 padding: const EdgeInsets.symmetric(vertical: 12),
               ),
               onPressed: () => Navigator.of(ctx).pop(),
-              child: const Text("OK", style: TextStyle(fontWeight: FontWeight.w600)),
+              child: Text(
+                AppLocalizations.of(context)!.ok,
+                style: const TextStyle(fontWeight: FontWeight.w600),
+              ),
             ),
           ),
         ],

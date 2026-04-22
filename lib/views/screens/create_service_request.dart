@@ -158,12 +158,13 @@ Future<void> serviceList() async {
   }
 
   Future<void> SendRequest() async {
+    final loc = AppLocalizations.of(context)!;
     if (selectcategoryId == null || selectedIssueId == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           backgroundColor: Colors.red,
           content: Text(
-            AppLocalizations.of(context)!.selectServiceIssue,
+            loc.selectServiceIssue,
             style: TextStyle(
               color: Theme.of(context).textTheme.bodyMedium?.color,
             ),
@@ -213,8 +214,8 @@ Future<void> serviceList() async {
           setState(() => _isLoading = false);
         //  NULL RESPONSE
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text("Something went wrong. Please try again."),
+          SnackBar(
+            content: Text(loc.somethingWentWrongTryAgain),
             backgroundColor: Colors.red,
           ),
         );
@@ -224,8 +225,8 @@ Future<void> serviceList() async {
       AppLogger.error("SendRequest error: $e");
 
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text("Unexpected error occurred"),
+        SnackBar(
+          content: Text(loc.unexpectedErrorOccurred),
           backgroundColor: Colors.red,
         ),
       );
@@ -536,7 +537,7 @@ fillColor: Theme.of(context).colorScheme.surface,                        ),
 
                       const SizedBox(height: 3),
                       Text(
-                        "${selectedImages.length} / 10 images selected",
+                        t.imagesSelectedCount(selectedImages.length.toString()),
                         style: TextStyle(
                           fontSize: 12,
                           color: selectedImages.length == 10
@@ -623,7 +624,7 @@ fillColor: Theme.of(context).colorScheme.surface,                        ),
                   color: Theme.of(context).textTheme.bodyMedium?.color,
                 ),
                 title: Text(
-                  "Camera",
+                  AppLocalizations.of(context)!.camera,
                   style: TextStyle(
                     color: Theme.of(context).textTheme.bodyMedium?.color,
                   ),
@@ -639,7 +640,7 @@ fillColor: Theme.of(context).colorScheme.surface,                        ),
                   color: Theme.of(context).textTheme.bodyMedium?.color,
                 ),
                 title: Text(
-                  "Gallery",
+                  AppLocalizations.of(context)!.gallery,
                   style: TextStyle(
                     color: Theme.of(context).textTheme.bodyMedium?.color,
                   ),

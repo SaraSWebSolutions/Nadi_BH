@@ -1,6 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:nadi_user_app/l10n/app_localizations.dart';
 import 'package:nadi_user_app/core/constants/app_consts.dart';
 import 'package:nadi_user_app/core/network/dio_client.dart';
 import 'package:nadi_user_app/preferences/preferences.dart';
@@ -137,7 +138,9 @@ class _RequestPeopleDetailsState extends ConsumerState<RequestPeopleDetails> {
                 final list = peopleDetails.data;
 
                 if (list.isEmpty) {
-                  return const Center(child: Text("No requests found"));
+                  return Center(
+                    child: Text(AppLocalizations.of(context)!.noRequestsFound),
+                  );
                 }
                 // ✅ AUTO SCROLL TO LAST ITEM
                 WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -196,8 +199,8 @@ class _RequestPeopleDetailsState extends ConsumerState<RequestPeopleDetails> {
                     child: TextField(
                       keyboardType: TextInputType.number,
                       controller: _pointsController,
-                      decoration: const InputDecoration(
-                        hintText: "Enter points",
+                      decoration: InputDecoration(
+                        hintText: AppLocalizations.of(context)!.enterPointsValue,
                         border: InputBorder.none,
                       ),
                     ),
@@ -221,8 +224,8 @@ class _RequestPeopleDetailsState extends ConsumerState<RequestPeopleDetails> {
                     onPressed: () {
                       _sendpointrequest();
                     },
-                    child: const Text(
-                      "Send",
+                    child: Text(
+                      AppLocalizations.of(context)!.send,
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: 16,

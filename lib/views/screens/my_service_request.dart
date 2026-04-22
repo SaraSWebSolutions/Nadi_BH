@@ -17,6 +17,7 @@ import 'package:nadi_user_app/widgets/my_service_card.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:nadi_user_app/widgets/no_internet_widget.dart';
 
+
 class MyServiceRequest extends ConsumerStatefulWidget {
   const MyServiceRequest({super.key});
 
@@ -124,7 +125,7 @@ class _MyServiceRequestState extends ConsumerState<MyServiceRequest> {
                           color: AppColors.app_background_clr
                         ),
                       ),
-                      const Text(""),
+                      const SizedBox(width: 1),
                     ],
                   ),
                 ),
@@ -183,7 +184,7 @@ class _MyServiceRequestState extends ConsumerState<MyServiceRequest> {
                                     child: ServiceRequestCard(
                                       title: service["serviceRequestID"] ?? "",
                                       date: formatDate(
-                                        service["createdAt"] ?? "",
+                                        service["createdAt"] ?? ""
                                       ),
                                       description: service["feedback"] ?? "",
                                       serviceStatus:

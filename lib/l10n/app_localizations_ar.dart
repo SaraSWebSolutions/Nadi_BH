@@ -840,4 +840,277 @@ class AppLocalizationsAr extends AppLocalizations {
   String memberRemoved(Object name) {
     return 'تمت إزالة $name من العائلة';
   }
+
+  @override
+  String get feedbackSubmittedSuccessfully => 'تم إرسال الملاحظات بنجاح';
+
+  @override
+  String get failedToSubmitFeedback => 'فشل إرسال الملاحظات';
+
+  @override
+  String get writeYourFeedback => 'اكتب ملاحظاتك...';
+
+  @override
+  String get somethingWentWrongTryAgain =>
+      'حدث خطأ ما. يرجى المحاولة مرة أخرى.';
+
+  @override
+  String get unexpectedErrorOccurred => 'حدث خطأ غير متوقع';
+
+  @override
+  String get chat => 'الدردشة';
+
+  @override
+  String get couldNotLoadChat => 'تعذر تحميل الدردشة';
+
+  @override
+  String get checkConnectionTryAgain =>
+      'يرجى التحقق من الاتصال والمحاولة مرة أخرى.';
+
+  @override
+  String get writeMessage => 'اكتب رسالة...';
+
+  @override
+  String get block => 'بلوك';
+
+  @override
+  String get thisMember => 'هذا العضو';
+
+  @override
+  String get saveChangesTitle => 'حفظ التغييرات؟';
+
+  @override
+  String get saveChangesMessage =>
+      'هل أنت متأكد أنك تريد حفظ التغييرات على ملفك الشخصي؟';
+
+  @override
+  String get selectFamilyMember => 'اختر فرد العائلة';
+
+  @override
+  String get noFamilyMembersFound => 'لم يتم العثور على أفراد عائلة';
+
+  @override
+  String get chooseMember => 'اختر عضوًا';
+
+  @override
+  String get pleaseSelectFamilyMember => 'يرجى اختيار فرد من العائلة';
+
+  @override
+  String get pleaseAnswerBeforeNext =>
+      'يرجى الإجابة قبل الانتقال للسؤال التالي';
+
+  @override
+  String get qaConversation => 'محادثة الأسئلة والأجوبة';
+
+  @override
+  String get noAdminQuestions => 'لا توجد أسئلة من الإدارة';
+
+  @override
+  String get noQuestionsAvailable => 'لا توجد أسئلة متاحة';
+
+  @override
+  String questionProgress(Object current, Object total) {
+    return 'السؤال $current من $total';
+  }
+
+  @override
+  String get enterYourAnswer => 'أدخل إجابتك';
+
+  @override
+  String get previous => 'السابق';
+
+  @override
+  String get next => 'التالي';
+
+  @override
+  String get success => 'تم بنجاح!';
+
+  @override
+  String pointsEarnedLabel(Object points) {
+    return '+ $points نقطة مكتسبة';
+  }
+
+  @override
+  String totalPointsLabel(Object total) {
+    return 'إجمالي النقاط: $total';
+  }
+
+  @override
+  String get done => 'تم';
+
+  @override
+  String get completedExclamation => 'اكتمل!';
+
+  @override
+  String get discardSignUpTitle => 'إلغاء التسجيل؟';
+
+  @override
+  String get discardSignUpMessage =>
+      'هل أنت متأكد أنك تريد المغادرة؟ ستفقد جميع المعلومات التي أدخلتها.';
+
+  @override
+  String get discard => 'إلغاء';
+
+  @override
+  String get member => 'عضو';
+
+  @override
+  String get account => 'الحساب';
+
+  @override
+  String accountTypeStepperTitle(Object accountType) {
+    return 'حساب $accountType';
+  }
+
+  @override
+  String get memberAddedSuccessfully => 'تمت إضافة العضو بنجاح';
+
+  @override
+  String get connectionTimeoutTryAgain =>
+      'انتهت مهلة الاتصال. يرجى التحقق من الإنترنت والمحاولة مرة أخرى.';
+
+  @override
+  String get noInternetTryAgain =>
+      'لا يوجد اتصال بالإنترنت. يرجى المحاولة مرة أخرى.';
+
+  @override
+  String get sessionEnded => 'انتهت الجلسة';
+
+  @override
+  String get sessionEndedMessage => 'انتهت جلستك. يرجى تسجيل الدخول مرة أخرى.';
+
+  @override
+  String get accountDisabledSupportMessage =>
+      'تم تعطيل حسابك. يرجى التواصل مع فريق الدعم للمساعدة.';
+
+  @override
+  String get accountRejectedSupportMessage =>
+      'تم رفض حسابك. يرجى التواصل مع فريق الدعم للمساعدة.';
+
+  @override
+  String get noContent => 'لا يوجد محتوى';
+
+  @override
+  String get noContentAvailable => 'لا يوجد محتوى متاح';
+
+  @override
+  String versionLabel(Object version) {
+    return 'الإصدار $version';
+  }
+
+  @override
+  String get noChatsFound => 'لا توجد محادثات';
+
+  @override
+  String get chats => 'المحادثات';
+
+  @override
+  String get searchMessage => 'ابحث في الرسائل...';
+
+  @override
+  String get resetEmailSentCheckInbox =>
+      'تم إرسال رسالة إعادة التعيين! يرجى التحقق من بريدك الوارد.';
+
+  @override
+  String get passwordResetSuccessful =>
+      'تمت إعادة تعيين كلمة المرور بنجاح! يرجى تسجيل الدخول.';
+
+  @override
+  String get resetPasswordTitle => 'إعادة تعيين كلمة المرور';
+
+  @override
+  String get resetPasswordInstructions =>
+      'افتح رسالة إعادة التعيين التي وصلتك، ثم انسخ الرمز الموجود في نهاية الرابط والصقه أدناه.';
+
+  @override
+  String get resetTokenFromEmail => 'رمز إعادة التعيين (من البريد الإلكتروني)';
+
+  @override
+  String get enterResetTokenFromEmail =>
+      'يرجى إدخال رمز إعادة التعيين من البريد الإلكتروني';
+
+  @override
+  String get newPassword => 'كلمة المرور الجديدة';
+
+  @override
+  String get confirmPasswordLabel => 'تأكيد كلمة المرور';
+
+  @override
+  String get back => 'رجوع';
+
+  @override
+  String get photo => 'صورة';
+
+  @override
+  String get takePhoto => 'التقاط صورة';
+
+  @override
+  String get uploadGallery => 'رفع من المعرض';
+
+  @override
+  String get englishShort => 'Eng';
+
+  @override
+  String get arabicShort => 'عربي';
+
+  @override
+  String get recording => 'جارٍ التسجيل...';
+
+  @override
+  String get recordVoice => 'تسجيل صوت';
+
+  @override
+  String get recordedVoice => 'الصوت المسجل';
+
+  @override
+  String get noServiceRequestIdFound => 'لم يتم العثور على رقم طلب الخدمة';
+
+  @override
+  String get noRequestsFound => 'لا توجد طلبات';
+
+  @override
+  String get enterPointsValue => 'أدخل النقاط';
+
+  @override
+  String get send => 'إرسال';
+
+  @override
+  String get noRecentActivity => 'لا يوجد نشاط حديث';
+
+  @override
+  String get errorLabel => 'خطأ';
+
+  @override
+  String get notAvailable => 'غير متوفر';
+
+  @override
+  String get spouse => 'الزوج/الزوجة';
+
+  @override
+  String get pleaseSelectOption => 'يرجى اختيار أحد الخيارات';
+
+  @override
+  String get pleaseEnterYourAnswer => 'يرجى إدخال إجابتك';
+
+  @override
+  String get individual => 'فردي';
+
+  @override
+  String get firstName => 'الاسم الأول';
+
+  @override
+  String get secondName => 'الاسم الثاني';
+
+  @override
+  String get thirdName => 'الاسم الثالث';
+
+  @override
+  String get fourthName => 'اسم العائلة';
+
+  @override
+  String get requiredField => 'مطلوب';
+
+  @override
+  String get failedToAddMemberTryAgain =>
+      'فشل إضافة العضو. يرجى المحاولة مرة أخرى.';
 }

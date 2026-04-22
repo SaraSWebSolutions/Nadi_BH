@@ -172,10 +172,14 @@ final isArabic = locale.languageCode == 'ar';
             flex: 4,
             child: aboutAsync.when(
               loading: () => const Center(child: CircularProgressIndicator()),
-              error: (err, _) => Center(child: Text("Error: $err")),
+              error: (err, _) => Center(
+                child: Text("${AppLocalizations.of(context)!.errorLabel}: $err"),
+              ),
               data: (textPages) {
                 if (textPages.isEmpty) {
-                  return const Center(child: Text("No content"));
+                  return Center(
+                    child: Text(AppLocalizations.of(context)!.noContent),
+                  );
                 }
                 return Column(
                   children: [

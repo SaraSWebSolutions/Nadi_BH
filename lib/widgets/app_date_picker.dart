@@ -27,7 +27,7 @@ class AppDatePicker extends StatelessWidget {
     );
 
     if (pickedDate != null) {
-      controller.text = DateFormat("dd/MM/yyyy").format(pickedDate);
+      controller.text = DateFormat("dd/MM/yyyy", "en_US").format(pickedDate);
 
       if (onDateSelected != null) {
         onDateSelected!(pickedDate);

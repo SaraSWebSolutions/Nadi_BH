@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:nadi_user_app/core/constants/app_consts.dart';
+import 'package:nadi_user_app/l10n/app_localizations.dart';
 
 class IdCardSection extends StatelessWidget {
   final String title;
@@ -59,7 +60,7 @@ class IdCardSection extends StatelessWidget {
                           width: 70,
                           height: 80,
                           child: previewImage == null
-                              ? const Center(child: Text("Photo"))
+                              ? Center(child: Text(AppLocalizations.of(context)!.photo))
                               : ClipRRect(
                                   borderRadius: BorderRadius.circular(6),
                                   child: Image.file(
@@ -113,7 +114,7 @@ class IdCardSection extends StatelessWidget {
                 padding: const EdgeInsets.symmetric(vertical: 12),
               ),
               child:  Text(
-                "Take Photo",
+                AppLocalizations.of(context)!.takePhoto,
                 style: TextStyle(color: Theme.of(context).textTheme.bodyMedium?.color),
               ),
             ),
@@ -136,8 +137,8 @@ class IdCardSection extends StatelessWidget {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  const Text(
-                    "Upload Gallery",
+                  Text(
+                    AppLocalizations.of(context)!.uploadGallery,
                     style: TextStyle(
                       color: Colors.white,
                       fontSize: 16,

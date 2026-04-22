@@ -34,14 +34,19 @@ Future<Map<String,dynamic>> submitquestiondatas({
     required Map<String, dynamic> payload,
 }) async{
   try{
+       print("➡️ API CALL: questionnaire/submit");
+      print("📦 PAYLOAD: $payload");
      final response = await _dio.post(
       "questionnaire/submit",
       data: payload
       );
+        print("✅ RESPONSE (submit): ${response.data}");
       return response.data;
   }on DioException catch(e){
-    final err = e.response?.data['message'];
-    throw err;
+      print("❌ ERROR (submit): ${e.response?.data}");
+      final err = e.response?.data['message'];
+      throw err ?? "Submission failed";
+   
   }
 }
 

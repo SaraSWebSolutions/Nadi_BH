@@ -41,8 +41,8 @@ class _UploadIdViewState extends State<UploadIdView> {
   Future<void> UploadIDproof(BuildContext context) async {
     if (frontImage == null || backImage == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text("Please upload both front and back images"),
+        SnackBar(
+          content: Text(AppLocalizations.of(context)!.uploadIdError),
           backgroundColor: Colors.red,
         ),
       );

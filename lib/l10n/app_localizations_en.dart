@@ -851,4 +851,276 @@ class AppLocalizationsEn extends AppLocalizations {
   String memberRemoved(Object name) {
     return '$name removed from family';
   }
+
+  @override
+  String get feedbackSubmittedSuccessfully => 'Feedback submitted successfully';
+
+  @override
+  String get failedToSubmitFeedback => 'Failed to submit feedback';
+
+  @override
+  String get writeYourFeedback => 'Write your feedback...';
+
+  @override
+  String get somethingWentWrongTryAgain =>
+      'Something went wrong. Please try again.';
+
+  @override
+  String get unexpectedErrorOccurred => 'Unexpected error occurred';
+
+  @override
+  String get chat => 'Chat';
+
+  @override
+  String get couldNotLoadChat => 'Could not load chat';
+
+  @override
+  String get checkConnectionTryAgain =>
+      'Please check your connection and try again.';
+
+  @override
+  String get writeMessage => 'Write a message...';
+
+  @override
+  String get block => 'Block';
+
+  @override
+  String get thisMember => 'this member';
+
+  @override
+  String get saveChangesTitle => 'Save changes?';
+
+  @override
+  String get saveChangesMessage =>
+      'Are you sure you want to save the changes to your profile?';
+
+  @override
+  String get selectFamilyMember => 'Select Family Member';
+
+  @override
+  String get noFamilyMembersFound => 'No family members found';
+
+  @override
+  String get chooseMember => 'Choose a member';
+
+  @override
+  String get pleaseSelectFamilyMember => 'Please select a family member';
+
+  @override
+  String get pleaseAnswerBeforeNext => 'Please answer before moving next';
+
+  @override
+  String get qaConversation => 'Q & A Conversation';
+
+  @override
+  String get noAdminQuestions => 'No admin questions';
+
+  @override
+  String get noQuestionsAvailable => 'No questions available';
+
+  @override
+  String questionProgress(Object current, Object total) {
+    return 'Question $current of $total';
+  }
+
+  @override
+  String get enterYourAnswer => 'Enter your answer';
+
+  @override
+  String get previous => 'Previous';
+
+  @override
+  String get next => 'Next';
+
+  @override
+  String get success => 'Success!';
+
+  @override
+  String pointsEarnedLabel(Object points) {
+    return '+ $points Points Earned';
+  }
+
+  @override
+  String totalPointsLabel(Object total) {
+    return 'Total Points: $total';
+  }
+
+  @override
+  String get done => 'Done';
+
+  @override
+  String get completedExclamation => 'Completed!';
+
+  @override
+  String get discardSignUpTitle => 'Discard Sign Up?';
+
+  @override
+  String get discardSignUpMessage =>
+      'Are you sure you want to leave? Any information you\'ve entered will be lost.';
+
+  @override
+  String get discard => 'Discard';
+
+  @override
+  String get member => 'Member';
+
+  @override
+  String get account => 'Account';
+
+  @override
+  String accountTypeStepperTitle(Object accountType) {
+    return '$accountType Account';
+  }
+
+  @override
+  String get memberAddedSuccessfully => 'Member added successfully';
+
+  @override
+  String get connectionTimeoutTryAgain =>
+      'Connection timeout. Please check your internet and try again.';
+
+  @override
+  String get noInternetTryAgain => 'No internet connection. Please try again.';
+
+  @override
+  String get sessionEnded => 'Session Ended';
+
+  @override
+  String get sessionEndedMessage =>
+      'Your session has ended. Please sign in again.';
+
+  @override
+  String get accountDisabledSupportMessage =>
+      'Your account has been disabled. Please contact our support team for assistance.';
+
+  @override
+  String get accountRejectedSupportMessage =>
+      'Your account has been rejected. Please contact our support team for assistance.';
+
+  @override
+  String get noContent => 'No content';
+
+  @override
+  String get noContentAvailable => 'No content available';
+
+  @override
+  String versionLabel(Object version) {
+    return 'Version $version';
+  }
+
+  @override
+  String get noChatsFound => 'No chats found';
+
+  @override
+  String get chats => 'Chats';
+
+  @override
+  String get searchMessage => 'Search Message...';
+
+  @override
+  String get resetEmailSentCheckInbox =>
+      'Reset email sent! Please check your inbox.';
+
+  @override
+  String get passwordResetSuccessful =>
+      'Password reset successful! Please log in.';
+
+  @override
+  String get resetPasswordTitle => 'Reset Password';
+
+  @override
+  String get resetPasswordInstructions =>
+      'Open the reset email you received, copy the token at the end of the link, and paste it below.';
+
+  @override
+  String get resetTokenFromEmail => 'Reset Token (from email)';
+
+  @override
+  String get enterResetTokenFromEmail =>
+      'Please enter the reset token from email';
+
+  @override
+  String get newPassword => 'New Password';
+
+  @override
+  String get confirmPasswordLabel => 'Confirm Password';
+
+  @override
+  String get back => 'Back';
+
+  @override
+  String get photo => 'Photo';
+
+  @override
+  String get takePhoto => 'Take Photo';
+
+  @override
+  String get uploadGallery => 'Upload Gallery';
+
+  @override
+  String get englishShort => 'Eng';
+
+  @override
+  String get arabicShort => 'عربي';
+
+  @override
+  String get recording => 'Recording...';
+
+  @override
+  String get recordVoice => 'Record Voice';
+
+  @override
+  String get recordedVoice => 'Recorded Voice';
+
+  @override
+  String get noServiceRequestIdFound => 'No Service Request ID found';
+
+  @override
+  String get noRequestsFound => 'No requests found';
+
+  @override
+  String get enterPointsValue => 'Enter points';
+
+  @override
+  String get send => 'Send';
+
+  @override
+  String get noRecentActivity => 'No recent activity';
+
+  @override
+  String get errorLabel => 'Error';
+
+  @override
+  String get notAvailable => 'N/A';
+
+  @override
+  String get spouse => 'Spouse';
+
+  @override
+  String get pleaseSelectOption => 'Please select an option';
+
+  @override
+  String get pleaseEnterYourAnswer => 'Please enter your answer';
+
+  @override
+  String get individual => 'Individual';
+
+  @override
+  String get firstName => 'First Name';
+
+  @override
+  String get secondName => 'Second Name';
+
+  @override
+  String get thirdName => 'Third Name';
+
+  @override
+  String get fourthName => 'Fourth Name';
+
+  @override
+  String get requiredField => 'Required';
+
+  @override
+  String get failedToAddMemberTryAgain =>
+      'Failed to add member. Please try again.';
 }
