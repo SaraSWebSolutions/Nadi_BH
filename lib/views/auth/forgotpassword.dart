@@ -36,9 +36,7 @@ class _ForgotpasswordState extends State<Forgotpassword> {
         final loc = AppLocalizations.of(context)!;
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(
-              response['message'] ?? loc.resetEmailSentCheckInbox,
-            ),
+            content: Text(response['message'] ?? loc.resetEmailSentCheckInbox),
             backgroundColor: AppColors.btn_primery,
             duration: const Duration(seconds: 4),
           ),
@@ -64,135 +62,138 @@ class _ForgotpasswordState extends State<Forgotpassword> {
     final isLandscape = size.width > size.height;
     final isRTL = Directionality.of(context) == TextDirection.rtl;
     final loc = AppLocalizations.of(context)!;
+    final isIOS = Theme.of(context).platform == TargetPlatform.iOS;
 
-return Scaffold(
-  body: Stack(
-    children: [
+    return Scaffold(
+      body: Stack(
+        children: [
+          /// BACKGROUND
+          Positioned.fill(
+            child: Image.asset(
+              "assets/images/onboarding/1774802367130_PAGE-No3.png",
+              fit: BoxFit.cover,
+            ),
+          ),
 
-      /// BACKGROUND
-      Positioned.fill(
-        child: Image.asset(
-          "assets/images/onboarding/1774802367130_PAGE-No3.png",
-          fit: BoxFit.cover,
-        ),
-      ),
+          /// CONTENT (NO Positioned.fill)
+          SafeArea(
+            child: SingleChildScrollView(
+              physics: const ClampingScrollPhysics(),
+              keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+              child: ConstrainedBox(
+                constraints: BoxConstraints(
+                  minHeight:
+                      MediaQuery.of(context).size.height -
+                      MediaQuery.of(context).padding.top,
+                ),
+                child: IntrinsicHeight(
+                  child: Column(
+                    children: [
+                      SizedBox(
+                        height: isIOS ? size.height * 0.36 : size.height * 0.40,
+                      ),
 
-      /// CONTENT (NO Positioned.fill)
-      SafeArea(
-       child: SingleChildScrollView(
-                physics: const ClampingScrollPhysics(),
-                keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
-                child: ConstrainedBox(
-                  constraints: BoxConstraints(
-                    minHeight: MediaQuery.of(context).size.height -
-                        MediaQuery.of(context).padding.top,
-                  ),
-                  child: IntrinsicHeight(
-                    child: Column(
-                      children: [
-                        SizedBox(height: size.height * 0.40),
-                        
-                        /// WHITE CONTAINER
-                        Expanded(
-                          child: Container(
-                            width: double.infinity,
-                            padding: const EdgeInsets.all(20),
-                            decoration: BoxDecoration(
-                              color: Theme.of(context).scaffoldBackgroundColor,
-                              borderRadius: const BorderRadius.only(
-                                topLeft: Radius.circular(30),
-                                topRight: Radius.circular(30),
-                              ),
+                      /// WHITE CONTAINER
+                      Expanded(
+                        child: Container(
+                          width: double.infinity,
+                          padding: const EdgeInsets.all(20),
+                          decoration: BoxDecoration(
+                            color: Theme.of(context).scaffoldBackgroundColor,
+                            borderRadius: const BorderRadius.only(
+                              topLeft: Radius.circular(30),
+                              topRight: Radius.circular(30),
                             ),
-                            child: Form(
-                              key: _formKey,
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  const SizedBox(height: 20),
-        
-                                  Text(
-                                    AppLocalizations.of(context)!.changePassword,
-                                    style: const TextStyle(
-                                      fontSize: 20,
-                                      fontWeight: FontWeight.bold,
-                                    ),
+                          ),
+                          child: Form(
+                            key: _formKey,
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                const SizedBox(height: 20),
+
+                                Text(
+                                  AppLocalizations.of(context)!.changePassword,
+                                  style: const TextStyle(
+                                    fontSize: 20,
+                                    fontWeight: FontWeight.bold,
                                   ),
-        
-                                  const SizedBox(height: 15),
-        
-                                  AppTextField(
-                                    label: loc.enterEmail,
-                                    keyboardType: TextInputType.emailAddress,
-                                    controller: _emailCtrl,
-                                    validator: (v) {
-                                      if (v == null || v.trim().isEmpty) {
-                                        return loc.emailRequired;
-                                      }
-                                      if (!RegExp(r'^[\w.-]+@[\w.-]+\.\w+$').hasMatch(v.trim())) {
-                                        return loc.emailInvalid;
-                                      }
-                                      return null;
-                                    },
-                                  ),
-        
-                                  const SizedBox(height: 30),
-        
-                                  AppButton(
-                                    height: 48,
-                                    width: double.infinity,
-                                    color: AppColors.btn_primery,
-                                    text: loc.sendEmail,
-                                    isLoading: _isLoading,
-                                    onPressed: () {
-                                      if (_formKey.currentState!.validate()) {
-                                        emailVerify();
-                                      }
-                                    },
-                                  ),
-                                  
-                                  const SizedBox(height: 40),
-                                ],
-                              ),
+                                ),
+
+                                const SizedBox(height: 15),
+
+                                AppTextField(
+                                  label: loc.enterEmail,
+                                  keyboardType: TextInputType.emailAddress,
+                                  controller: _emailCtrl,
+                                  validator: (v) {
+                                    if (v == null || v.trim().isEmpty) {
+                                      return loc.emailRequired;
+                                    }
+                                    if (!RegExp(
+                                      r'^[\w.-]+@[\w.-]+\.\w+$',
+                                    ).hasMatch(v.trim())) {
+                                      return loc.emailInvalid;
+                                    }
+                                    return null;
+                                  },
+                                ),
+
+                                const SizedBox(height: 30),
+
+                                AppButton(
+                                  height: 48,
+                                  width: double.infinity,
+                                  color: AppColors.btn_primery,
+                                  text: loc.sendEmail,
+                                  isLoading: _isLoading,
+                                  onPressed: () {
+                                    if (_formKey.currentState!.validate()) {
+                                      emailVerify();
+                                    }
+                                  },
+                                ),
+
+                                const SizedBox(height: 40),
+                              ],
                             ),
                           ),
                         ),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
                 ),
               ),
-      ),
+            ),
+          ),
 
-      /// BACK BUTTON (ABSOLUTE TOP LAYER)
-      SafeArea(
-        child: Align(
-          alignment: Alignment.topLeft,
-          child: GestureDetector(
-            onTap: () {
-              print("BACK CLICKED");
-              GoRouter.of(context).go('/login');
-            },
-            child: Container(
-              margin: const EdgeInsets.all(12),
-              height: 42,
-              width: 42,
-              decoration: BoxDecoration(
-                color: Colors.black.withOpacity(0.4),
-                shape: BoxShape.circle,
-              ),
-              child: Icon(
-                 isRTL ? Icons.arrow_forward : Icons.arrow_back,
-                color: Colors.white,
+          /// BACK BUTTON (ABSOLUTE TOP LAYER)
+          SafeArea(
+            child: Align(
+              alignment: Alignment.topLeft,
+              child: GestureDetector(
+                onTap: () {
+                  print("BACK CLICKED");
+                  GoRouter.of(context).go('/login');
+                },
+                child: Container(
+                  margin: const EdgeInsets.all(12),
+                  height: 42,
+                  width: 42,
+                  decoration: BoxDecoration(
+                    color: Colors.black.withOpacity(0.4),
+                    shape: BoxShape.circle,
+                  ),
+                  child: Icon(
+                    isRTL ? Icons.arrow_forward : Icons.arrow_back,
+                    color: Colors.white,
+                  ),
+                ),
               ),
             ),
           ),
-        ),
+        ],
       ),
-
-    ],
-  ),
-);
-   
+    );
   }
 }

@@ -307,6 +307,7 @@ import 'package:nadi_user_app/routing/app_router.dart';
 import 'package:nadi_user_app/services/auth_service.dart';
 import 'package:nadi_user_app/widgets/buttons/primary_button.dart';
 import 'package:nadi_user_app/views/languagetoggle.dart';
+
 class LoginView extends StatefulWidget {
   const LoginView({super.key});
 
@@ -320,7 +321,7 @@ class _LoginViewState extends State<LoginView> {
 
   bool isChecked = false;
   bool _obscure = true;
-bool _isLoading = false;
+  bool _isLoading = false;
 
   String? emailError;
   String? passwordError;
@@ -343,25 +344,27 @@ bool _isLoading = false;
       });
     }
   }
+
   Future<void> login(BuildContext context) async {
-      if (_isLoading) return; // prevent multiple clicks
+    if (_isLoading) return; // prevent multiple clicks
 
     final email = controller.email.text.trim();
     final password = controller.password.text.trim();
 
     // Client-side validation before hitting the API
     setState(() {
-  emailError = email.isEmpty
-      ? AppLocalizations.of(context)!.emailRequired
-      : null;
+      emailError = email.isEmpty
+          ? AppLocalizations.of(context)!.emailRequired
+          : null;
 
-  passwordError = password.isEmpty
-      ? AppLocalizations.of(context)!.passwordRequired
-      : null;
-});;
+      passwordError = password.isEmpty
+          ? AppLocalizations.of(context)!.passwordRequired
+          : null;
+    });
+    ;
 
     if (emailError != null || passwordError != null) return;
-  setState(() => _isLoading = true); // 🔥 START LOADER
+    setState(() => _isLoading = true); // 🔥 START LOADER
 
     final loginData = controller.getLoginData();
     final fcmToken = await AppPreferences.getfcmToken();
@@ -413,9 +416,9 @@ bool _isLoading = false;
       setState(() {
         passwordError = "Something went wrong";
       });
-    }finally {
-    if (mounted) setState(() => _isLoading = false); // 🔥 STOP LOADER
-  }
+    } finally {
+      if (mounted) setState(() => _isLoading = false); // 🔥 STOP LOADER
+    }
   }
 
   void _showAccountDisabledDialog() {
@@ -437,8 +440,7 @@ bool _isLoading = false;
             const SizedBox(width: 12),
             Expanded(
               child: Text(
-               AppLocalizations.of(context)!.accountDisabled
-,
+                AppLocalizations.of(context)!.accountDisabled,
                 style: const TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
@@ -451,8 +453,8 @@ bool _isLoading = false;
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-             Text(
-                AppLocalizations.of(context)!.accountDisabledMsg,
+            Text(
+              AppLocalizations.of(context)!.accountDisabledMsg,
 
               style: TextStyle(fontSize: 14, height: 1.5),
             ),
@@ -467,7 +469,11 @@ bool _isLoading = false;
                 children: [
                   Row(
                     children: [
-                      Icon(Icons.phone, color: AppColors.app_background_clr, size: 20),
+                      Icon(
+                        Icons.phone,
+                        color: AppColors.app_background_clr,
+                        size: 20,
+                      ),
                       const SizedBox(width: 10),
                       const Expanded(
                         child: Text(
@@ -483,7 +489,11 @@ bool _isLoading = false;
                   const SizedBox(height: 10),
                   Row(
                     children: [
-                      Icon(Icons.email_outlined, color: AppColors.app_background_clr, size: 20),
+                      Icon(
+                        Icons.email_outlined,
+                        color: AppColors.app_background_clr,
+                        size: 20,
+                      ),
                       const SizedBox(width: 10),
                       const Expanded(
                         child: Text(
@@ -514,7 +524,10 @@ bool _isLoading = false;
                 padding: const EdgeInsets.symmetric(vertical: 12),
               ),
               onPressed: () => Navigator.of(ctx).pop(),
-              child:  Text(AppLocalizations.of(context)!.ok, style: TextStyle(fontWeight: FontWeight.w600)),
+              child: Text(
+                AppLocalizations.of(context)!.ok,
+                style: TextStyle(fontWeight: FontWeight.w600),
+              ),
             ),
           ),
         ],
@@ -543,14 +556,11 @@ bool _isLoading = false;
               ),
             ),
             const SizedBox(width: 12),
-             Expanded(
+            Expanded(
               child: Text(
                 AppLocalizations.of(context)!.accountRejected,
 
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                ),
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               ),
             ),
           ],
@@ -559,7 +569,7 @@ bool _isLoading = false;
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-             Text(
+            Text(
               AppLocalizations.of(context)!.accountRejectedMsg,
               style: TextStyle(fontSize: 14, height: 1.5),
             ),
@@ -574,7 +584,11 @@ bool _isLoading = false;
                 children: [
                   Row(
                     children: [
-                      Icon(Icons.phone, color: AppColors.app_background_clr, size: 20),
+                      Icon(
+                        Icons.phone,
+                        color: AppColors.app_background_clr,
+                        size: 20,
+                      ),
                       const SizedBox(width: 10),
                       const Expanded(
                         child: Text(
@@ -590,7 +604,11 @@ bool _isLoading = false;
                   const SizedBox(height: 10),
                   Row(
                     children: [
-                      Icon(Icons.email_outlined, color: AppColors.app_background_clr, size: 20),
+                      Icon(
+                        Icons.email_outlined,
+                        color: AppColors.app_background_clr,
+                        size: 20,
+                      ),
                       const SizedBox(width: 10),
                       const Expanded(
                         child: Text(
@@ -621,7 +639,10 @@ bool _isLoading = false;
                 padding: const EdgeInsets.symmetric(vertical: 12),
               ),
               onPressed: () => Navigator.of(ctx).pop(),
-              child:  Text(AppLocalizations.of(context)!.ok, style: TextStyle(fontWeight: FontWeight.w600)),
+              child: Text(
+                AppLocalizations.of(context)!.ok,
+                style: TextStyle(fontWeight: FontWeight.w600),
+              ),
             ),
           ),
         ],
@@ -632,6 +653,7 @@ bool _isLoading = false;
   @override
   Widget build(BuildContext context) {
     final screenHeight = MediaQuery.of(context).size.height;
+    final isIOS = Theme.of(context).platform == TargetPlatform.iOS;
 
     return Scaffold(
       // true = Scaffold body shrinks when keyboard opens; scroll view viewport shrinks too,
@@ -647,7 +669,6 @@ bool _isLoading = false;
               alignment: Alignment.topCenter,
             ),
           ),
-
 
           /// LAYER 2 — scrollable form content
           /// Positioned.fill gives SafeArea a TIGHT height = Stack height (= screen - keyboard).
@@ -665,14 +686,19 @@ bool _isLoading = false;
                   // (scroll range = 0, so no dragging). When keyboard opens the viewport
                   // shrinks but minHeight stays → content overflows viewport → scrollable.
                   constraints: BoxConstraints(
-                    minHeight: MediaQuery.of(context).size.height -
+                    minHeight:
+                        MediaQuery.of(context).size.height -
                         MediaQuery.of(context).padding.top -
                         MediaQuery.of(context).padding.bottom,
                   ),
                   child: IntrinsicHeight(
                     child: Column(
                       children: [
-                        SizedBox(height: screenHeight * 0.40),
+                        SizedBox(
+                          height: isIOS
+                              ? screenHeight * 0.36
+                              : screenHeight * 0.40,
+                        ),
                         // Expanded pushes form to bottom (works with IntrinsicHeight)
                         // const Expanded(child: SizedBox()),
 
@@ -710,41 +736,53 @@ bool _isLoading = false;
                                 TextFormField(
                                   controller: controller.email,
                                   keyboardType: TextInputType.emailAddress,
-                                 decoration: InputDecoration(
-  labelText: AppLocalizations.of(context)!.enterEmail,
+                                  decoration: InputDecoration(
+                                    labelText: AppLocalizations.of(
+                                      context,
+                                    )!.enterEmail,
 
-  filled: true,
-  fillColor: Theme.of(context).colorScheme.surface,
+                                    filled: true,
+                                    fillColor: Theme.of(
+                                      context,
+                                    ).colorScheme.surface,
 
-  labelStyle: TextStyle(
-    color: Theme.of(context).colorScheme.onSurfaceVariant,
-  ),
+                                    labelStyle: TextStyle(
+                                      color: Theme.of(
+                                        context,
+                                      ).colorScheme.onSurfaceVariant,
+                                    ),
 
-  floatingLabelStyle: TextStyle(
-    color: Theme.of(context).colorScheme.primary,
-  ),
+                                    floatingLabelStyle: TextStyle(
+                                      color: Theme.of(
+                                        context,
+                                      ).colorScheme.primary,
+                                    ),
 
-  errorText: emailError,
+                                    errorText: emailError,
 
-  border: OutlineInputBorder(
-    borderRadius: BorderRadius.circular(12),
-  ),
+                                    border: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(12),
+                                    ),
 
-  enabledBorder: OutlineInputBorder(
-    borderRadius: BorderRadius.circular(12),
-    borderSide: BorderSide(
-      color: Theme.of(context).colorScheme.outline,
-    ),
-  ),
+                                    enabledBorder: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(12),
+                                      borderSide: BorderSide(
+                                        color: Theme.of(
+                                          context,
+                                        ).colorScheme.outline,
+                                      ),
+                                    ),
 
-  focusedBorder: OutlineInputBorder(
-    borderRadius: BorderRadius.circular(12),
-    borderSide: BorderSide(
-      color: Theme.of(context).colorScheme.primary,
-      width: 1.5,
-    ),
-  ),
-),
+                                    focusedBorder: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(12),
+                                      borderSide: BorderSide(
+                                        color: Theme.of(
+                                          context,
+                                        ).colorScheme.primary,
+                                        width: 1.5,
+                                      ),
+                                    ),
+                                  ),
                                 ),
 
                                 const SizedBox(height: 15),
@@ -753,57 +791,73 @@ bool _isLoading = false;
                                 TextFormField(
                                   controller: controller.password,
                                   obscureText: _obscure,
-                                 decoration: InputDecoration(
-  labelText: AppLocalizations.of(context)!.password,
+                                  decoration: InputDecoration(
+                                    labelText: AppLocalizations.of(
+                                      context,
+                                    )!.password,
 
-  filled: true,
-  fillColor: Theme.of(context).colorScheme.surface,
+                                    filled: true,
+                                    fillColor: Theme.of(
+                                      context,
+                                    ).colorScheme.surface,
 
-  labelStyle: TextStyle(
-    color: Theme.of(context).colorScheme.onSurfaceVariant,
-  ),
+                                    labelStyle: TextStyle(
+                                      color: Theme.of(
+                                        context,
+                                      ).colorScheme.onSurfaceVariant,
+                                    ),
 
-  floatingLabelStyle: TextStyle(
-    color: Theme.of(context).colorScheme.primary,
-    fontWeight: FontWeight.w600,
-  ),
+                                    floatingLabelStyle: TextStyle(
+                                      color: Theme.of(
+                                        context,
+                                      ).colorScheme.primary,
+                                      fontWeight: FontWeight.w600,
+                                    ),
 
-  errorText: passwordError,
+                                    errorText: passwordError,
 
-  border: OutlineInputBorder(
-    borderRadius: BorderRadius.circular(12),
-    borderSide: BorderSide(
-      color: Theme.of(context).colorScheme.outline,
-    ),
-  ),
+                                    border: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(12),
+                                      borderSide: BorderSide(
+                                        color: Theme.of(
+                                          context,
+                                        ).colorScheme.outline,
+                                      ),
+                                    ),
 
-  enabledBorder: OutlineInputBorder(
-    borderRadius: BorderRadius.circular(12),
-    borderSide: BorderSide(
-      color: Theme.of(context).colorScheme.outline,
-    ),
-  ),
+                                    enabledBorder: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(12),
+                                      borderSide: BorderSide(
+                                        color: Theme.of(
+                                          context,
+                                        ).colorScheme.outline,
+                                      ),
+                                    ),
 
-  focusedBorder: OutlineInputBorder(
-    borderRadius: BorderRadius.circular(12),
-    borderSide: BorderSide(
-      color: Theme.of(context).colorScheme.primary,
-      width: 1.5,
-    ),
-  ),
+                                    focusedBorder: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(12),
+                                      borderSide: BorderSide(
+                                        color: Theme.of(
+                                          context,
+                                        ).colorScheme.primary,
+                                        width: 1.5,
+                                      ),
+                                    ),
 
-  suffixIcon: IconButton(
-    icon: Icon(
-      _obscure
-          ? Icons.visibility_off_outlined
-          : Icons.visibility_outlined,
-      color: Theme.of(context).colorScheme.onSurfaceVariant,
-    ),
-    onPressed: () {
-      setState(() => _obscure = !_obscure);
-    },
-  ),
-),
+                                    suffixIcon: IconButton(
+                                      icon: Icon(
+                                        _obscure
+                                            ? Icons.visibility_off_outlined
+                                            : Icons.visibility_outlined,
+                                        color: Theme.of(
+                                          context,
+                                        ).colorScheme.onSurfaceVariant,
+                                      ),
+                                      onPressed: () {
+                                        setState(() => _obscure = !_obscure);
+                                      },
+                                    ),
+                                  ),
                                 ),
 
                                 const SizedBox(height: 10),
@@ -822,7 +876,9 @@ bool _isLoading = false;
                                               setState(() => isChecked = v!),
                                         ),
                                         Text(
-                                          AppLocalizations.of(context)!.rememberMe,
+                                          AppLocalizations.of(
+                                            context,
+                                          )!.rememberMe,
                                         ),
                                       ],
                                     ),
@@ -831,7 +887,9 @@ bool _isLoading = false;
                                         RouteNames.forgotpassword,
                                       ),
                                       child: Text(
-                                        AppLocalizations.of(context)!.forgotPassword,
+                                        AppLocalizations.of(
+                                          context,
+                                        )!.forgotPassword,
                                         style: const TextStyle(
                                           fontWeight: FontWeight.bold,
                                           color: AppColors.app_background_clr,
@@ -848,9 +906,10 @@ bool _isLoading = false;
                                   children: [
                                     Expanded(
                                       child: AppButton(
-                                        text: AppLocalizations.of(context)!.signUp,
-                                        width: double.infinity,         
-
+                                        text: AppLocalizations.of(
+                                          context,
+                                        )!.signUp,
+                                        width: double.infinity,
 
                                         color: AppColors.button_secondary,
                                         height: 50,
@@ -861,9 +920,11 @@ bool _isLoading = false;
                                     const SizedBox(width: 10),
                                     Expanded(
                                       child: AppButton(
-                                        text: AppLocalizations.of(context)!.signIn,
+                                        text: AppLocalizations.of(
+                                          context,
+                                        )!.signIn,
                                         width: double.infinity,
-                                                                                  isLoading: _isLoading,
+                                        isLoading: _isLoading,
 
                                         color: AppColors.button_secondary,
                                         height: 50,
@@ -876,9 +937,7 @@ bool _isLoading = false;
                                 const SizedBox(height: 10),
 
                                 Center(
-                                  child: Text(
-                                    AppLocalizations.of(context)!.or,
-                                  ),
+                                  child: Text(AppLocalizations.of(context)!.or),
                                 ),
 
                                 const SizedBox(height: 10),
@@ -889,7 +948,9 @@ bool _isLoading = false;
                                   },
                                   child: Center(
                                     child: Text(
-                                      AppLocalizations.of(context)!.signInWithOtp,
+                                      AppLocalizations.of(
+                                        context,
+                                      )!.signInWithOtp,
                                       style: const TextStyle(
                                         fontWeight: FontWeight.bold,
                                         color: AppColors.app_background_clr,
@@ -906,7 +967,8 @@ bool _isLoading = false;
                                   },
                                   child: Center(
                                     child: Row(
-                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
                                       children: [
                                         Icon(
                                           Icons.help_outline_rounded,
@@ -915,11 +977,14 @@ bool _isLoading = false;
                                         ),
                                         const SizedBox(width: 6),
                                         Text(
-                                        AppLocalizations.of(context)!.helpSupport,
+                                          AppLocalizations.of(
+                                            context,
+                                          )!.helpSupport,
                                           style: TextStyle(
                                             fontWeight: FontWeight.w600,
                                             color: AppColors.app_background_clr,
-                                            decoration: TextDecoration.underline,
+                                            decoration:
+                                                TextDecoration.underline,
                                             decorationColor:
                                                 AppColors.app_background_clr,
                                           ),
@@ -940,12 +1005,12 @@ bool _isLoading = false;
                 ),
               ),
             ),
-          ), 
-             Positioned(
-      top: 50,
-      right: 20,
-      child: LanguageView(),
-    ),// closes Positioned.fill
+          ),
+          Positioned(
+            top: 50,
+            right: 20,
+            child: LanguageView(),
+          ), // closes Positioned.fill
         ],
       ),
     );

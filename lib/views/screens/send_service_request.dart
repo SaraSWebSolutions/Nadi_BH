@@ -18,11 +18,11 @@ import 'package:nadi_user_app/widgets/buttons/primary_button.dart';
 import 'package:nadi_user_app/widgets/media_upload_widget.dart';
 import 'package:nadi_user_app/widgets/record_widget.dart';
 import 'package:shimmer/shimmer.dart';
-import 'package:permission_handler/permission_handler.dart';
-import 'package:audioplayers/audioplayers.dart';
+// import 'package:permission_handler/permission_handler.dart';
+// import 'package:audioplayers/audioplayers.dart';
 import 'dart:async';
 
-class SendServiceRequest extends ConsumerStatefulWidget  {
+class SendServiceRequest extends ConsumerStatefulWidget {
   final String title;
   final String serviceId;
   final int points;
@@ -50,8 +50,8 @@ class _SendServiceRequestState extends ConsumerState<SendServiceRequest> {
   final TextEditingController descriptionController = TextEditingController();
   String? selectedIssueId;
   bool isChecked = false;
-  final AudioPlayer _audioPlayer = AudioPlayer();
-  bool isRecording = false;
+  // final AudioPlayer _audioPlayer = AudioPlayer();
+  // bool isRecording = false;
   File? recordedVoice;
   bool isPlaying = false;
   final TextEditingController _timeController = TextEditingController();
@@ -62,57 +62,56 @@ class _SendServiceRequestState extends ConsumerState<SendServiceRequest> {
     issuseList();
   }
 
-  Future<void> playPauseVoice() async {
-    if (recordedVoice == null) return;
+  // Future<void> playPauseVoice() async {
+  //   if (recordedVoice == null) return;
 
-    if (isPlaying) {
-      await _audioPlayer.pause();
-      setState(() => isPlaying = false);
-    } else {
-      await _audioPlayer.stop();
-      await _audioPlayer.play(
-        DeviceFileSource(recordedVoice!.path), // ✅ FIX
-      );
-      setState(() => isPlaying = true);
-    }
-  }
+  //   if (isPlaying) {
+  //     await _audioPlayer.pause();
+  //     setState(() => isPlaying = false);
+  //   } else {
+  //     await _audioPlayer.stop();
+  //     await _audioPlayer.play(
+  //       DeviceFileSource(recordedVoice!.path), // ✅ FIX
+  //     );
+  //     setState(() => isPlaying = true);
+  //   }
+  // }
 
-  Future<bool> requestMicPermission() async {
+  // Future<bool> requestMicPermission() async {
+  //   try {
+  //     final status = await Permission.microphone.status;
+
+  //     if (status.isGranted) {
+  //       return true;
+  //     }
+
+  //     final result = await Permission.microphone.request();
+  //     return result.isGranted;
+  //   } catch (e) {
+  //     AppLogger.error("Permission error: $e");
+  //     return false;
+  //   }
+  // }
+
+  Future<void> issuseList() async {
     try {
-      final status = await Permission.microphone.status;
+      final locale = ref.read(languageProvider);
+      final lang = locale.languageCode;
 
-      if (status.isGranted) {
-        return true;
+      final response = await _requestSerivices.IssuseList(lang);
+
+      if (!mounted) return;
+      if (response != null) {
+        setState(() {
+          issueList = response;
+        });
       }
 
-      final result = await Permission.microphone.request();
-      return result.isGranted;
+      AppLogger.debug("response ${jsonEncode(response)}");
     } catch (e) {
-      AppLogger.error("Permission error: $e");
-      return false;
+      AppLogger.error("issuseList error: $e");
     }
   }
-
-Future<void> issuseList() async {
-  try {
-    final locale = ref.read(languageProvider);
-    final lang = locale.languageCode;
-
-    final response = await _requestSerivices.IssuseList(lang);
-
-    if (!mounted) return;
-    if (response != null) {
-      setState(() {
-        issueList = response;
-      });
-    }
-
-    AppLogger.debug("response ${jsonEncode(response)}");
-  } catch (e) {
-    AppLogger.error("issuseList error: $e");
-  }
-}
-
 
   Future<void> pickImage(ImageSource source) async {
     final XFile? image = await _picker.pickImage(
@@ -141,6 +140,10 @@ Future<void> issuseList() async {
     setState(() {
       _isLoading = true;
     });
+    final File? voiceFile =
+        (recordedVoice != null && recordedVoice!.existsSync())
+        ? recordedVoice
+        : null;
     try {
       AppLogger.warn("selectcategoryId ${widget.serviceId}");
       final response = await _requestSerivices.createServiceRequestes(
@@ -151,7 +154,7 @@ Future<void> issuseList() async {
         immediateAssistance: isChecked,
         images: selectedImages.map((e) => File(e.path)).toList(),
         time: _timeController.text,
-        voice: recordedVoice,
+        voice: voiceFile,
       );
       AppLogger.warn("createServiceRequestes ${jsonEncode(response)}");
       final serviceRequestId = response?['data']?['serviceRequestID']
@@ -168,9 +171,9 @@ Future<void> issuseList() async {
           SnackbarHelper.showError(context, message);
         }
       } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(t.somethingWentWrong)),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(t.somethingWentWrong)));
       }
     } catch (e) {
       if (mounted) setState(() => _isLoading = false);
@@ -180,7 +183,6 @@ Future<void> issuseList() async {
 
   @override
   Widget build(BuildContext context) {
-
     Widget imageShimmer() {
       return Shimmer.fromColors(
         baseColor: Colors.grey.shade300,
@@ -195,9 +197,9 @@ Future<void> issuseList() async {
         ),
       );
     }
- final t = AppLocalizations.of(context)!;
+
+    final t = AppLocalizations.of(context)!;
     return Scaffold(
-      
       body: SafeArea(
         child: Container(
           decoration: BoxDecoration(
@@ -268,10 +270,14 @@ Future<void> issuseList() async {
                             vertical: 14,
                           ),
                           decoration: BoxDecoration(
-                            color: AppColors.app_background_clr.withOpacity(0.08),
+                            color: AppColors.app_background_clr.withOpacity(
+                              0.08,
+                            ),
                             borderRadius: BorderRadius.circular(14),
                             border: Border.all(
-                              color: AppColors.app_background_clr.withOpacity(0.3),
+                              color: AppColors.app_background_clr.withOpacity(
+                                0.3,
+                              ),
                             ),
                           ),
                           child: Row(
@@ -297,8 +303,8 @@ Future<void> issuseList() async {
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                     Text(
-                                     t.servicePointsRequired,
+                                    Text(
+                                      t.servicePointsRequired,
                                       style: TextStyle(
                                         fontSize: 13,
                                         fontWeight: FontWeight.w500,
@@ -309,7 +315,9 @@ Future<void> issuseList() async {
                                     Text(
                                       widget.points == 0
                                           ? t.serviceFree
-                                          : t.pointsLabel(widget.points.toString()),
+                                          : t.pointsLabel(
+                                              widget.points.toString(),
+                                            ),
                                       style: const TextStyle(
                                         fontSize: 18,
                                         fontWeight: FontWeight.bold,
@@ -322,7 +330,7 @@ Future<void> issuseList() async {
                           ),
                         ),
 
-                         Text(
+                        Text(
                           t.issueDetails,
                           style: TextStyle(
                             fontSize: 14,
@@ -371,7 +379,7 @@ Future<void> issuseList() async {
                           maxLines: null,
                           keyboardType: TextInputType.multiline,
                           decoration: InputDecoration(
-                            labelText:  t.describeIssue,
+                            labelText: t.describeIssue,
                             floatingLabelStyle: const TextStyle(
                               color: AppColors.app_background_clr,
                             ),
@@ -429,7 +437,7 @@ Future<void> issuseList() async {
                         // ),
                         const SizedBox(height: 22),
 
-                         Text(
+                        Text(
                           t.mediaUploadOptional,
                           style: TextStyle(
                             fontSize: 17,
@@ -439,7 +447,9 @@ Future<void> issuseList() async {
 
                         const SizedBox(height: 3),
                         Text(
-                          t.imagesSelectedCount(selectedImages.length.toString()),
+                          t.imagesSelectedCount(
+                            selectedImages.length.toString(),
+                          ),
                           style: TextStyle(
                             fontSize: 12,
                             color: selectedImages.length == 10
@@ -481,7 +491,9 @@ Future<void> issuseList() async {
                         // ),
                         RecordWidget(
                           onRecordComplete: (file) {
-                            recordedVoice = file;
+                            setState(() {
+                              recordedVoice = file;
+                            });
                           },
                         ),
 

@@ -275,9 +275,9 @@ class _SignInOtpState extends State<SignInOtp> {
   final AuthService _authService = AuthService();
   bool _showOtp = false;
   bool _isOtpError = false;
-bool _isLoading = false;
+  bool _isLoading = false;
   Future<void> sendOtp() async {
-      setState(() => _isLoading = true);
+    setState(() => _isLoading = true);
 
     try {
       final mobileNumber = _phoneController.text;
@@ -314,18 +314,15 @@ bool _isLoading = false;
       AppLogger.error("Send otp with phone $e");
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(e.toString()),
-          backgroundColor: Colors.red,
-        ),
+        SnackBar(content: Text(e.toString()), backgroundColor: Colors.red),
       );
-    }finally {
-    if (mounted) setState(() => _isLoading = false);
-  }
+    } finally {
+      if (mounted) setState(() => _isLoading = false);
+    }
   }
 
   Future<void> OTPphoneverify() async {
-      setState(() => _isLoading = true);
+    setState(() => _isLoading = true);
 
     final otp = _otpController.text.trim();
     final mobileNumber = _phoneController.text;
@@ -345,7 +342,9 @@ bool _isLoading = false;
         MqttNotificationService.connect(savedUserId);
       }
       if (!context.mounted) return;
-      context.go(RouteNames.bottomnav); // ignore: use_build_context_synchronously
+      context.go(
+        RouteNames.bottomnav,
+      ); // ignore: use_build_context_synchronously
     } on DioException catch (e) {
       final message = e.response?.data?['message'] ?? 'Something went wrong';
       AppLogger.error("OTPphoneverify: $message");
@@ -366,15 +365,11 @@ bool _isLoading = false;
       AppLogger.error("OTPphoneverify $e");
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(e.toString()),
-          backgroundColor: Colors.red,
-        ),
+        SnackBar(content: Text(e.toString()), backgroundColor: Colors.red),
       );
+    } finally {
+      if (mounted) setState(() => _isLoading = false);
     }
-    finally {
-    if (mounted) setState(() => _isLoading = false);
-  }
   }
 
   void _showAccountDisabledDialog() {
@@ -397,10 +392,7 @@ bool _isLoading = false;
             const Expanded(
               child: Text(
                 "Account Disabled",
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                ),
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               ),
             ),
           ],
@@ -424,7 +416,11 @@ bool _isLoading = false;
                 children: [
                   Row(
                     children: [
-                      Icon(Icons.phone, color: AppColors.app_background_clr, size: 20),
+                      Icon(
+                        Icons.phone,
+                        color: AppColors.app_background_clr,
+                        size: 20,
+                      ),
                       const SizedBox(width: 10),
                       const Expanded(
                         child: Text(
@@ -440,7 +436,11 @@ bool _isLoading = false;
                   const SizedBox(height: 10),
                   Row(
                     children: [
-                      Icon(Icons.email_outlined, color: AppColors.app_background_clr, size: 20),
+                      Icon(
+                        Icons.email_outlined,
+                        color: AppColors.app_background_clr,
+                        size: 20,
+                      ),
                       const SizedBox(width: 10),
                       const Expanded(
                         child: Text(
@@ -506,10 +506,7 @@ bool _isLoading = false;
             const Expanded(
               child: Text(
                 "Account Rejected",
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                ),
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               ),
             ),
           ],
@@ -533,7 +530,11 @@ bool _isLoading = false;
                 children: [
                   Row(
                     children: [
-                      Icon(Icons.phone, color: AppColors.app_background_clr, size: 20),
+                      Icon(
+                        Icons.phone,
+                        color: AppColors.app_background_clr,
+                        size: 20,
+                      ),
                       const SizedBox(width: 10),
                       const Expanded(
                         child: Text(
@@ -549,7 +550,11 @@ bool _isLoading = false;
                   const SizedBox(height: 10),
                   Row(
                     children: [
-                      Icon(Icons.email_outlined, color: AppColors.app_background_clr, size: 20),
+                      Icon(
+                        Icons.email_outlined,
+                        color: AppColors.app_background_clr,
+                        size: 20,
+                      ),
                       const SizedBox(width: 10),
                       const Expanded(
                         child: Text(
@@ -594,7 +599,7 @@ bool _isLoading = false;
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
-        final isRTL = Directionality.of(context) == TextDirection.rtl;
+    final isRTL = Directionality.of(context) == TextDirection.rtl;
 
     final defaultPinTheme = PinTheme(
       width: 50,
@@ -622,7 +627,9 @@ bool _isLoading = false;
       ),
     );
     final l10n = AppLocalizations.of(context)!;
-return Scaffold(
+    final isIOS = Theme.of(context).platform == TargetPlatform.iOS;
+
+    return Scaffold(
       resizeToAvoidBottomInset: true,
       body: Stack(
         children: [
@@ -633,22 +640,29 @@ return Scaffold(
               fit: BoxFit.cover,
             ),
           ),
-  /// CONTENT
+
+          /// CONTENT
           Positioned.fill(
             child: SafeArea(
-             child: SingleChildScrollView(
+              child: SingleChildScrollView(
                 physics: const ClampingScrollPhysics(),
-                keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+                keyboardDismissBehavior:
+                    ScrollViewKeyboardDismissBehavior.onDrag,
                 child: ConstrainedBox(
                   constraints: BoxConstraints(
-                    minHeight: MediaQuery.of(context).size.height -
+                    minHeight:
+                        MediaQuery.of(context).size.height -
                         MediaQuery.of(context).padding.top,
                   ),
                   child: IntrinsicHeight(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        SizedBox(height: size.height * 0.38),
+                        SizedBox(
+                          height: isIOS
+                              ? size.height * 0.36
+                              : size.height * 0.39,
+                        ),
 
                         /// White form container that fills remaining space
                         Expanded(
@@ -686,7 +700,9 @@ return Scaffold(
                                     controller: _phoneController,
                                     prefixText: "+973 ",
                                     filled: true,
-                                    fillColor: Theme.of(context).scaffoldBackgroundColor,
+                                    fillColor: Theme.of(
+                                      context,
+                                    ).scaffoldBackgroundColor,
                                     validator: (value) {
                                       if (value == null || value.isEmpty) {
                                         return l10n.pleaseEnterPhoneNumber;
@@ -706,7 +722,7 @@ return Scaffold(
                                     AppButton(
                                       height: 48,
                                       width: double.infinity,
-                                        isLoading: _isLoading,
+                                      isLoading: _isLoading,
 
                                       color: AppColors.btn_primery,
                                       text: l10n.resendOtp,
@@ -767,7 +783,7 @@ return Scaffold(
                                       height: 48,
                                       width: double.infinity,
                                       color: AppColors.btn_primery,
-                                        isLoading: _isLoading,
+                                      isLoading: _isLoading,
 
                                       text: l10n.signIn,
                                       onPressed: () async {
@@ -798,6 +814,7 @@ return Scaffold(
               ),
             ),
           ),
+
           /// SAFE BACK BUTTON (FIXED)
           SafeArea(
             child: Align(
@@ -824,7 +841,7 @@ return Scaffold(
                         color: Colors.black.withOpacity(0.4),
                         shape: BoxShape.circle,
                       ),
-                      child:  Icon(
+                      child: Icon(
                         isRTL ? Icons.arrow_forward : Icons.arrow_back,
                         color: Colors.white,
                         size: 18,
@@ -835,11 +852,8 @@ return Scaffold(
               ),
             ),
           ),
-
-        
         ],
       ),
     );
-   
   }
 }

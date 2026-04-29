@@ -1,12 +1,10 @@
 import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:nadi_user_app/core/constants/app_consts.dart';
 import 'package:nadi_user_app/l10n/app_localizations.dart';
 import 'package:record/record.dart';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:permission_handler/permission_handler.dart';
 
 class RecordWidget extends StatefulWidget {
   final Function(File?)? onRecordComplete;
@@ -29,73 +27,91 @@ class _RecordWidgetState extends State<RecordWidget> {
   void initState() {
     super.initState();
 
+    /// ✅ Only ONE listener (avoid duplicate bugs)
     _audioPlayer.onPlayerComplete.listen((event) {
       if (!mounted) return;
       setState(() => isPlaying = false);
     });
-
-    _audioPlayer.onPlayerStateChanged.listen((state) {
-      if (!mounted) return;
-      if (state == PlayerState.completed || state == PlayerState.stopped) {
-        setState(() => isPlaying = false);
-      }
-    });
   }
 
-  Future<bool> requestMicPermission() async {
-    final status = await Permission.microphone.status;
-    if (status.isGranted) return true;
-    final result = await Permission.microphone.request();
-    return result.isGranted;
-  }
-
+  /// ✅ Start Recording
   Future<void> startRecording() async {
-    final hasPermission = await requestMicPermission();
-    if (!hasPermission) return;
+    try {
+      /// ✅ Correct permission handling (DO NOT use permission_handler)
+      if (!await _audioRecorder.hasPermission()) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Microphone permission denied")),
+        );
+        return;
+      }
 
-    final dir = await getApplicationDocumentsDirectory();
-    final path =
-        '${dir.path}/voice_${DateTime.now().millisecondsSinceEpoch}.m4a';
+      /// ✅ Use temporary directory (important)
+      final dir = await getTemporaryDirectory();
+      final path =
+          '${dir.path}/voice_${DateTime.now().millisecondsSinceEpoch}.m4a';
 
-    await _audioRecorder.start(
-      RecordConfig(
-        encoder: AudioEncoder.aacLc,
-        bitRate: 128000,
-        sampleRate: 44100,
-      ),
-      path: path,
-    );
+      await _audioRecorder.start(
+        const RecordConfig(encoder: AudioEncoder.aacLc),
+        path: path,
+      );
 
-    setState(() {
-      isRecording = true;
-      recordedFilePath = path;
-    });
-  }
+      setState(() {
+        isRecording = true;
+        recordedFilePath = null; // IMPORTANT FIX
+      });
 
-  Future<void> stopRecording() async {
-    final path = await _audioRecorder.stop();
-    setState(() {
-      isRecording = false;
-      recordedFilePath = path;
-      isPlaying = false;
-    });
-    if (widget.onRecordComplete != null && path != null) {
-      widget.onRecordComplete!(File(path));
+      debugPrint("Recording started: $path");
+    } catch (e) {
+      debugPrint("Start recording error: $e");
     }
   }
 
+  /// ✅ Stop Recording
+  Future<void> stopRecording() async {
+    try {
+      final path = await _audioRecorder.stop();
+
+      setState(() {
+        isRecording = false;
+        recordedFilePath = path;
+        isPlaying = false;
+      });
+
+      debugPrint("Recording saved: $path");
+
+      if (widget.onRecordComplete != null && path != null) {
+        widget.onRecordComplete!(File(path));
+      }
+    } catch (e) {
+      debugPrint("Stop recording error: $e");
+    }
+  }
+
+  /// ✅ Play / Pause Voice
   Future<void> playPauseVoice() async {
     if (recordedFilePath == null) return;
-    if (isPlaying) {
-      await _audioPlayer.pause();
-      setState(() => isPlaying = false);
-    } else {
-      await _audioPlayer.stop(); // reset previous audio
-      await _audioPlayer.play(DeviceFileSource(recordedFilePath!));
-      setState(() => isPlaying = true);
+
+    /// ✅ Ensure file exists
+    if (!File(recordedFilePath!).existsSync()) {
+      debugPrint("File not found");
+      return;
+    }
+
+    try {
+      if (isPlaying) {
+        await _audioPlayer.pause();
+        setState(() => isPlaying = false);
+      } else {
+        await _audioPlayer.stop();
+        await _audioPlayer.play(DeviceFileSource(recordedFilePath!));
+        setState(() => isPlaying = true);
+      }
+    } catch (e) {
+      debugPrint("Playback error: $e");
     }
   }
 
+  /// ✅ Toggle Record
   Future<void> toggleRecord() async {
     if (isRecording) {
       await stopRecording();
@@ -114,8 +130,10 @@ class _RecordWidgetState extends State<RecordWidget> {
   @override
   Widget build(BuildContext context) {
     final loc = AppLocalizations.of(context)!;
+
     return Column(
       children: [
+        /// 🎤 RECORD BUTTON
         GestureDetector(
           onTap: toggleRecord,
           child: Container(
@@ -129,16 +147,19 @@ class _RecordWidgetState extends State<RecordWidget> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Icon(isRecording ? Icons.stop : Icons.mic, color: Colors.white),
-                SizedBox(width: 8),
+                const SizedBox(width: 8),
                 Text(
                   isRecording ? loc.recording : loc.recordVoice,
-                  style: TextStyle(color: Colors.white, fontSize: 16),
+                  style: const TextStyle(color: Colors.white, fontSize: 16),
                 ),
               ],
             ),
           ),
         ),
+
         const SizedBox(height: 10),
+
+        /// ▶️ PLAYBACK UI
         if (recordedFilePath != null && !isRecording)
           Container(
             height: 52,
@@ -150,7 +171,7 @@ class _RecordWidgetState extends State<RecordWidget> {
                   color: Colors.black.withOpacity(0.15),
                   blurRadius: 8,
                   spreadRadius: 2,
-                  offset: Offset(0, 4), 
+                  offset: const Offset(0, 4),
                 ),
               ],
             ),
@@ -159,18 +180,22 @@ class _RecordWidgetState extends State<RecordWidget> {
               child: Row(
                 children: [
                   IconButton(
-                    icon: Icon(isPlaying ? Icons.pause : Icons.play_arrow ,color: Theme.of(context).textTheme.bodyMedium?.color ,),
+                    icon: Icon(
+                      isPlaying ? Icons.pause : Icons.play_arrow,
+                      color: Theme.of(context).textTheme.bodyMedium?.color,
+                    ),
                     onPressed: playPauseVoice,
                   ),
                   Text(loc.recordedVoice),
                   const Spacer(),
                   IconButton(
-                    icon: Icon(Icons.delete, color: Colors.red),
+                    icon: const Icon(Icons.delete, color: Colors.red),
                     onPressed: () {
                       setState(() {
                         recordedFilePath = null;
                         isPlaying = false;
                       });
+
                       if (widget.onRecordComplete != null) {
                         widget.onRecordComplete!(null);
                       }
