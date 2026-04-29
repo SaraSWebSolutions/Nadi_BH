@@ -22,7 +22,7 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:stream_chat_flutter/stream_chat_flutter.dart';
 import 'package:app_badge_plus/app_badge_plus.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
+import 'dart:io';
 final container = ProviderContainer();
 
 Future<int> getBadgeCount() async {
@@ -77,9 +77,9 @@ void main() async {
   /// when the app is in the foreground. Without this, iOS only plays the
   /// sound but does NOT display the notification alert.
   await FirebaseMessaging.instance.setForegroundNotificationPresentationOptions(
-    alert: true,
-    badge: true,
-    sound: true,
+    alert: false,
+    badge: false,
+    sound: false,
   );
 
   /// VERY IMPORTANT FOR IOS TOKEN
@@ -109,15 +109,19 @@ void main() async {
   await Hive.openBox("blockbox");
   await Hive.openBox("servicesBox");
 
-  /// FOREGROUND MESSAGE
+  /// FOREGROUND 
+  /// 
  FirebaseMessaging.onMessage.listen((RemoteMessage message) async {
   final data = message.data;
-
+if (Platform.isIOS && message.notification != null) {
+    // Do NOT return completely — just prevent duplicate logic if needed
+    // We still allow manual control
+  }
   // ✅ Handle Stream Chat push notifications
   if (data.containsKey('sender') ||
       data.containsKey('channel_id') ||
       (data.containsKey('type') && data['type'] == 'message.new')) {
-
+if (Platform.isIOS) return;
     final senderName = data['sender_name'] ??
         data['sender'] ??
         message.notification?.title ??
@@ -163,6 +167,10 @@ void main() async {
   currentCount++;
   await saveBadgeCount(currentCount);
   await updateBadge(currentCount);
+if (Platform.isIOS && message.notification != null) {
+  // iOS already got payload → avoid duplicate logic issues
+}
+
 
   NotificationService.show(
     title: message.notification?.title ?? 'OTP',

@@ -19,7 +19,7 @@ class _HelpSupportViewState extends ConsumerState<HelpSupportView> {
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _phoneController = TextEditingController(
-    text: "+973",
+    text: "+973 ",
   ); // default prefix
   final TextEditingController _messageController = TextEditingController();
   final HelpandsupportService _helpandsupportService = HelpandsupportService();
@@ -149,7 +149,7 @@ class _HelpSupportViewState extends ConsumerState<HelpSupportView> {
                         controller: _phoneController,
                         label: loc.phoneLabel,
                         keyboardType: TextInputType.phone,
-                        maxLength: 12,
+                        maxLength: 13,
             //inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                           inputFormatters: [
     FilteringTextInputFormatter.allow(RegExp(r'[0-9+]')),
@@ -164,7 +164,7 @@ class _HelpSupportViewState extends ConsumerState<HelpSupportView> {
     return loc.invalidCountryCode;
   }
 
-  final digits = value.replaceFirst("+973 ", "");
+  final digits = value.replaceFirst("+973", "").trim();
 
   if (digits.length != 8) {
     return loc.invalidPhoneLength;
