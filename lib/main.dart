@@ -23,6 +23,7 @@ import 'package:stream_chat_flutter/stream_chat_flutter.dart';
 import 'package:app_badge_plus/app_badge_plus.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:io';
+
 final container = ProviderContainer();
 
 Future<int> getBadgeCount() async {
@@ -42,12 +43,13 @@ Future<void> updateBadge(int count) async {
     debugPrint("❌ Badge not supported: $e");
   }
 }
+
 ///  STEP 1: ADD THIS HERE (TOP LEVEL, NOT INSIDE CLASS)
 Future<void> firebaseBackgroundHandler(RemoteMessage message) async {
   await Firebase.initializeApp();
-  if (message.data.containsKey('sender') || 
+  if (message.data.containsKey('sender') ||
       message.data.containsKey('channel_id')) {
-    return;  // Stream Chat SDK handles this
+    return; // Stream Chat SDK handles this
   }
 }
 
@@ -76,11 +78,11 @@ void main() async {
   /// ✅ CRITICAL: Tell iOS to show notification banner+sound+badge even
   /// when the app is in the foreground. Without this, iOS only plays the
   /// sound but does NOT display the notification alert.
-  await FirebaseMessaging.instance.setForegroundNotificationPresentationOptions(
-    alert: false,
-    badge: false,
-    sound: false,
-  );
+  // await FirebaseMessaging.instance.setForegroundNotificationPresentationOptions(
+  //   alert: false,
+  //   badge: false,
+  //   sound: false,
+  // );
 
   /// VERY IMPORTANT FOR IOS TOKEN
   await FirebaseMessaging.instance.setAutoInitEnabled(true);
@@ -109,77 +111,77 @@ void main() async {
   await Hive.openBox("blockbox");
   await Hive.openBox("servicesBox");
 
-  /// FOREGROUND 
-  /// 
- FirebaseMessaging.onMessage.listen((RemoteMessage message) async {
-  final data = message.data;
-if (Platform.isIOS && message.notification != null) {
-    // Do NOT return completely — just prevent duplicate logic if needed
-    // We still allow manual control
-  }
-  // ✅ Handle Stream Chat push notifications
-  if (data.containsKey('sender') ||
-      data.containsKey('channel_id') ||
-      (data.containsKey('type') && data['type'] == 'message.new')) {
-if (Platform.isIOS) return;
-    final senderName = data['sender_name'] ??
-        data['sender'] ??
-        message.notification?.title ??
-        'New Message';
+  /// FOREGROUND MESSAGE
+  FirebaseMessaging.onMessage.listen((RemoteMessage message) async {
+    print("📩 FOREGROUND MESSAGE RECEIVED: ${message.data}");
+    final data = message.data;
+    if (Platform.isIOS && message.notification != null) {
+      // Do NOT return completely — just prevent duplicate logic if needed
+      // We still allow manual control
+    }
+    // ✅ Handle Stream Chat push notifications
+    if (data.containsKey('sender') ||
+        data.containsKey('channel_id') ||
+        (data.containsKey('type') && data['type'] == 'message.new')) {
+      if (Platform.isIOS) return;
+      final senderName =
+          data['sender_name'] ??
+          data['sender'] ??
+          message.notification?.title ??
+          'New Message';
 
-    final messageText = data['message_text'] ??
-        message.notification?.body ??
-        'You have a new message';
+      final messageText =
+          data['message_text'] ??
+          message.notification?.body ??
+          'You have a new message';
 
-    final channelId = data['channel_id'] ?? data['cid'] ?? '';
+      final channelId = data['channel_id'] ?? data['cid'] ?? '';
 
-    final activeChannel = container.read(activeChatChannelProvider);
+      final activeChannel = container.read(activeChatChannelProvider);
 
-    // ❌ If user is inside same chat → NO badge increment
-    if (activeChannel != null &&
-        activeChannel.isNotEmpty &&
-        channelId.isNotEmpty &&
-        channelId == activeChannel) {
-      debugPrint('🔇 FCM: Suppressed — user is viewing this chat');
+      // ❌ If user is inside same chat → NO badge increment
+      if (activeChannel != null &&
+          activeChannel.isNotEmpty &&
+          channelId.isNotEmpty &&
+          channelId == activeChannel) {
+        debugPrint('🔇 FCM: Suppressed — user is viewing this chat');
+        return;
+      }
+
+      // ✅ 🔥 BADGE INCREMENT
+      int currentCount = await getBadgeCount();
+      currentCount++;
+      await saveBadgeCount(currentCount);
+      await updateBadge(currentCount);
+
+      debugPrint('🔔 FCM: Chat notification: $senderName');
+
+      NotificationService.show(
+        title: senderName,
+        body: messageText,
+        payload: 'chat:$channelId',
+        channelId: 'chat_messages_channel',
+        channelName: 'Chat Messages',
+      );
       return;
     }
 
-    // ✅ 🔥 BADGE INCREMENT
+    // ✅ 🔥 BADGE INCREMENT (GENERAL)
     int currentCount = await getBadgeCount();
     currentCount++;
     await saveBadgeCount(currentCount);
     await updateBadge(currentCount);
-
-    debugPrint('🔔 FCM: Chat notification: $senderName');
+    if (Platform.isIOS && message.notification != null) {
+      // iOS already got payload → avoid duplicate logic issues
+    }
 
     NotificationService.show(
-      title: senderName,
-      body: messageText,
-      payload: 'chat:$channelId',
-      channelId: 'chat_messages_channel',
-      channelName: 'Chat Messages',
+      title: message.notification?.title ?? 'OTP',
+      body: message.notification?.body ?? 'Your OTP is ${message.data['otp']}',
     );
-    return;
-  }
 
-  // ✅ 🔥 BADGE INCREMENT (GENERAL)
-  int currentCount = await getBadgeCount();
-  currentCount++;
-  await saveBadgeCount(currentCount);
-  await updateBadge(currentCount);
-if (Platform.isIOS && message.notification != null) {
-  // iOS already got payload → avoid duplicate logic issues
-}
-
-
-  NotificationService.show(
-    title: message.notification?.title ?? 'OTP',
-    body: message.notification?.body ??
-        'Your OTP is ${message.data['otp']}',
-  );
-
-  container.invalidate(fetchpointsnodification);
-});
+    container.invalidate(fetchpointsnodification);
+  });
   // ✅ Wire GoRouter to NotificationService for tap-to-navigate
   NotificationService.setRouter(appRouter);
 
@@ -213,10 +215,7 @@ class MyApp extends ConsumerWidget {
       // StreamChat must wrap the entire app so StreamChannel/StreamMessageListView
       // can find it via context anywhere in the widget tree
       builder: (context, child) {
-        return StreamChat(
-          client: StreamChatService().client,
-          child: child!,
-        );
+        return StreamChat(client: StreamChatService().client, child: child!);
       },
 
       locale: locale,
@@ -227,7 +226,7 @@ class MyApp extends ConsumerWidget {
         GlobalWidgetsLocalizations.delegate,
         GlobalCupertinoLocalizations.delegate,
       ],
-      
+
       themeMode: themeMode,
       theme: ThemeData(
         fontFamily: 'Poppins',
@@ -245,7 +244,9 @@ class MyApp extends ConsumerWidget {
         ),
         cardTheme: CardThemeData(
           elevation: 0,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+          ),
           color: Colors.white,
           margin: EdgeInsets.zero,
         ),
@@ -270,7 +271,10 @@ class MyApp extends ConsumerWidget {
         inputDecorationTheme: InputDecorationTheme(
           filled: true,
           fillColor: Colors.grey.shade50,
-          contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+          contentPadding: const EdgeInsets.symmetric(
+            horizontal: 20,
+            vertical: 16,
+          ),
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(12),
             borderSide: BorderSide(color: Colors.grey.shade400, width: 1),
@@ -281,7 +285,10 @@ class MyApp extends ConsumerWidget {
           ),
           focusedBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(12),
-            borderSide: const BorderSide(color: AppColors.btn_primery, width: 2),
+            borderSide: const BorderSide(
+              color: AppColors.btn_primery,
+              width: 2,
+            ),
           ),
           errorBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(12),
@@ -314,7 +321,9 @@ class MyApp extends ConsumerWidget {
         ),
         cardTheme: CardThemeData(
           elevation: 0,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+          ),
           color: const Color(0xFF1E1E1E),
           margin: EdgeInsets.zero,
         ),
@@ -339,7 +348,10 @@ class MyApp extends ConsumerWidget {
         inputDecorationTheme: InputDecorationTheme(
           filled: true,
           fillColor: const Color(0xFF2A2A2A),
-          contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+          contentPadding: const EdgeInsets.symmetric(
+            horizontal: 20,
+            vertical: 16,
+          ),
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(12),
             borderSide: BorderSide.none,
@@ -350,7 +362,10 @@ class MyApp extends ConsumerWidget {
           ),
           focusedBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(12),
-            borderSide: const BorderSide(color: AppColors.btn_primery, width: 2),
+            borderSide: const BorderSide(
+              color: AppColors.btn_primery,
+              width: 2,
+            ),
           ),
           errorBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(12),

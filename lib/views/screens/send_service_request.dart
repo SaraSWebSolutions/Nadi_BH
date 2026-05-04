@@ -356,12 +356,19 @@ class _SendServiceRequestState extends ConsumerState<SendServiceRequest> {
                               ),
                             ),
                             filled: true,
-                            fillColor: Colors.white,
+                            fillColor: Theme.of(context).colorScheme.surface,
                           ),
                           items: issueList.map((issue) {
                             return DropdownMenuItem<String>(
                               value: issue['_id'],
-                              child: Text(issue['issue']),
+                              child: Text(
+                                issue['issue'],
+                                style: TextStyle(
+                                  color: Theme.of(
+                                    context,
+                                  ).textTheme.bodyMedium?.color,
+                                ),
+                              ),
                             );
                           }).toList(),
                           onChanged: (value) {
@@ -396,7 +403,7 @@ class _SendServiceRequestState extends ConsumerState<SendServiceRequest> {
                               ),
                             ),
                             filled: true,
-                            fillColor: Colors.white,
+                            fillColor: Theme.of(context).colorScheme.surface,
                           ),
                         ),
 
@@ -442,6 +449,9 @@ class _SendServiceRequestState extends ConsumerState<SendServiceRequest> {
                           style: TextStyle(
                             fontSize: 17,
                             fontWeight: FontWeight.w600,
+                            color: Theme.of(
+                              context,
+                            ).textTheme.bodyMedium?.color,
                           ),
                         ),
 

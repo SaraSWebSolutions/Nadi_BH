@@ -322,6 +322,7 @@ class Myprofile extends ConsumerWidget {
               if (v.isEmpty) return;
               parts.add(label == null ? v : "$label $v");
             }
+
             add(null, addr['building']);
             add(loc.block, addr['block']);
             add(null, addr['city']);
@@ -330,6 +331,7 @@ class Myprofile extends ConsumerWidget {
             add(null, addr['additionalInfo']);
             return parts.join(", ");
           }
+
           final addressCtrl = TextEditingController(
             text: addresses.isNotEmpty
                 ? buildFullAddress(addresses[0] as Map)
@@ -337,8 +339,7 @@ class Myprofile extends ConsumerWidget {
           );
           final familyCount = basicData['familyCount'] ?? 0;
           final accountTypeId = basicData['accountTypeId'] ?? "";
-          final showAddMember =
-              accountTypeId == "693175a0976ca992c877f99b";
+          final showAddMember = accountTypeId == "693175a0976ca992c877f99b";
           return Column(
             children: [
               // Header
@@ -477,128 +478,127 @@ class Myprofile extends ConsumerWidget {
               ),
               // Body
               Expanded(
-                 child: RefreshIndicator(
-    onRefresh: () async {
-      ref.invalidate(profileprovider); // reload profile
-      ref.invalidate(familyMembersListProvider); // reload members
-    },
-                child: SingleChildScrollView(
-                  physics: AlwaysScrollableScrollPhysics(),
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 15,
-                      vertical: 15,
-                    ), // reduced vertical padding
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        if (showAddMember) ...[
-                          const SizedBox(height: 20),
-                          const _FamilyMembersListSection(),
-                          const SizedBox(height: 16),
-                          SizedBox(
-                            width: double.infinity,
-                            child: ElevatedButton(
-                              onPressed: () {
-                                 context.push(RouteNames.addMember);
-                              },
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: AppColors.app_background_clr,
-                                padding: const EdgeInsets.symmetric(
-                                  vertical: 14,
+                child: RefreshIndicator(
+                  onRefresh: () async {
+                    ref.invalidate(profileprovider); // reload profile
+                    ref.invalidate(familyMembersVerifiedProvider);
+                  },
+                  child: SingleChildScrollView(
+                    physics: AlwaysScrollableScrollPhysics(),
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 15,
+                        vertical: 15,
+                      ), // reduced vertical padding
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          if (showAddMember) ...[
+                            const SizedBox(height: 20),
+                            const _FamilyMembersListSection(),
+                            const SizedBox(height: 16),
+                            SizedBox(
+                              width: double.infinity,
+                              child: ElevatedButton(
+                                onPressed: () {
+                                  context.push(RouteNames.addMember);
+                                },
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: AppColors.app_background_clr,
+                                  padding: const EdgeInsets.symmetric(
+                                    vertical: 14,
+                                  ),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
                                 ),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(12),
-                                ),
-                              ),
-                              child: Text(
-  loc.addMember,
-                                style: TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w600,
-                                  color: Colors.white,
+                                child: Text(
+                                  loc.addMember,
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w600,
+                                    color: Colors.white,
+                                  ),
                                 ),
                               ),
                             ),
+                          ],
+                          Text(
+                            loc.fullName,
+                            style: TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w600,
+                              // color: Theme.of(context).textTheme.bodyLarge?.color,
+                            ),
+                          ),
+                          const SizedBox(height: 4), // reduced
+                          AppTextField(
+                            controller: nameCtrl,
+                            readonly: true,
+                            enabled: false,
+                            textStyle: TextStyle(
+                              // color: Theme.of(context).textTheme.bodyLarge?.color,
+                            ),
+                          ),
+                          const SizedBox(height: 10), // reduced
+                          Text(
+                            loc.emailAddress,
+                            style: TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                          const SizedBox(height: 4),
+                          AppTextField(
+                            controller: emailCtrl,
+                            readonly: true,
+                            enabled: false,
+                            textStyle: TextStyle(
+                              // color: Theme.of(context).textTheme.bodyLarge?.color,
+                            ),
+                          ),
+                          const SizedBox(height: 10),
+                          Text(
+                            "${loc.phoneNumber}",
+                            style: TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                          const SizedBox(height: 4),
+                          AppTextField(
+                            prefixText: "+973 ",
+                            controller: phoneCtrl,
+                            readonly: true,
+                            enabled: false,
+                            textStyle: TextStyle(
+                              // color: Theme.of(context).textTheme.bodyLarge?.color,
+                            ),
+                          ),
+                          const SizedBox(height: 10),
+                          Text(
+                            loc.address,
+                            style: TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                          const SizedBox(height: 4),
+                          AppTextField(
+                            minLines: 3,
+                            maxLines: 5,
+                            controller: addressCtrl,
+                            readonly: true,
+                            enabled: false,
+                            textStyle: TextStyle(
+                              // color: Theme.of(context).textTheme.bodyLarge?.color,
+                            ),
                           ),
                         ],
-                        Text(
-                          loc.fullName,
-                          style: TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w600,
-                            // color: Theme.of(context).textTheme.bodyLarge?.color,
-                          ),
-                        ),
-                        const SizedBox(height: 4), // reduced
-                        AppTextField(
-                          controller: nameCtrl,
-                          readonly: true,
-                          enabled: false,
-                         textStyle: TextStyle(
-    // color: Theme.of(context).textTheme.bodyLarge?.color,
-  ),
-                        ),
-                        const SizedBox(height: 10), // reduced
-                        Text(
-                          loc.emailAddress,
-                          style: TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                        const SizedBox(height: 4),
-                        AppTextField(
-                          controller: emailCtrl,
-                          readonly: true,
-                          enabled: false,
-                          textStyle: TextStyle(
-    // color: Theme.of(context).textTheme.bodyLarge?.color,
-  ),
-                        ),
-                        const SizedBox(height: 10),
-                        Text(
-                          "${loc.phoneNumber}",
-                          style: TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                        const SizedBox(height: 4),
-                        AppTextField(
-                           prefixText: "+973 ",
-                          controller:  phoneCtrl,
-                          readonly: true,
-                          enabled: false,
-                          textStyle: TextStyle(
-    // color: Theme.of(context).textTheme.bodyLarge?.color,
-  ),
-                        ),
-                        const SizedBox(height: 10),
-                        Text(
-                          loc.address,
-                          style: TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w600,
-                            
-                          ),
-                        ),
-                        const SizedBox(height: 4),
-                        AppTextField(
-                          minLines: 3,
-                          maxLines: 5,
-                          controller: addressCtrl,
-                          readonly: true,
-                          enabled: false,
-                          textStyle: TextStyle(
-    // color: Theme.of(context).textTheme.bodyLarge?.color,
-  ),
-                        ),
-                      ],
+                      ),
                     ),
                   ),
                 ),
-                 ),
               ),
             ],
           );
@@ -614,8 +614,9 @@ class Myprofile extends ConsumerWidget {
 }
 
 String _memberStatus(Map member) {
-  final verification =
-      (member['accountVerification'] ?? '').toString().toLowerCase();
+  final verification = (member['accountVerification'] ?? '')
+      .toString()
+      .toLowerCase();
   final rawStatus = member['accountStatus'];
   final bool isActive;
   if (rawStatus is bool) {
@@ -649,10 +650,7 @@ Widget _statusCountPill({
         Container(
           height: 8,
           width: 8,
-          decoration: BoxDecoration(
-            color: color,
-            shape: BoxShape.circle,
-          ),
+          decoration: BoxDecoration(color: color, shape: BoxShape.circle),
         ),
         const SizedBox(width: 6),
         Text(
@@ -671,12 +669,11 @@ Widget _statusCountPill({
 class _FamilyMembersListSection extends ConsumerWidget {
   const _FamilyMembersListSection();
 
-Widget _header(BuildContext context, int count) {
-
+  Widget _header(BuildContext context, int count) {
     return Row(
       children: [
-       Text(
-  AppLocalizations.of(context)!.familyMembers,
+        Text(
+          AppLocalizations.of(context)!.familyMembers,
           style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
         ),
         const SizedBox(width: 8),
@@ -715,14 +712,14 @@ Widget _header(BuildContext context, int count) {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-      final loc = AppLocalizations.of(context)!; // ✅ ADD THIS
+    final loc = AppLocalizations.of(context)!; // ✅ ADD THIS
 
-final membersAsync = ref.watch(familyMembersVerifiedProvider);
+    final membersAsync = ref.watch(familyMembersVerifiedProvider);
     return membersAsync.when(
       loading: () => Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-         _header(context, 0),
+          _header(context, 0),
           _infoBox(
             child: const Center(
               child: SizedBox(
@@ -745,17 +742,13 @@ final membersAsync = ref.watch(familyMembersVerifiedProvider);
                 const SizedBox(width: 10),
                 Expanded(
                   child: Text(
-                   AppLocalizations.of(context)!.errorLoadingProfile,
-                    style: TextStyle(
-                      fontSize: 13,
-                      color: Colors.grey.shade800,
-                    ),
+                    AppLocalizations.of(context)!.errorLoadingProfile,
+                    style: TextStyle(fontSize: 13, color: Colors.grey.shade800),
                   ),
                 ),
                 TextButton(
-                  onPressed: () =>
-                      ref.invalidate(familyMembersListProvider),
-                  child:  Text(AppLocalizations.of(context)!.retry),
+                  onPressed: () => ref.invalidate(familyMembersListProvider),
+                  child: Text(AppLocalizations.of(context)!.retry),
                 ),
               ],
             ),
@@ -767,14 +760,11 @@ final membersAsync = ref.watch(familyMembersVerifiedProvider);
           return Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-             _header(context, 0),
+              _header(context, 0),
               _infoBox(
                 child: Row(
                   children: [
-                    Icon(
-                      Icons.group_outlined,
-                      color: Colors.grey.shade500,
-                    ),
+                    Icon(Icons.group_outlined, color: Colors.grey.shade500),
                     const SizedBox(width: 10),
                     Expanded(
                       child: Text(
@@ -797,7 +787,7 @@ final membersAsync = ref.watch(familyMembersVerifiedProvider);
         int rejected = 0;
         for (final m in members) {
           final status = _memberStatus(m);
-            final loc = AppLocalizations.of(context)!;
+          final loc = AppLocalizations.of(context)!;
 
           switch (status) {
             case 'Rejected':
@@ -814,7 +804,7 @@ final membersAsync = ref.watch(familyMembersVerifiedProvider);
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _header(context,members.length),
+            _header(context, members.length),
             const SizedBox(height: 10),
             Wrap(
               spacing: 8,
@@ -858,10 +848,7 @@ class _FamilyMemberTile extends ConsumerStatefulWidget {
   final Map<String, dynamic> member;
   final VoidCallback onRemoved;
 
-  const _FamilyMemberTile({
-    required this.member,
-    required this.onRemoved,
-  });
+  const _FamilyMemberTile({required this.member, required this.onRemoved});
 
   @override
   ConsumerState<_FamilyMemberTile> createState() => _FamilyMemberTileState();
@@ -915,11 +902,11 @@ class _FamilyMemberTileState extends ConsumerState<_FamilyMemberTile> {
 
     setState(() => _removing = true);
     try {
-      await ref.read(familyMembersManageServiceProvider).removeFamilyMember(memberId);
+      await ref
+          .read(familyMembersManageServiceProvider)
+          .removeFamilyMember(memberId);
       if (!mounted) return;
-SnackbarHelper.ShowSuccess(
-  context,
-          loc.memberRemoved(name));
+      SnackbarHelper.ShowSuccess(context, loc.memberRemoved(name));
       widget.onRemoved();
     } catch (e) {
       if (!mounted) return;

@@ -13,13 +13,11 @@ class PrivacyPolicyView extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final privacyAsync = ref.watch(Privacypolicyprovider);
-  final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context)!;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Scaffold(
       appBar: AppBar(
-        title:  Text(
-         l10n.privacyPolicy,
-          style: TextStyle(color: Colors.white),
-        ),
+        title: Text(l10n.privacyPolicy, style: TextStyle(color: Colors.white)),
         backgroundColor: AppColors.app_background_clr,
         iconTheme: const IconThemeData(color: Colors.white),
         elevation: 0,
@@ -45,22 +43,29 @@ class PrivacyPolicyView extends ConsumerWidget {
                       height: 160,
                       width: double.infinity,
                       color: Colors.grey.withOpacity(0.1),
-                      child: const Center(child: CircularProgressIndicator(strokeWidth: 2)),
+                      child: const Center(
+                        child: CircularProgressIndicator(strokeWidth: 2),
+                      ),
                     ),
                     errorWidget: (context, url, error) => Container(
                       height: 160,
                       width: double.infinity,
                       decoration: BoxDecoration(
- color: Theme.of(context).colorScheme.onPrimary                      ),
+                        color: Theme.of(context).colorScheme.surface,
+                      ), // ✅ correct bg
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Icon(Icons.privacy_tip_outlined, size: 50, color: Theme.of(context).colorScheme.onPrimary),
+                          Icon(
+                            Icons.privacy_tip_outlined,
+                            size: 50,
+                            color: Theme.of(context).colorScheme.onSurface,
+                          ),
                           const SizedBox(height: 8),
                           Text(
                             l10n.privacyPolicy,
                             style: TextStyle(
-    color: Theme.of(context).colorScheme.onPrimary,
+                              color: Theme.of(context).colorScheme.onSurface,
                               fontWeight: FontWeight.w600,
                               letterSpacing: 1.1,
                             ),
@@ -76,11 +81,12 @@ class PrivacyPolicyView extends ConsumerWidget {
                     padding: const EdgeInsets.only(bottom: 14),
                     child: Text(
                       text,
-                      textAlign: TextAlign.justify, // Better for long legal text
+                      textAlign:
+                          TextAlign.justify, // Better for long legal text
                       style: TextStyle(
                         fontSize: 14.5,
                         height: 1.5,
-                        color: Colors.black87,
+                        color: Theme.of(context).textTheme.bodyMedium?.color,
                       ),
                     ),
                   ),
