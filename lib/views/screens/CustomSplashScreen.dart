@@ -345,13 +345,13 @@ late Animation<double> _rotationAnimation;
 
     if (!mounted) return;
 
-    if (!hasSeenAbout) {
-      context.go(RouteNames.language);
-    } else if (isLoggedIn && token.isNotEmpty) {
-      context.go(RouteNames.bottomnav);
-    } else {
-      context.go(RouteNames.login);
-    }
+  if (!hasSeenAbout) {
+  context.go(RouteNames.language);
+} else if (token != null && token.isNotEmpty) {
+  context.go(RouteNames.bottomnav);
+} else {
+  context.go(RouteNames.login);
+}
   }
 
   // ================= UI =================

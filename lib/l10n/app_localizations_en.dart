@@ -1123,4 +1123,7 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get failedToAddMemberTryAgain =>
       'Failed to add member. Please try again.';
+
+  @override
+  String get emailOrPhone => 'Email / Phone Number';
 }

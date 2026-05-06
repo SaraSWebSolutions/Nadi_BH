@@ -436,5 +436,7 @@
   "thirdName": "الاسم الثالث",
   "fourthName": "اسم العائلة",
   "requiredField": "مطلوب",
-  "failedToAddMemberTryAgain": "فشل إضافة العضو. يرجى المحاولة مرة أخرى."
+  "failedToAddMemberTryAgain": "فشل إضافة العضو. يرجى المحاولة مرة أخرى.",
+
+"emailOrPhone": "البريد الإلكتروني أو رقم الهاتف"
 }

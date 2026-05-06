@@ -1113,4 +1113,7 @@ class AppLocalizationsAr extends AppLocalizations {
   @override
   String get failedToAddMemberTryAgain =>
       'فشل إضافة العضو. يرجى المحاولة مرة أخرى.';
+
+  @override
+  String get emailOrPhone => 'البريد الإلكتروني أو رقم الهاتف';
 }

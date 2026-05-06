@@ -346,22 +346,27 @@ class _LoginViewState extends State<LoginView> {
   }
 
   Future<void> login(BuildContext context) async {
-    if (_isLoading) return; // prevent multiple clicks
+     if (_isLoading) return;
 
-    final email = controller.email.text.trim();
-    final password = controller.password.text.trim();
+  final input = controller.email.text.trim();
+  final password = controller.password.text.trim();
 
-    // Client-side validation before hitting the API
-    setState(() {
-      emailError = email.isEmpty
-          ? AppLocalizations.of(context)!.emailRequired
-          : null;
+  bool isEmail = RegExp(r'^[^@]+@[^@]+\.[^@]+').hasMatch(input);
+  bool isPhone = RegExp(r'^[0-9]{8}$').hasMatch(input); // ✅ ONLY 8 digits
 
-      passwordError = password.isEmpty
-          ? AppLocalizations.of(context)!.passwordRequired
-          : null;
-    });
-    ;
+  setState(() {
+    if (input.isEmpty) {
+      emailError = "Email or phone number is required";
+    } else if (!isEmail && !isPhone) {
+      emailError = "Enter valid email or 8-digit phone number";
+    } else {
+      emailError = null;
+    }
+
+    passwordError = password.isEmpty ? "Password required" : null;
+  });
+
+  
 
     if (emailError != null || passwordError != null) return;
     setState(() => _isLoading = true); // 🔥 START LOADER
@@ -371,7 +376,8 @@ class _LoginViewState extends State<LoginView> {
     AppLogger.info("Login Fcm Token ******************* $fcmToken");
     try {
       final response = await _authService.LoginApi(
-        email: loginData.email,
+       email: isEmail ? input : null,
+  mobileNumber: isPhone ? input : null,
         password: loginData.password,
         fcmToken: fcmToken,
       );
@@ -739,7 +745,7 @@ class _LoginViewState extends State<LoginView> {
                                   decoration: InputDecoration(
                                     labelText: AppLocalizations.of(
                                       context,
-                                    )!.enterEmail,
+                                    )!.emailOrPhone,
 
                                     filled: true,
                                     fillColor: Theme.of(

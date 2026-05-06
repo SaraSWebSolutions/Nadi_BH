@@ -371,22 +371,51 @@ class AuthService {
   }
 
   //Login
-  Future<Map<String, dynamic>?> LoginApi({
-    required String email,
-    required String password,
-    required String fcmToken,
-  }) async {
-    try {
-      print(" fcmToken*******77777777777777 $fcmToken");
-      final response = await _dio.post(
-        "user-account/signin",
-        data: {"email": email, "password": password, "fcmToken": fcmToken},
+ 
+Future<Map<String, dynamic>?> LoginApi({
+ String? email,
+  String? mobileNumber,
+  required String password,
+  required String fcmToken,
+}) async {
+  try {
+    /// 🔐 PRINT REQUEST PAYLOAD (safe)
+     final payload = {
+      if (email != null) "email": email,
+      if (mobileNumber != null) "mobileNumber": mobileNumber,
+      "password": password,
+      "fcmToken": fcmToken,
+    };
+
+       print("🚀 LOGIN a: $payload");
+
+
+   final response = await _dio.post(
+      "user-account/signin",
+      data: payload,
+    );
+
+    /// ✅ PRINT SUCCESS RESPONSE
+    AppLogger.success(
+      "✅ LOGIN RESPONSE [${response.statusCode}]:\n"
+      "${const JsonEncoder.withIndent('  ').convert(response.data)}",
+    );
+
+    return response.data;
+  } on DioException catch (e) {
+    /// ❌ PRINT ERROR RESPONSE (IMPORTANT)
+    AppLogger.error("❌ LOGIN ERROR STATUS: ${e.response?.statusCode}");
+
+    if (e.response?.data != null) {
+      AppLogger.error(
+        "❌ LOGIN ERROR RESPONSE:\n"
+        "${const JsonEncoder.withIndent('  ').convert(e.response?.data)}",
       );
-      return response.data;
-    } on DioException catch (e) {
-      AppLogger.error("Login ${e.response?.statusCode}");
-      AppLogger.error("Login ${e.response?.data}");
-      rethrow;
+    } else {
+      AppLogger.error("❌ LOGIN ERROR MESSAGE: ${e.message}");
     }
+
+    rethrow;
   }
+}
 }

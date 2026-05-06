@@ -2215,6 +2215,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Failed to add member. Please try again.'**
   String get failedToAddMemberTryAgain;
+
+  /// No description provided for @emailOrPhone.
+  ///
+  /// In en, this message translates to:
+  /// **'Email / Phone Number'**
+  String get emailOrPhone;
 }
 
 class _AppLocalizationsDelegate

@@ -700,9 +700,11 @@ class _SignInOtpState extends State<SignInOtp> {
                                     controller: _phoneController,
                                     prefixText: "+973 ",
                                     filled: true,
+                                      maxLength: 8,
                                     fillColor: Theme.of(
                                       context,
                                     ).scaffoldBackgroundColor,
+                                    
                                     validator: (value) {
                                       if (value == null || value.isEmpty) {
                                         return l10n.pleaseEnterPhoneNumber;

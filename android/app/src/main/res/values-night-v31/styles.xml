@@ -9,7 +9,7 @@
         <item name="android:windowDrawsSystemBarBackgrounds">false</item>
         <item name="android:windowLayoutInDisplayCutoutMode">shortEdges</item>
         <item name="android:windowSplashScreenBackground">#6374AE</item>
-        <item name="android:windowSplashScreenAnimatedIcon">@drawable/android12splash</item>
+        <item name="android:windowSplashScreenAnimatedIcon">@null</item>
     </style>
     <!-- NormalTheme: used by Flutter after engine starts -->
     <style name="NormalTheme" parent="@android:style/Theme.Light.NoTitleBar">
