@@ -205,8 +205,8 @@ class _CustomSplashScreenState extends State<CustomSplashScreen>
   bool isLoading = true;
 
   late AnimationController _animationController;
-  late Animation<double> _fadeAnimation;
-  late Animation<double> _scaleAnimation;
+  // late Animation<double> _fadeAnimation;
+  // late Animation<double> _scaleAnimation;
   late Animation<double> _rotationAnimation;
   @override
   void initState() {
@@ -215,9 +215,27 @@ class _CustomSplashScreenState extends State<CustomSplashScreen>
     AppLogger.success("🚀 Splash initState()");
 
     _setupAnimation();
-    _initNotifications();
-    _loadSplashMedia();
+
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      await Future.wait([_initNotifications(), _loadSplashMedia()]);
+
+      if (mounted) {
+        setState(() {
+          isLoading = false;
+        });
+      }
+    });
   }
+  // @override
+  // void initState() {
+  //   super.initState();
+
+  //   AppLogger.success("🚀 Splash initState()");
+
+  //   _setupAnimation();
+  //   _initNotifications();
+  //   _loadSplashMedia();
+  // }
 
   // ================= ANIMATION SETUP =================
   bool _hasNavigated = false;
@@ -225,27 +243,31 @@ class _CustomSplashScreenState extends State<CustomSplashScreen>
   void _setupAnimation() {
     _animationController = AnimationController(
       vsync: this,
-      duration: const Duration(seconds: 6), // ✅ slower rotation
+      duration: const Duration(seconds: 20), // ✅ slower rotation
     );
 
-    _fadeAnimation = CurvedAnimation(
-      parent: _animationController,
-      curve: Curves.easeOut,
-    );
+    // _fadeAnimation = Tween<double>(
+    //   begin: 1,
+    //   end: 1,
+    // ).animate(_animationController);
 
-    _scaleAnimation = Tween<double>(begin: 0.92, end: 1.0).animate(
-      CurvedAnimation(parent: _animationController, curve: Curves.easeOutCubic),
-    );
+    //     _scaleAnimation = Tween<double>(
+    //   begin: 1.0,
+    //   end: 1.03,
+    // ).animate(
+    //   CurvedAnimation(
+    //     parent: _animationController,
+    //     curve: Curves.easeInOut,
+    //   ),
+    // );
 
-    // ✅ Rotation
     _rotationAnimation = Tween<double>(begin: 0, end: 1).animate(
       CurvedAnimation(parent: _animationController, curve: Curves.linear),
     );
-
     // ✅ IMPORTANT: repeat for continuous rotation
     _animationController.repeat();
-
-    setState(() => isLoading = false);
+    //_animationController.repeat(reverse: true);
+    // setState(() => isLoading = false);
 
     Future.delayed(const Duration(milliseconds: 2500), () {
       if (mounted && !_hasNavigated) _decideNavigation();
@@ -291,7 +313,7 @@ class _CustomSplashScreenState extends State<CustomSplashScreen>
         imageUrl = "${ImageBaseUrl.baseUrl}/$image";
       }
 
-      if (mounted) setState(() {});
+      // if (mounted) setState(() {});
     } catch (e) {
       AppLogger.error("❌ Splash error: $e");
     }
@@ -372,6 +394,7 @@ class _CustomSplashScreenState extends State<CustomSplashScreen>
         height: 220,
         fit: BoxFit.contain,
         filterQuality: FilterQuality.medium,
+        gaplessPlayback: true,
       );
     } else {
       imageWidget = Image.asset(
@@ -380,20 +403,19 @@ class _CustomSplashScreenState extends State<CustomSplashScreen>
         height: 220,
         fit: BoxFit.contain,
         filterQuality: FilterQuality.medium,
+        gaplessPlayback: true,
       );
     }
 
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        FadeTransition(
-          opacity: _fadeAnimation,
-          child: RotationTransition(
-            // 👈 ADD THIS
-            turns: _rotationAnimation,
-            child: ScaleTransition(scale: _scaleAnimation, child: imageWidget),
-          ),
+        RotationTransition(
+          // 👈 ADD THIS
+          turns: _rotationAnimation,
+          child: imageWidget,
         ),
+
         const SizedBox(height: 45),
         SizedBox(
           width: 150,
@@ -432,11 +454,7 @@ class _CustomSplashScreenState extends State<CustomSplashScreen>
             fit: BoxFit.cover,
           ),
         ),
-        child: Center(
-          child: isLoading
-              ? const CircularProgressIndicator(color: Colors.white)
-              : _buildMedia(),
-        ),
+        child: Center(child: _buildMedia()),
       ),
     );
   }
