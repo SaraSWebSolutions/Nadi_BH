@@ -207,7 +207,7 @@ class _CustomSplashScreenState extends State<CustomSplashScreen>
   late AnimationController _animationController;
   late Animation<double> _fadeAnimation;
   late Animation<double> _scaleAnimation;
-late Animation<double> _rotationAnimation;
+  late Animation<double> _rotationAnimation;
   @override
   void initState() {
     super.initState();
@@ -222,48 +222,44 @@ late Animation<double> _rotationAnimation;
   // ================= ANIMATION SETUP =================
   bool _hasNavigated = false;
 
- void _setupAnimation() {
-  _animationController = AnimationController(
-    vsync: this,
-    duration: const Duration(seconds: 6), // ✅ slower rotation
-  );
+  void _setupAnimation() {
+    _animationController = AnimationController(
+      vsync: this,
+      duration: const Duration(seconds: 6), // ✅ slower rotation
+    );
 
-  _fadeAnimation = CurvedAnimation(
-    parent: _animationController,
-    curve: Curves.easeOut,
-  );
-
-  _scaleAnimation = Tween<double>(begin: 0.92, end: 1.0).animate(
-    CurvedAnimation(
+    _fadeAnimation = CurvedAnimation(
       parent: _animationController,
-      curve: Curves.easeOutCubic,
-    ),
-  );
+      curve: Curves.easeOut,
+    );
 
-  // ✅ Rotation
-  _rotationAnimation = Tween<double>(begin: 0, end: 1).animate(
-    CurvedAnimation(
-      parent: _animationController,
-      curve: Curves.linear,
-    ),
-  );
+    _scaleAnimation = Tween<double>(begin: 0.92, end: 1.0).animate(
+      CurvedAnimation(parent: _animationController, curve: Curves.easeOutCubic),
+    );
 
-  // ✅ IMPORTANT: repeat for continuous rotation
-  _animationController.repeat();
+    // ✅ Rotation
+    _rotationAnimation = Tween<double>(begin: 0, end: 1).animate(
+      CurvedAnimation(parent: _animationController, curve: Curves.linear),
+    );
 
-  setState(() => isLoading = false);
+    // ✅ IMPORTANT: repeat for continuous rotation
+    _animationController.repeat();
 
-  Future.delayed(const Duration(milliseconds: 2500), () {
-    if (mounted && !_hasNavigated) _decideNavigation();
-  });
-}
+    setState(() => isLoading = false);
+
+    Future.delayed(const Duration(milliseconds: 2500), () {
+      if (mounted && !_hasNavigated) _decideNavigation();
+    });
+  }
 
   // ================= LOAD MEDIA =================
   Future<void> _loadSplashMedia() async {
     try {
       // ✅ Hard 3-second timeout so media fetch never blocks the splash
-      final response = await _onbordingService.loading()
-          .timeout(const Duration(seconds: 3), onTimeout: () => null);
+      final response = await _onbordingService.loading().timeout(
+        const Duration(seconds: 3),
+        onTimeout: () => null,
+      );
 
       if (response == null ||
           response['data'] == null ||
@@ -282,8 +278,10 @@ late Animation<double> _rotationAnimation;
           Uri.parse(videoUrl!),
         );
 
-        await _videoController!.initialize()
-            .timeout(const Duration(seconds: 3), onTimeout: () {});
+        await _videoController!.initialize().timeout(
+          const Duration(seconds: 3),
+          onTimeout: () {},
+        );
         _videoController!
           ..setLooping(true)
           ..play();
@@ -345,13 +343,13 @@ late Animation<double> _rotationAnimation;
 
     if (!mounted) return;
 
-  if (!hasSeenAbout) {
-  context.go(RouteNames.language);
-} else if (token != null && token.isNotEmpty) {
-  context.go(RouteNames.bottomnav);
-} else {
-  context.go(RouteNames.login);
-}
+    if (!hasSeenAbout) {
+      context.go(RouteNames.language);
+    } else if (token != null && token.isNotEmpty) {
+      context.go(RouteNames.bottomnav);
+    } else {
+      context.go(RouteNames.login);
+    }
   }
 
   // ================= UI =================
@@ -377,7 +375,7 @@ late Animation<double> _rotationAnimation;
       );
     } else {
       imageWidget = Image.asset(
-        'assets/logo/Applogo.png',
+        'assets/logo/logo.png',
         width: 220,
         height: 220,
         fit: BoxFit.contain,
@@ -390,13 +388,11 @@ late Animation<double> _rotationAnimation;
       children: [
         FadeTransition(
           opacity: _fadeAnimation,
-          child:RotationTransition(   // 👈 ADD THIS
-        turns: _rotationAnimation,
-        child: ScaleTransition(
-          scale: _scaleAnimation,
-          child: imageWidget,
-        ),
-      ),
+          child: RotationTransition(
+            // 👈 ADD THIS
+            turns: _rotationAnimation,
+            child: ScaleTransition(scale: _scaleAnimation, child: imageWidget),
+          ),
         ),
         const SizedBox(height: 45),
         SizedBox(
@@ -430,7 +426,9 @@ late Animation<double> _rotationAnimation;
         height: double.infinity,
         decoration: const BoxDecoration(
           image: DecorationImage(
-            image: AssetImage('assets/images/onboarding/1774802367129_PAGE-No1.png'),
+            image: AssetImage(
+              'assets/images/onboarding/1774802367129_PAGE-No1.png',
+            ),
             fit: BoxFit.cover,
           ),
         ),
