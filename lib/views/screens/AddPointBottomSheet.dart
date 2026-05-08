@@ -63,7 +63,7 @@ class _AddPointBottomSheetContentState
     if (_selectedType == RecipientType.admin) {
       setState(() => isLoading = true);
       try {
-        await _pointsRequest.sendtoadmin(points: points);
+        await _pointsRequest.sendtoadmin(points: points, reason: reason);
         if (!mounted) return;
         setState(() => isLoading = false);
         SnackbarHelper.ShowSuccess(
@@ -140,8 +140,10 @@ class _AddPointBottomSheetContentState
               /// Title
               Text(
                 t.requestToPoints,
-                style:
-                    const TextStyle(fontSize: 18, fontWeight: FontWeight.w700),
+                style: const TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w700,
+                ),
               ),
               const SizedBox(height: 12),
 
@@ -158,8 +160,9 @@ class _AddPointBottomSheetContentState
                         title: Text(
                           t.admin,
                           style: TextStyle(
-                            color:
-                                Theme.of(context).textTheme.bodyMedium?.color,
+                            color: Theme.of(
+                              context,
+                            ).textTheme.bodyMedium?.color,
                           ),
                         ),
                         value: RecipientType.admin,
@@ -184,8 +187,9 @@ class _AddPointBottomSheetContentState
                         title: Text(
                           t.family,
                           style: TextStyle(
-                            color:
-                                Theme.of(context).textTheme.bodyMedium?.color,
+                            color: Theme.of(
+                              context,
+                            ).textTheme.bodyMedium?.color,
                           ),
                         ),
                         value: RecipientType.friend,
@@ -226,28 +230,31 @@ class _AddPointBottomSheetContentState
                           decoration: InputDecoration(
                             labelText: t.selectFamilyMember,
                             floatingLabelStyle: const TextStyle(
-                                color: AppColors.app_background_clr),
+                              color: AppColors.app_background_clr,
+                            ),
                             contentPadding: const EdgeInsets.symmetric(
-                                horizontal: 15, vertical: 14),
+                              horizontal: 15,
+                              vertical: 14,
+                            ),
                             enabledBorder: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(10),
-                              borderSide:
-                                  const BorderSide(color: Colors.black26),
+                              borderSide: const BorderSide(
+                                color: Colors.black26,
+                              ),
                             ),
                             focusedBorder: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(10),
                               borderSide: const BorderSide(
-                                  color: AppColors.app_background_clr),
+                                color: AppColors.app_background_clr,
+                              ),
                             ),
                             errorBorder: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(10),
-                              borderSide:
-                                  const BorderSide(color: Colors.red),
+                              borderSide: const BorderSide(color: Colors.red),
                             ),
                             focusedErrorBorder: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(10),
-                              borderSide:
-                                  const BorderSide(color: Colors.red),
+                              borderSide: const BorderSide(color: Colors.red),
                             ),
                           ),
                           hint: _familyMembers.isEmpty
@@ -381,7 +388,9 @@ class _AddPointBottomSheetContentState
       decoration: InputDecoration(
         labelText: hintText,
         prefixText: prefix,
-        floatingLabelStyle: const TextStyle(color: AppColors.app_background_clr),
+        floatingLabelStyle: const TextStyle(
+          color: AppColors.app_background_clr,
+        ),
         filled: !enabled,
         fillColor: !enabled ? Colors.grey.shade200 : null,
         contentPadding: const EdgeInsets.symmetric(

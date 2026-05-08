@@ -205,9 +205,10 @@ class _CustomSplashScreenState extends State<CustomSplashScreen>
   bool isLoading = true;
 
   late AnimationController _animationController;
-  // late Animation<double> _fadeAnimation;
-  // late Animation<double> _scaleAnimation;
   late Animation<double> _rotationAnimation;
+
+  bool _hasNavigated = false;
+
   @override
   void initState() {
     super.initState();
@@ -226,48 +227,19 @@ class _CustomSplashScreenState extends State<CustomSplashScreen>
       }
     });
   }
-  // @override
-  // void initState() {
-  //   super.initState();
 
-  //   AppLogger.success("🚀 Splash initState()");
-
-  //   _setupAnimation();
-  //   _initNotifications();
-  //   _loadSplashMedia();
-  // }
-
-  // ================= ANIMATION SETUP =================
-  bool _hasNavigated = false;
-
+  // ================= ANIMATION =================
   void _setupAnimation() {
     _animationController = AnimationController(
       vsync: this,
-      duration: const Duration(seconds: 20), // ✅ slower rotation
+      duration: const Duration(seconds: 20),
     );
-
-    // _fadeAnimation = Tween<double>(
-    //   begin: 1,
-    //   end: 1,
-    // ).animate(_animationController);
-
-    //     _scaleAnimation = Tween<double>(
-    //   begin: 1.0,
-    //   end: 1.03,
-    // ).animate(
-    //   CurvedAnimation(
-    //     parent: _animationController,
-    //     curve: Curves.easeInOut,
-    //   ),
-    // );
 
     _rotationAnimation = Tween<double>(begin: 0, end: 1).animate(
       CurvedAnimation(parent: _animationController, curve: Curves.linear),
     );
-    // ✅ IMPORTANT: repeat for continuous rotation
+
     _animationController.repeat();
-    //_animationController.repeat(reverse: true);
-    // setState(() => isLoading = false);
 
     Future.delayed(const Duration(milliseconds: 2500), () {
       if (mounted && !_hasNavigated) _decideNavigation();
@@ -277,7 +249,6 @@ class _CustomSplashScreenState extends State<CustomSplashScreen>
   // ================= LOAD MEDIA =================
   Future<void> _loadSplashMedia() async {
     try {
-      // ✅ Hard 3-second timeout so media fetch never blocks the splash
       final response = await _onbordingService.loading().timeout(
         const Duration(seconds: 3),
         onTimeout: () => null,
@@ -293,9 +264,9 @@ class _CustomSplashScreenState extends State<CustomSplashScreen>
       final image = item['image'];
       final video = item['video'];
 
-      // VIDEO
       if (video != null && video.toString().isNotEmpty) {
         videoUrl = "${ImageBaseUrl.baseUrl}/$video";
+
         _videoController = VideoPlayerController.networkUrl(
           Uri.parse(videoUrl!),
         );
@@ -304,16 +275,15 @@ class _CustomSplashScreenState extends State<CustomSplashScreen>
           const Duration(seconds: 3),
           onTimeout: () {},
         );
+
         _videoController!
           ..setLooping(true)
           ..play();
-      }
-      // IMAGE
-      else if (image != null && image.toString().isNotEmpty) {
+      } else if (image != null && image.toString().isNotEmpty) {
         imageUrl = "${ImageBaseUrl.baseUrl}/$image";
       }
 
-      // if (mounted) setState(() {});
+      if (mounted) setState(() {});
     } catch (e) {
       AppLogger.error("❌ Splash error: $e");
     }
@@ -322,35 +292,27 @@ class _CustomSplashScreenState extends State<CustomSplashScreen>
   // ================= FCM =================
   Future<void> _initNotifications() async {
     try {
-      // ✅ Timeout the entire FCM init to prevent blocking splash
       await Future(() async {
-        NotificationSettings settings = await FirebaseMessaging.instance
-            .requestPermission(alert: true, badge: true, sound: true);
+        final settings = await FirebaseMessaging.instance.requestPermission(
+          alert: true,
+          badge: true,
+          sound: true,
+        );
 
         AppLogger.success("Permission: ${settings.authorizationStatus}");
 
-        // Token refresh listener
         FirebaseMessaging.instance.onTokenRefresh.listen((token) async {
-          AppLogger.success("FCM Token refreshed: $token");
           await AppPreferences.savefcmToken(token);
         });
 
-        /// ✅ SAFE TOKEN GET (important for iOS simulator)
-        try {
-          final token = await FirebaseMessaging.instance.getToken();
+        final token = await FirebaseMessaging.instance.getToken();
 
-          if (token != null) {
-            AppLogger.success("FCM Token: $token");
-            await AppPreferences.savefcmToken(token);
-          } else {
-            AppLogger.error("FCM token is null (maybe simulator)");
-          }
-        } catch (e) {
-          AppLogger.error("FCM not available (Simulator): $e");
+        if (token != null) {
+          await AppPreferences.savefcmToken(token);
         }
       }).timeout(const Duration(seconds: 5));
     } catch (e) {
-      AppLogger.error("FCM init timed out or failed: $e");
+      AppLogger.error("FCM init error: $e");
     }
   }
 
@@ -375,50 +337,33 @@ class _CustomSplashScreenState extends State<CustomSplashScreen>
   }
 
   // ================= UI =================
-  Widget _buildMedia() {
-    // 🎥 VIDEO → NO ANIMATION
-    if (_videoController != null && _videoController!.value.isInitialized) {
-      return AspectRatio(
-        aspectRatio: _videoController!.value.aspectRatio,
-        child: VideoPlayer(_videoController!),
-      );
-    }
-
-    // 🖼 IMAGE / LOGO → sharp still logo with fade + subtle scale-in
-    Widget imageWidget;
-
-    if (imageUrl != null) {
-      imageWidget = Image.network(
-        imageUrl!,
-        width: 220,
-        height: 220,
-        fit: BoxFit.contain,
-        filterQuality: FilterQuality.medium,
-        gaplessPlayback: true,
-      );
-    } else {
-      imageWidget = Image.asset(
-        'assets/logo/logo.png',
-        width: 220,
-        height: 220,
-        fit: BoxFit.contain,
-        filterQuality: FilterQuality.medium,
-        gaplessPlayback: true,
-      );
-    }
-
+  Widget _buildSplashUI() {
     return Column(
-      mainAxisSize: MainAxisSize.min,
+      mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        RotationTransition(
-          // 👈 ADD THIS
-          turns: _rotationAnimation,
-          child: imageWidget,
+        // 🔄 ROTATING LOGO (FIXED SIZE = NO JUMP)
+        SizedBox(
+          width: 300,
+          height: 300,
+          child: RotationTransition(
+            turns: _rotationAnimation,
+            child: Center(
+              child: Image.asset(
+                'assets/logo/logo.png',
+                width: 240,
+                height: 240,
+                fit: BoxFit.contain,
+                filterQuality: FilterQuality.high,
+              ),
+            ),
+          ),
         ),
 
-        const SizedBox(height: 45),
+        const SizedBox(height: 50),
+
+        // 📊 PROGRESS BAR
         SizedBox(
-          width: 150,
+          width: 180,
           child: ClipRRect(
             borderRadius: BorderRadius.circular(10),
             child: const LinearProgressIndicator(
@@ -430,6 +375,22 @@ class _CustomSplashScreenState extends State<CustomSplashScreen>
         ),
       ],
     );
+  }
+
+  // ================= VIDEO / IMAGE =================
+  Widget _buildMedia() {
+    if (_videoController != null && _videoController!.value.isInitialized) {
+      return AspectRatio(
+        aspectRatio: _videoController!.value.aspectRatio,
+        child: VideoPlayer(_videoController!),
+      );
+    }
+
+    if (imageUrl != null) {
+      return _buildSplashUI();
+    }
+
+    return _buildSplashUI();
   }
 
   @override
@@ -454,7 +415,7 @@ class _CustomSplashScreenState extends State<CustomSplashScreen>
             fit: BoxFit.cover,
           ),
         ),
-        child: Center(child: _buildMedia()),
+        child: Center(child: isLoading ? const SizedBox() : _buildMedia()),
       ),
     );
   }

@@ -54,11 +54,20 @@ class PointsRequest {
 
   // --- Send To Admin
 
-  Future<Map<String, dynamic>> sendtoadmin({required String points}) async {
+  Future<Map<String, dynamic>> sendtoadmin({
+    required String points,
+    required String reason,
+  }) async {
     try {
+      final requestData = {"points": points, "reason": reason};
+
+      AppLogger.success("REQUEST => POST points/requestToAdmin");
+
+      AppLogger.warn("REQUEST BODY => $requestData");
+
       final response = await _dio.post(
         'points/requestToAdmin',
-        data: {"points": points},
+        data: {"points": points, "reason": reason},
       );
       AppLogger.warn("PointsRequest ${response.data}");
       return response.data;

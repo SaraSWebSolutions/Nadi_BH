@@ -226,8 +226,8 @@ class _BottomNavState extends ConsumerState<BottomNav> {
         now.difference(lastBackPressed!) > const Duration(seconds: 2)) {
       lastBackPressed = now;
       ScaffoldMessenger.of(context).showSnackBar(
-         SnackBar(
-          content:  Text(AppLocalizations.of(context)!.tapAgainToExit ),
+        SnackBar(
+          content: Text(AppLocalizations.of(context)!.tapAgainToExit),
           duration: Duration(seconds: 2),
         ),
       );
@@ -300,9 +300,16 @@ class _BottomNavState extends ConsumerState<BottomNav> {
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
     // Total unread across all chats — drives the tab badge
-    final unreadMap = ref.watch(streamUnreadCountsProvider).value ?? {};
-    final totalUnread = unreadMap.values.fold(0, (sum, c) => sum + c);
+    final unreadMap = ref
+        .watch(streamUnreadCountsProvider)
+        .maybeWhen(data: (data) => data, orElse: () => {});
 
+    // USE THIS
+
+    final totalUnread = unreadMap.values.fold<int>(
+      0,
+      (sum, c) => sum + (c as int),
+    );
     return Container(
       decoration: BoxDecoration(
         borderRadius: const BorderRadius.only(
