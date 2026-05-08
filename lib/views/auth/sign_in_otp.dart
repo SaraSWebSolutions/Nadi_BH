@@ -690,7 +690,11 @@ class _SignInOtpState extends State<SignInOtp> {
                   /// FORM CARD (NO Expanded, NO IntrinsicHeight)
                   Container(
                     width: double.infinity,
-                    constraints: BoxConstraints(minHeight: size.height),
+                    constraints: BoxConstraints(
+                      minHeight:
+                          size.height -
+                          (isIOS ? size.height * 0.60 : size.height * 0.62),
+                    ),
                     decoration: BoxDecoration(
                       color: Theme.of(context).scaffoldBackgroundColor,
                       borderRadius: const BorderRadius.only(

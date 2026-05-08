@@ -97,18 +97,22 @@ class _ForgotpasswordState extends State<Forgotpassword> {
                       children: [
                         /// TOP SPACE
                         SizedBox(
-                          height: keyboardOpen
-                              ? 40
-                              : (isIOS
-                                    ? size.height * 0.36
-                                    : size.height * 0.40),
+                          height: isIOS
+                              ? size.height * 0.36
+                              : size.height * 0.38,
                         ),
 
                         /// WHITE CONTAINER
                         Container(
                           width: double.infinity,
-                          constraints: BoxConstraints(minHeight: size.height),
-
+                          constraints: BoxConstraints(
+                            minHeight:
+                                size.height -
+                                (isIOS
+                                    ? size.height * 0.60
+                                    : size.height * 0.62),
+                          ),
+                          //constraints: BoxConstraints(minHeight: size.height),
                           padding: const EdgeInsets.all(20),
                           decoration: BoxDecoration(
                             color: Theme.of(context).scaffoldBackgroundColor,
@@ -125,7 +129,7 @@ class _ForgotpasswordState extends State<Forgotpassword> {
                                 const SizedBox(height: 20),
 
                                 Text(
-                                  loc.changePassword,
+                                  loc.forgotPassword,
                                   style: const TextStyle(
                                     fontSize: 20,
                                     fontWeight: FontWeight.bold,
