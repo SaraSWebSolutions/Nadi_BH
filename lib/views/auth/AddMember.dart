@@ -306,12 +306,9 @@ class _AddmemberState extends State<Addmember> {
   bool _hideBottomButton = false;
   final GlobalKey<FormState> _addressFormKey = GlobalKey<FormState>();
   final ScrollController _scrollController = ScrollController();
-final FocusNode _nameFocus = FocusNode();
+  final FocusNode _nameFocus = FocusNode();
   bool _isLoading = false;
-final Map<String, String> genderMap = {
-  'male': 'Male',
-  'female': 'Female',
-};
+  final Map<String, String> genderMap = {'male': 'Male', 'female': 'Female'};
   int _totalMembers = 0;
   int _currentMemberIndex = 1;
 
@@ -325,16 +322,17 @@ final Map<String, String> genderMap = {
         return widget.accountType;
     }
   }
-@override
-void dispose() {
-  _scrollController.dispose();
-  _nameFocus.dispose(); // ✅ important
-  super.dispose();
-}
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    _nameFocus.dispose(); // ✅ important
+    super.dispose();
+  }
+
   Future<void> _addMember() async {
     final l10n = AppLocalizations.of(context)!;
     final memberValid = widget.formKey.currentState?.validate() ?? false;
-  
 
     if (!_isAddress) {
       SnackbarHelper.showError(context, l10n.addAddressError);
@@ -355,8 +353,6 @@ void dispose() {
       address: _isAddress
           ? addressController.getOnlyAddressMap(addressType: "flat")
           : null,
-      
-
     );
 
     AppLogger.success("body : $body");
@@ -389,24 +385,27 @@ void dispose() {
 
         // Delay slightly so user sees the snackbar
         Future.delayed(const Duration(seconds: 1), () {
-          if (context.mounted) context.push(RouteNames.accountverfy); // ignore: use_build_context_synchronously
+          if (context.mounted)
+            context.push(
+              RouteNames.accountverfy,
+            ); // ignore: use_build_context_synchronously
         });
       } else {
         // Increment member index for next member
         setState(() {
-  _currentMemberIndex++;
-});
+          _currentMemberIndex++;
+        });
 
-FocusScope.of(context).unfocus();
+        FocusScope.of(context).unfocus();
 
-WidgetsBinding.instance.addPostFrameCallback((_) {
-  if (_scrollController.hasClients) {
-    _scrollController.jumpTo(0); // faster than animate
-  }
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (_scrollController.hasClients) {
+            _scrollController.jumpTo(0); // faster than animate
+          }
 
-  // ✅ THIS IS THE FIX
-  _nameFocus.requestFocus();
-});
+          // ✅ THIS IS THE FIX
+          _nameFocus.requestFocus();
+        });
       }
     } on DioException catch (e) {
       if (!mounted) return;
@@ -415,7 +414,8 @@ WidgetsBinding.instance.addPostFrameCallback((_) {
       if (e.response?.data != null) {
         final data = e.response!.data;
         if (data is Map) {
-          errorMsg = data['message'] ?? data['error'] ?? data['msg'] ?? errorMsg;
+          errorMsg =
+              data['message'] ?? data['error'] ?? data['msg'] ?? errorMsg;
           if (data['errors'] != null && data['errors'] is Map) {
             final errors = data['errors'] as Map;
             final fieldErrors = errors.values
@@ -436,7 +436,10 @@ WidgetsBinding.instance.addPostFrameCallback((_) {
     } catch (e) {
       if (!mounted) return;
       setState(() => _isLoading = false);
-      SnackbarHelper.showError(context, '${l10n.somethingWentWrong}: ${e.toString()}');
+      SnackbarHelper.showError(
+        context,
+        '${l10n.somethingWentWrong}: ${e.toString()}',
+      );
     }
   }
 
@@ -445,229 +448,232 @@ WidgetsBinding.instance.addPostFrameCallback((_) {
     final l10n = AppLocalizations.of(context)!;
     return Form(
       key: widget.formKey,
-        child: SingleChildScrollView(
-    controller: _scrollController,
-    child:
-       Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 10),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // Text(
-                //   "Add ${widget.accountType} Member",
-                //   style: const TextStyle(
-                //     fontSize: 22,
-                //     fontWeight: FontWeight.w600,
-                //   ),
-                // ),
-               
-                const SizedBox(height: 15),
-                Row(
-                  children: [
-                    SizedBox(
-                      width: 160,
-                      height: 45,
-                      child: TextFormField(
-                        controller: controller.familyCount,
-                        keyboardType: TextInputType.number,
-                        enabled: !_isFamilyCountLocked,
-                        decoration: InputDecoration(
-                          labelText: l10n.enterFamilyCount,
-                          labelStyle: TextStyle(fontSize: 12),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          contentPadding: const EdgeInsets.symmetric(
-                            horizontal: 12,
-                            vertical: 10,
-                          ),
-                          enabledBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12),
-                            borderSide: const BorderSide(color: Colors.black26),
-                          ),
-                        ),
-                        
-
-validator: (value) => controller.validatefamilycount(value, l10n),                        onChanged: (val) {
-                          final count = int.tryParse(val);
-                          if (count != null && count > 0) {
-                            setState(() {
-                              _totalMembers = count;
-                              // Preserve progress: keep the user's current member
-                              // index, only reset to 1 on first entry, and clamp
-                              // if the new count is smaller than the progress.
-                              if (_currentMemberIndex < 1) {
-                                _currentMemberIndex = 1;
-                              } else if (_currentMemberIndex > count) {
-                                _currentMemberIndex = count;
-                              }
-                              _isFamilyCountLocked = true;
-                            });
-                          }
-                        },
-                      ),
-                    ),
-                    const SizedBox(width: 1),
-                    TextButton(
-                      onPressed: () {
-                        setState(() {
-                          _isFamilyCountLocked = false;
-                        });
-                      },
-                      child: Row(
-                        children: [
-                          Icon(
-                            Icons.person_add,
-                            size: 18,
-                            color: AppColors.btn_primery,
-                          ),
-                          const SizedBox(width: 4),
-                          Text(
-                            l10n.addMemberBtn,
-                            style: TextStyle(color: AppColors.btn_primery),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-
-                const SizedBox(height: 10),
- if (_totalMembers > 0)
-                  Text(
-                    l10n.addMemberTitle(
-                      _localizedAccountType(l10n),
-                      _currentMemberIndex.toString(),
-                      _totalMembers.toString(),
-                    ),
-                    style: const TextStyle(
-                      fontSize: 12,
-                      // fontWeight: FontWeight.w400,
-                    ),
-                  ),
-                const SizedBox(height: 15),
-
-                AppTextField(
-                  controller: controller.fullName,
-                  label: l10n.memberFullName,
-                    focusNode: _nameFocus, // ✅ add this
-                    validator: (value) => controller.validatefullname(value,l10n),
-
-                ),
-                const SizedBox(height: 15),
-
-                AppDropdown(
-                  label: l10n.relationship,
-                  items: [
-                    l10n.father,
-                    l10n.mother,
-                    l10n.son,
-                    l10n.daughter,
-                    l10n.husband,
-                    l10n.wife,
-                    l10n.addOther,
-                  
-                  ],
-                  value: controller.relation,
-                  onChanged: (val) => setState(() => controller.relation = val),
-                  validator: (val) =>
-                      val == null ? l10n.selectRelationship : null,
-                ),
-
-                const SizedBox(height: 15),
-
-                // Mobile
-                AppTextField(
-                  controller: controller.mobile,
-                  keyboardType: TextInputType.phone,
-                  label: l10n.mobileNumber,
-                  prefixText: "+973 ",
-                  maxLength: 8,
-                  inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                  validator: (value) => controller.validatemobilenumber(value,l10n),
-                ),
-
-                const SizedBox(height: 15),
-
-                // AppTextField(
-                //   controller: controller.password,
-
-                //   label: "Password*",
-                //   validator: (value) => controller.validatepassword(value),
-                // ),
-                const SizedBox(height: 15),
-
-                AppTextField(
-                  controller: controller.email,
-                  keyboardType: TextInputType.emailAddress,
-                  label: '${l10n.emailAddress}*',
-                  validator: (value) => controller.validateemail(value,l10n),
-                ),
-                const SizedBox(height: 15),
-                AppDropdown(
-                  label: l10n.gender,
-                  items: [l10n.male, l10n.female],
-                  value: controller.gender,
-                  onChanged: (val) => setState(() => controller.gender = val),
-                  validator: (val) => val == null ? l10n.selectGender : null,
-                ),
-
-                const SizedBox(height: 20),
-                SizedBox(
-                  width: double.infinity,
-                  height: 47,
-                  child: OutlinedButton(
-                    style: OutlinedButton.styleFrom(
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                    ),
-                    onPressed: () {
-                      setState(() {
-                        _isAddress = !_isAddress;
-                      });
-                    },
-                    child: Text(
-                      _isAddress ? l10n.hideAddress : l10n.addAddress,
-                      style: TextStyle(color: AppColors.btn_primery),
-                    ),
-                  ),
-                ),
-
-                if (_isAddress)
-                  Column(
+      child: SingleChildScrollView(
+        controller: _scrollController,
+        child: Column(
+          children: [
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 10),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Text(
+                  //   "Add ${widget.accountType} Member",
+                  //   style: const TextStyle(
+                  //     fontSize: 22,
+                  //     fontWeight: FontWeight.w600,
+                  //   ),
+                  // ),
+                  const SizedBox(height: 15),
+                  Row(
                     children: [
-                      const SizedBox(height: 20),
-                      Address(
-                        accountType: "Family",
-                        family: true,
-                        formKey: _addressFormKey,
-                        controller: addressController, //  pass controller
+                      SizedBox(
+                        width: 160,
+                        height: 68,
+                        child: TextFormField(
+                          controller: controller.familyCount,
+                          keyboardType: TextInputType.number,
+                          enabled: !_isFamilyCountLocked,
+                          decoration: InputDecoration(
+                            labelText: l10n.enterFamilyCount,
+                            labelStyle: TextStyle(fontSize: 12),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            contentPadding: const EdgeInsets.symmetric(
+                              horizontal: 12,
+                              vertical: 10,
+                            ),
+                            enabledBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12),
+                              borderSide: const BorderSide(
+                                color: Colors.black26,
+                              ),
+                            ),
+                          ),
+
+                          validator: (value) =>
+                              controller.validatefamilycount(value, l10n),
+                          onChanged: (val) {
+                            final count = int.tryParse(val);
+                            if (count != null && count > 0) {
+                              setState(() {
+                                _totalMembers = count;
+                                // Preserve progress: keep the user's current member
+                                // index, only reset to 1 on first entry, and clamp
+                                // if the new count is smaller than the progress.
+                                if (_currentMemberIndex < 1) {
+                                  _currentMemberIndex = 1;
+                                } else if (_currentMemberIndex > count) {
+                                  _currentMemberIndex = count;
+                                }
+                                _isFamilyCountLocked = true;
+                              });
+                            }
+                          },
+                        ),
+                      ),
+                      const SizedBox(width: 1),
+                      TextButton(
+                        onPressed: () {
+                          setState(() {
+                            _isFamilyCountLocked = false;
+                          });
+                        },
+                        child: Row(
+                          children: [
+                            Icon(
+                              Icons.person_add,
+                              size: 18,
+                              color: AppColors.btn_primery,
+                            ),
+                            const SizedBox(width: 4),
+                            Text(
+                              l10n.addMemberBtn,
+                              style: TextStyle(color: AppColors.btn_primery),
+                            ),
+                          ],
+                        ),
                       ),
                     ],
                   ),
 
-                const SizedBox(height: 10),
-              ],
-            ),
-          ),
+                  const SizedBox(height: 10),
+                  if (_totalMembers > 0)
+                    Text(
+                      l10n.addMemberTitle(
+                        _localizedAccountType(l10n),
+                        _currentMemberIndex.toString(),
+                        _totalMembers.toString(),
+                      ),
+                      style: const TextStyle(
+                        fontSize: 12,
+                        // fontWeight: FontWeight.w400,
+                      ),
+                    ),
+                  const SizedBox(height: 15),
 
-          if (!_hideBottomButton)
-            AppButton(
-              text: _currentMemberIndex < _totalMembers
-                  ? l10n.addMember
-                  : l10n.finish,
-              isLoading: _isLoading,
-              onPressed: _addMember,
-              color: AppColors.btn_primery,
-              width: double.infinity,
-              height: 47,
+                  AppTextField(
+                    controller: controller.fullName,
+                    label: l10n.memberFullName,
+                    focusNode: _nameFocus, // ✅ add this
+                    validator: (value) =>
+                        controller.validatefullname(value, l10n),
+                  ),
+                  const SizedBox(height: 15),
+
+                  AppDropdown(
+                    label: l10n.relationship,
+                    items: [
+                      l10n.father,
+                      l10n.mother,
+                      l10n.son,
+                      l10n.daughter,
+                      l10n.husband,
+                      l10n.wife,
+                      l10n.addOther,
+                    ],
+                    value: controller.relation,
+                    onChanged: (val) =>
+                        setState(() => controller.relation = val),
+                    validator: (val) =>
+                        val == null ? l10n.selectRelationship : null,
+                  ),
+
+                  const SizedBox(height: 15),
+
+                  // Mobile
+                  AppTextField(
+                    controller: controller.mobile,
+                    keyboardType: TextInputType.phone,
+                    label: l10n.mobileNumber,
+                    prefixText: "+973 ",
+                    maxLength: 8,
+                    inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                    validator: (value) =>
+                        controller.validatemobilenumber(value, l10n),
+                  ),
+
+                  const SizedBox(height: 15),
+
+                  // AppTextField(
+                  //   controller: controller.password,
+
+                  //   label: "Password*",
+                  //   validator: (value) => controller.validatepassword(value),
+                  // ),
+                  const SizedBox(height: 15),
+
+                  AppTextField(
+                    controller: controller.email,
+                    keyboardType: TextInputType.emailAddress,
+                    label: '${l10n.emailAddress}*',
+                    validator: (value) => controller.validateemail(value, l10n),
+                  ),
+                  const SizedBox(height: 15),
+                  AppDropdown(
+                    label: l10n.gender,
+                    items: [l10n.male, l10n.female],
+                    value: controller.gender,
+                    onChanged: (val) => setState(() => controller.gender = val),
+                    validator: (val) => val == null ? l10n.selectGender : null,
+                  ),
+
+                  const SizedBox(height: 20),
+                  SizedBox(
+                    width: double.infinity,
+                    height: 47,
+                    child: OutlinedButton(
+                      style: OutlinedButton.styleFrom(
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                      ),
+                      onPressed: () {
+                        setState(() {
+                          _isAddress = !_isAddress;
+                        });
+                      },
+                      child: Text(
+                        _isAddress ? l10n.hideAddress : l10n.addAddress,
+                        style: TextStyle(color: AppColors.btn_primery),
+                      ),
+                    ),
+                  ),
+
+                  if (_isAddress)
+                    Column(
+                      children: [
+                        const SizedBox(height: 20),
+                        Address(
+                          accountType: "Family",
+                          family: true,
+                          formKey: _addressFormKey,
+                          controller: addressController, //  pass controller
+                        ),
+                      ],
+                    ),
+
+                  const SizedBox(height: 10),
+                ],
+              ),
             ),
-          const SizedBox(height: 10),
-        ],
-      ),),
+
+            if (!_hideBottomButton)
+              AppButton(
+                text: _currentMemberIndex < _totalMembers
+                    ? l10n.addMember
+                    : l10n.finish,
+                isLoading: _isLoading,
+                onPressed: _addMember,
+                color: AppColors.btn_primery,
+                width: double.infinity,
+                height: 47,
+              ),
+            const SizedBox(height: 10),
+          ],
+        ),
+      ),
     );
   }
 }

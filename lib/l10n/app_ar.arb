@@ -438,5 +438,6 @@
   "requiredField": "مطلوب",
   "failedToAddMemberTryAgain": "فشل إضافة العضو. يرجى المحاولة مرة أخرى.",
 
-"emailOrPhone": "البريد الإلكتروني أو رقم الهاتف"
+"emailOrPhone": "البريد الإلكتروني أو رقم الهاتف",
+"more": "المزيد"
 }

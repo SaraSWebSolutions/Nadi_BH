@@ -1116,4 +1116,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get emailOrPhone => 'البريد الإلكتروني أو رقم الهاتف';
+
+  @override
+  String get more => 'المزيد';
 }

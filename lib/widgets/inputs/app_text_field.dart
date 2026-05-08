@@ -37,109 +37,124 @@ class AppTextField extends StatefulWidget {
     this.inputFormatters,
     this.filled = false,
     this.fillColor,
-        this.focusNode, // ✅ add here
-          this.textStyle, // 👈 ADD THIS
-
-
+    this.focusNode, // ✅ add here
+    this.textStyle, // 👈 ADD THIS
   });
   @override
   State<AppTextField> createState() => _AppTextFieldState();
 }
+
 class _AppTextFieldState extends State<AppTextField> {
   bool _obscure = true;
   @override
   Widget build(BuildContext context) {
-   return TextFormField(
-  readOnly: widget.readonly,
-  enabled: widget.enabled,
-  controller: widget.controller,
-  obscureText: widget.isPassword ? _obscure : false,
-  keyboardType: widget.keyboardType,
-  validator: widget.validator,
-  minLines: widget.minLines,
-  maxLines: widget.maxLines ?? 1,
-  maxLength: widget.maxLength,
-  maxLengthEnforcement: MaxLengthEnforcement.enforced,
-  inputFormatters: widget.inputFormatters,
-  focusNode: widget.focusNode,
+    return TextFormField(
+      readOnly: widget.readonly,
+      enabled: widget.enabled,
+      controller: widget.controller,
+      obscureText: widget.isPassword ? _obscure : false,
+      keyboardType: widget.keyboardType,
+      validator: widget.validator,
+      minLines: widget.minLines,
+      maxLines: widget.maxLines ?? 1,
+      maxLength: widget.maxLength,
+      maxLengthEnforcement: MaxLengthEnforcement.enforced,
+      inputFormatters: widget.inputFormatters,
+      focusNode: widget.focusNode,
 
-  style: widget.textStyle ??
-      TextStyle(
-        color: Theme.of(context).colorScheme.onSurface,
-        fontSize: 15,
+      style:
+          widget.textStyle ??
+          TextStyle(
+            color: Theme.of(context).colorScheme.onSurface,
+            fontSize: 15,
+          ),
+
+      buildCounter: widget.maxLength != null
+          ? (_, {required currentLength, required isFocused, maxLength}) =>
+                const SizedBox.shrink()
+          : null,
+
+      decoration: InputDecoration(
+        labelText: widget.label,
+        prefixText: widget.prefixText,
+        // reserve space for error text
+        helperText: " ",
+
+        errorMaxLines: 3,
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 16,
+          vertical: 18,
+        ),
+
+        alignLabelWithHint: true,
+
+        errorStyle: const TextStyle(
+          fontSize: 12,
+          height: 1.3,
+          color: Colors.red,
+        ),
+        labelStyle: TextStyle(
+          fontSize: 15,
+          color: Theme.of(context).colorScheme.onSurfaceVariant,
+          fontWeight: FontWeight.w400,
+        ),
+
+        floatingLabelStyle: TextStyle(
+          color: Theme.of(context).colorScheme.primary,
+          fontWeight: FontWeight.w600,
+        ),
+
+        filled: true,
+
+        fillColor: !widget.enabled
+            ? Theme.of(
+                context,
+              ).colorScheme.surfaceContainerHighest.withOpacity(0.4)
+            : (widget.filled
+                  ? (widget.fillColor ??
+                        Theme.of(context).colorScheme.surfaceContainerHighest)
+                  : Theme.of(context).colorScheme.surface),
+
+        prefixIcon: widget.prefixIcon != null
+            ? Icon(
+                widget.prefixIcon,
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
+                size: 22,
+              )
+            : null,
+
+        suffixIcon: widget.isPassword
+            ? IconButton(
+                icon: Icon(
+                  _obscure
+                      ? Icons.visibility_off_outlined
+                      : Icons.visibility_outlined,
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
+                  size: 22,
+                ),
+                onPressed: () {
+                  setState(() => _obscure = !_obscure);
+                },
+              )
+            : null,
+
+        border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide(
+            color: Theme.of(context).colorScheme.outlineVariant,
+          ),
+        ),
+
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide(
+            color: Theme.of(context).colorScheme.primary,
+            width: 1.5,
+          ),
+        ),
       ),
-
-  buildCounter: widget.maxLength != null
-      ? (_, {required currentLength, required isFocused, maxLength}) =>
-          const SizedBox.shrink()
-      : null,
-
-  decoration: InputDecoration(
-    labelText: widget.label,
-    prefixText: widget.prefixText,
-
-    labelStyle: TextStyle(
-      fontSize: 15,
-      color: Theme.of(context).colorScheme.onSurfaceVariant,
-      fontWeight: FontWeight.w400,
-    ),
-
-    floatingLabelStyle: TextStyle(
-      color: Theme.of(context).colorScheme.primary,
-      fontWeight: FontWeight.w600,
-    ),
-
-    filled: true,
-
-    fillColor: !widget.enabled
-        ? Theme.of(context).colorScheme.surfaceContainerHighest.withOpacity(0.4)
-        : (widget.filled
-            ? (widget.fillColor ??
-                Theme.of(context).colorScheme.surfaceContainerHighest)
-            : Theme.of(context).colorScheme.surface),
-
-    prefixIcon: widget.prefixIcon != null
-        ? Icon(
-            widget.prefixIcon,
-            color: Theme.of(context).colorScheme.onSurfaceVariant,
-            size: 22,
-          )
-        : null,
-
-    suffixIcon: widget.isPassword
-        ? IconButton(
-            icon: Icon(
-              _obscure
-                  ? Icons.visibility_off_outlined
-                  : Icons.visibility_outlined,
-              color: Theme.of(context).colorScheme.onSurfaceVariant,
-              size: 22,
-            ),
-            onPressed: () {
-              setState(() => _obscure = !_obscure);
-            },
-          )
-        : null,
-
-    border: OutlineInputBorder(
-      borderRadius: BorderRadius.circular(12),
-    ),
-
-    enabledBorder: OutlineInputBorder(
-      borderRadius: BorderRadius.circular(12),
-      borderSide: BorderSide(
-        color: Theme.of(context).colorScheme.outlineVariant,
-      ),
-    ),
-
-    focusedBorder: OutlineInputBorder(
-      borderRadius: BorderRadius.circular(12),
-      borderSide: BorderSide(
-        color: Theme.of(context).colorScheme.primary,
-        width: 1.5,
-      ),
-    ),
-  ),
-);
+    );
   }
 }

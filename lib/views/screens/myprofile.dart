@@ -500,8 +500,18 @@ class Myprofile extends ConsumerWidget {
                             SizedBox(
                               width: double.infinity,
                               child: ElevatedButton(
-                                onPressed: () {
-                                  context.push(RouteNames.addMember);
+                                onPressed: () async {
+                                  final result = await context.push(
+                                    RouteNames.addMember,
+                                  );
+
+                                  // refresh family members + profile
+                                  if (result == true && context.mounted) {
+                                    ref.invalidate(
+                                      familyMembersVerifiedProvider,
+                                    );
+                                    ref.invalidate(profileprovider);
+                                  }
                                 },
                                 style: ElevatedButton.styleFrom(
                                   backgroundColor: AppColors.app_background_clr,
@@ -834,7 +844,10 @@ class _FamilyMembersListSection extends ConsumerWidget {
             ...members.map(
               (m) => _FamilyMemberTile(
                 member: m,
-                onRemoved: () => ref.invalidate(familyMembersListProvider),
+                onRemoved: () {
+                  ref.invalidate(familyMembersVerifiedProvider);
+                  ref.invalidate(profileprovider);
+                },
               ),
             ),
           ],
@@ -907,6 +920,9 @@ class _FamilyMemberTileState extends ConsumerState<_FamilyMemberTile> {
           .removeFamilyMember(memberId);
       if (!mounted) return;
       SnackbarHelper.ShowSuccess(context, loc.memberRemoved(name));
+      ref.invalidate(familyMembersVerifiedProvider);
+      ref.invalidate(profileprovider);
+
       widget.onRemoved();
     } catch (e) {
       if (!mounted) return;

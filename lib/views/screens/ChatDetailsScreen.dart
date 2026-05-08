@@ -39,7 +39,7 @@ class _ChatDetailsScreenState extends ConsumerState<ChatDetailsScreen>
 
   // Distinct color for admin vs regular user in the AppBar / avatars
   Color get _otherPartyColor =>
-      _isAdmin ? AppColors.app_background_clr  : AppColors.btn_primery;
+      _isAdmin ? AppColors.app_background_clr : AppColors.btn_primery;
 
   @override
   void initState() {
@@ -93,16 +93,22 @@ class _ChatDetailsScreenState extends ConsumerState<ChatDetailsScreen>
 
       debugPrint("🔵 Connecting Stream Chat for user: $userId");
       await StreamChatService().connectUserIfNeeded(userId);
-      debugPrint("✅ Stream Chat connected. Current user: ${client.state.currentUser?.id}");
+      debugPrint(
+        "✅ Stream Chat connected. Current user: ${client.state.currentUser?.id}",
+      );
       debugPrint("✅ WebSocket status: ${client.wsConnectionStatus}");
 
       // ✅ Extra safety: verify WebSocket is actually connected
       if (client.wsConnectionStatus != ConnectionStatus.connected) {
-        debugPrint("⚠️ WebSocket not connected after connectUserIfNeeded — waiting...");
+        debugPrint(
+          "⚠️ WebSocket not connected after connectUserIfNeeded — waiting...",
+        );
         // Give it a moment to establish
         await Future.delayed(const Duration(seconds: 2));
         if (client.wsConnectionStatus != ConnectionStatus.connected) {
-          throw Exception('WebSocket connection failed. Please check your internet and try again.');
+          throw Exception(
+            'WebSocket connection failed. Please check your internet and try again.',
+          );
         }
       }
 
@@ -120,7 +126,9 @@ class _ChatDetailsScreenState extends ConsumerState<ChatDetailsScreen>
 
       debugPrint("🔵 Watching channel...");
       await ch.watch();
-      debugPrint("✅ Channel watched successfully. Messages: ${ch.state?.messages.length ?? 0}");
+      debugPrint(
+        "✅ Channel watched successfully. Messages: ${ch.state?.messages.length ?? 0}",
+      );
 
       // Mark messages as read immediately — silently ignored if it fails
       try {
@@ -161,8 +169,8 @@ class _ChatDetailsScreenState extends ConsumerState<ChatDetailsScreen>
 
   AppBar _buildAppBar() {
     final loc = AppLocalizations.of(context)!;
-    return AppBar(                                                  
-      backgroundColor: _isAdmin ? AppColors.app_background_clr  : Colors.white,
+    return AppBar(
+      backgroundColor: _isAdmin ? AppColors.app_background_clr : Colors.white,
       elevation: 1,
       leading: IconButton(
         icon: Icon(
@@ -207,9 +215,7 @@ class _ChatDetailsScreenState extends ConsumerState<ChatDetailsScreen>
                   Text(
                     widget.roleName!,
                     style: TextStyle(
-                      color: _isAdmin
-                          ? Colors.white70
-                          : Colors.grey[600],
+                      color: _isAdmin ? Colors.white70 : Colors.grey[600],
                       fontSize: 11,
                     ),
                   ),
@@ -227,11 +233,15 @@ class _ChatDetailsScreenState extends ConsumerState<ChatDetailsScreen>
     if (_isLoading) {
       return Scaffold(
         appBar: AppBar(
-          backgroundColor: _isAdmin ? AppColors.app_background_clr  : Colors.white,
+          backgroundColor: _isAdmin
+              ? AppColors.app_background_clr
+              : Colors.white,
           elevation: 1,
           leading: IconButton(
-            icon: Icon(Icons.arrow_back,
-                color: _isAdmin ? Colors.white : Colors.black),
+            icon: Icon(
+              Icons.arrow_back,
+              color: _isAdmin ? Colors.white : Colors.black,
+            ),
             onPressed: () => Navigator.pop(context),
           ),
           title: Text(
@@ -259,7 +269,10 @@ class _ChatDetailsScreenState extends ConsumerState<ChatDetailsScreen>
           title: Text(
             widget.adminName ?? loc.chat,
             style: const TextStyle(
-                color: Colors.black, fontSize: 16, fontWeight: FontWeight.w600),
+              color: Colors.black,
+              fontSize: 16,
+              fontWeight: FontWeight.w600,
+            ),
           ),
         ),
         body: Center(
@@ -268,12 +281,18 @@ class _ChatDetailsScreenState extends ConsumerState<ChatDetailsScreen>
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const Icon(Icons.chat_bubble_outline,
-                    size: 60, color: Colors.grey),
+                const Icon(
+                  Icons.chat_bubble_outline,
+                  size: 60,
+                  color: Colors.grey,
+                ),
                 const SizedBox(height: 16),
                 Text(
                   loc.couldNotLoadChat,
-                  style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+                  style: const TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.w600,
+                  ),
                 ),
                 const SizedBox(height: 8),
                 Text(
@@ -304,77 +323,78 @@ class _ChatDetailsScreenState extends ConsumerState<ChatDetailsScreen>
               child: Align(
                 alignment: Alignment.topCenter,
                 child: StreamMessageListView(
+                  showFloatingDateDivider: false,
                   reverse: true,
                   shrinkWrap: true,
                   messageBuilder: (context, details, messages, defaultMessage) {
                     final message = details.message;
-                    final currentUser =
-                        StreamChat.of(context).client.state.currentUser;
-                  final isMe = message.user?.id == currentUser?.id;
+                    final currentUser = StreamChat.of(
+                      context,
+                    ).client.state.currentUser;
+                    final isMe = message.user?.id == currentUser?.id;
 
-                  if (isMe) {
-                    return defaultMessage.copyWith(
-                      showUsername: false,
-                      showUserAvatar: DisplayWidget.gone,
-                    );
-                  }
+                    if (isMe) {
+                      return defaultMessage.copyWith(
+                        showUsername: false,
+                        showUserAvatar: DisplayWidget.gone,
+                      );
+                    }
 
-                  // Other party (admin or user) — show avatar with role-based color
-                  return Padding(
-                    padding: const EdgeInsets.symmetric(
-                        vertical: 4, horizontal: 10),
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        CircleAvatar(
-                          radius: 16,
-                          backgroundColor: _otherPartyColor,
-                          child: Text(
-                            (widget.adminName?.isNotEmpty ?? false)
-                                ? widget.adminName![0].toUpperCase()
-                                : '?',
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 12,
+                    // Other party (admin or user) — show avatar with role-based color
+                    return Padding(
+                      padding: const EdgeInsets.symmetric(
+                        vertical: 4,
+                        horizontal: 10,
+                      ),
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          CircleAvatar(
+                            radius: 16,
+                            backgroundColor: _otherPartyColor,
+                            child: Text(
+                              (widget.adminName?.isNotEmpty ?? false)
+                                  ? widget.adminName![0].toUpperCase()
+                                  : '?',
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 12,
+                              ),
                             ),
                           ),
-                        ),
-                        const SizedBox(width: 6),
-                        Expanded(
-                          child: defaultMessage.copyWith(
-                            showUsername: false,
-                            showUserAvatar: DisplayWidget.gone,
+                          const SizedBox(width: 6),
+                          Expanded(
+                            child: defaultMessage.copyWith(
+                              showUsername: false,
+                              showUserAvatar: DisplayWidget.gone,
+                            ),
                           ),
-                        ),
-                      ],
-                    ),
-                  );
-                },
+                        ],
+                      ),
+                    );
+                  },
+                ),
               ),
-            ),
             ),
             StreamChatTheme(
               data: StreamChatThemeData.fromTheme(Theme.of(context)).copyWith(
                 messageInputTheme: StreamMessageInputThemeData(
                   inputBackgroundColor: Theme.of(context).colorScheme.surface,
                   borderRadius: BorderRadius.circular(24),
-                  inputDecoration:  InputDecoration(
+                  inputDecoration: InputDecoration(
                     hintText: loc.writeMessage,
-                      hintStyle: TextStyle(
-          color: Theme.of(context).hintColor,
-        ),
-        
+                    hintStyle: TextStyle(color: Theme.of(context).hintColor),
+
                     border: InputBorder.none,
                     contentPadding: EdgeInsets.symmetric(
                       horizontal: 16,
                       vertical: 10,
                     ),
-                    
                   ),
-                     // ✅ FIX: icon colors (left & right)
-      actionButtonColor: Theme.of(context).iconTheme.color,
-      sendButtonColor: Theme.of(context).colorScheme.onSurface,
+                  // ✅ FIX: icon colors (left & right)
+                  actionButtonColor: Theme.of(context).iconTheme.color,
+                  sendButtonColor: Theme.of(context).colorScheme.onSurface,
                 ),
               ),
               child: StreamMessageInput(

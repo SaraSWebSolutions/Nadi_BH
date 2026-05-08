@@ -246,6 +246,8 @@
 //   }
 // }
 
+import 'dart:async';
+
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -277,6 +279,32 @@ class _SignInOtpState extends State<SignInOtp> {
   bool _isOtpError = false;
   bool _isLoading = false;
   bool _otpSent = false;
+  int _secondsRemaining = 30;
+  bool _canResendOtp = false;
+  void _startOtpTimer() {
+    _secondsRemaining = 30;
+    _canResendOtp = false;
+
+    Timer.periodic(const Duration(seconds: 1), (timer) {
+      if (!mounted) {
+        timer.cancel();
+        return;
+      }
+
+      if (_secondsRemaining > 0) {
+        setState(() {
+          _secondsRemaining--;
+        });
+      } else {
+        timer.cancel();
+
+        setState(() {
+          _canResendOtp = true;
+        });
+      }
+    });
+  }
+
   Future<void> sendOtp() async {
     setState(() => _isLoading = true);
 
@@ -295,6 +323,7 @@ class _SignInOtpState extends State<SignInOtp> {
           _showOtp = true;
           _otpSent = true;
         });
+        _startOtpTimer();
         final otp = response['otp'].toString();
         SnackbarHelper.ShowSuccess(context, otp);
       }
@@ -703,19 +732,36 @@ class _SignInOtpState extends State<SignInOtp> {
                           const SizedBox(height: 20),
 
                           /// SEND OTP
-                          if (!_showOtp)
-                            AppButton(
-                              height: 48,
-                              width: double.infinity,
-                              isLoading: _isLoading,
-                              color: AppColors.btn_primery,
-                              text: _otpSent ? l10n.resendOtp : l10n.sendOtp,
-                              onPressed: () {
-                                if (_formKey.currentState!.validate()) {
-                                  sendOtp();
-                                }
-                              },
-                            ),
+                          // if (!_showOtp)
+                          /// SEND / RESEND OTP BUTTON
+                          AppButton(
+                            height: 48,
+                            width: double.infinity,
+                            isLoading: _isLoading,
+                            color: AppColors.btn_primery,
+                            text: !_showOtp
+                                ? l10n.sendOtp
+                                : _canResendOtp
+                                ? l10n.resendOtp
+                                : "Resend OTP in ${_secondsRemaining}s",
+
+                            onPressed: _isLoading
+                                ? null
+                                : () async {
+                                    /// FIRST TIME SEND OTP
+                                    if (!_showOtp) {
+                                      if (_formKey.currentState!.validate()) {
+                                        await sendOtp();
+                                      }
+                                      return;
+                                    }
+
+                                    /// RESEND OTP AFTER TIMER COMPLETE
+                                    if (_canResendOtp) {
+                                      await sendOtp();
+                                    }
+                                  },
+                          ),
 
                           /// OTP SECTION
                           if (_showOtp) ...[
@@ -751,12 +797,36 @@ class _SignInOtpState extends State<SignInOtp> {
                               color: AppColors.btn_primery,
                               isLoading: _isLoading,
                               text: l10n.signIn,
-                              onPressed: () {
-                                if (_otpController.text.length == 4) {
-                                  OTPphoneverify();
-                                } else {
+                              onPressed: () async {
+                                final otp = _otpController.text.trim();
+
+                                if (otp.isEmpty) {
                                   setState(() => _isOtpError = true);
+
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(
+                                      content: Text("Please enter OTP"),
+                                      backgroundColor: Colors.red,
+                                    ),
+                                  );
+
+                                  return;
                                 }
+
+                                if (otp.length != 4) {
+                                  setState(() => _isOtpError = true);
+
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(
+                                      content: Text("OTP must be 4 digits"),
+                                      backgroundColor: Colors.red,
+                                    ),
+                                  );
+
+                                  return;
+                                }
+
+                                await OTPphoneverify();
                               },
                             ),
                           ],

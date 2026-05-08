@@ -1126,4 +1126,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get emailOrPhone => 'Email / Phone Number';
+
+  @override
+  String get more => 'More..';
 }

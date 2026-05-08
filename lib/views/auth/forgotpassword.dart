@@ -59,12 +59,14 @@ class _ForgotpasswordState extends State<Forgotpassword> {
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
-    final isLandscape = size.width > size.height;
     final isRTL = Directionality.of(context) == TextDirection.rtl;
     final loc = AppLocalizations.of(context)!;
     final isIOS = Theme.of(context).platform == TargetPlatform.iOS;
 
+    final keyboardOpen = MediaQuery.of(context).viewInsets.bottom > 0;
+
     return Scaffold(
+      resizeToAvoidBottomInset: true,
       body: Stack(
         children: [
           /// BACKGROUND
@@ -72,31 +74,41 @@ class _ForgotpasswordState extends State<Forgotpassword> {
             child: Image.asset(
               "assets/images/onboarding/1774802367130_PAGE-No3.png",
               fit: BoxFit.cover,
+              alignment: Alignment.topCenter,
             ),
           ),
 
-          /// CONTENT (NO Positioned.fill)
-          SafeArea(
-            child: SingleChildScrollView(
-              physics: const ClampingScrollPhysics(),
-              keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
-              child: ConstrainedBox(
-                constraints: BoxConstraints(
-                  minHeight:
-                      MediaQuery.of(context).size.height -
-                      MediaQuery.of(context).padding.top,
-                ),
-                child: IntrinsicHeight(
-                  child: Column(
-                    children: [
-                      SizedBox(
-                        height: isIOS ? size.height * 0.36 : size.height * 0.40,
-                      ),
+          /// CONTENT
+          Positioned.fill(
+            child: SafeArea(
+              child: SingleChildScrollView(
+                physics: const ClampingScrollPhysics(),
+                keyboardDismissBehavior:
+                    ScrollViewKeyboardDismissBehavior.onDrag,
+                child: ConstrainedBox(
+                  constraints: BoxConstraints(
+                    minHeight:
+                        MediaQuery.of(context).size.height -
+                        MediaQuery.of(context).padding.top -
+                        MediaQuery.of(context).padding.bottom,
+                  ),
+                  child: IntrinsicHeight(
+                    child: Column(
+                      children: [
+                        /// TOP SPACE
+                        SizedBox(
+                          height: keyboardOpen
+                              ? 40
+                              : (isIOS
+                                    ? size.height * 0.36
+                                    : size.height * 0.40),
+                        ),
 
-                      /// WHITE CONTAINER
-                      Expanded(
-                        child: Container(
+                        /// WHITE CONTAINER
+                        Container(
                           width: double.infinity,
+                          constraints: BoxConstraints(minHeight: size.height),
+
                           padding: const EdgeInsets.all(20),
                           decoration: BoxDecoration(
                             color: Theme.of(context).scaffoldBackgroundColor,
@@ -113,7 +125,7 @@ class _ForgotpasswordState extends State<Forgotpassword> {
                                 const SizedBox(height: 20),
 
                                 Text(
-                                  AppLocalizations.of(context)!.changePassword,
+                                  loc.changePassword,
                                   style: const TextStyle(
                                     fontSize: 20,
                                     fontWeight: FontWeight.bold,
@@ -130,11 +142,13 @@ class _ForgotpasswordState extends State<Forgotpassword> {
                                     if (v == null || v.trim().isEmpty) {
                                       return loc.emailRequired;
                                     }
+
                                     if (!RegExp(
                                       r'^[\w.-]+@[\w.-]+\.\w+$',
                                     ).hasMatch(v.trim())) {
                                       return loc.emailInvalid;
                                     }
+
                                     return null;
                                   },
                                 ),
@@ -159,21 +173,20 @@ class _ForgotpasswordState extends State<Forgotpassword> {
                             ),
                           ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 ),
               ),
             ),
           ),
 
-          /// BACK BUTTON (ABSOLUTE TOP LAYER)
+          /// BACK BUTTON
           SafeArea(
             child: Align(
               alignment: Alignment.topLeft,
               child: GestureDetector(
                 onTap: () {
-                  print("BACK CLICKED");
                   GoRouter.of(context).go('/login');
                 },
                 child: Container(

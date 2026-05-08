@@ -1048,8 +1048,9 @@ class _DashboardState extends ConsumerState<Dashboard> {
                                     style: TextButton.styleFrom(
                                       padding: EdgeInsets.zero,
                                     ),
-                                    child: const Text(
-                                      "More..",
+                                    child: Text(
+                                      l10n.more,
+
                                       style: TextStyle(
                                         color: Colors.white,
                                         fontSize: AppFontSizes.small,

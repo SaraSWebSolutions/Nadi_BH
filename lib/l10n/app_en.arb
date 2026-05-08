@@ -472,5 +472,6 @@
   "fourthName": "Fourth Name",
   "requiredField": "Required",
   "failedToAddMemberTryAgain": "Failed to add member. Please try again.",
-  "emailOrPhone": "Email / Phone Number"
+  "emailOrPhone": "Email / Phone Number",
+  "more": "More.."
 }

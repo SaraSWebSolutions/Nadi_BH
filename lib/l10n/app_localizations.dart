@@ -2221,6 +2221,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Email / Phone Number'**
   String get emailOrPhone;
+
+  /// No description provided for @more.
+  ///
+  /// In en, this message translates to:
+  /// **'More..'**
+  String get more;
 }
 
 class _AppLocalizationsDelegate

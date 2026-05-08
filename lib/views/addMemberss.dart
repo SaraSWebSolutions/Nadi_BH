@@ -39,11 +39,14 @@ class _AddmemberssState extends ConsumerState<Addmemberss> {
   Future<void> _addMember() async {
     final loc = AppLocalizations.of(context)!;
     final isValid = _formKey.currentState!.validate();
-    
+
     if (!_showAddress) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(loc.addAddressError, style: const TextStyle(fontFamily: 'Poppins')),
+          content: Text(
+            loc.addAddressError,
+            style: const TextStyle(fontFamily: 'Poppins'),
+          ),
           backgroundColor: Colors.red,
         ),
       );
@@ -58,12 +61,12 @@ class _AddmemberssState extends ConsumerState<Addmemberss> {
     // BUILD BODY (CORRECT FORMAT)
     final body = {
       "userId": userId,
-      "accountTypeId": "693175af976ca992c877f99d", 
+      "accountTypeId": "693175af976ca992c877f99d",
       "fullName": nameCtrl.text,
       "relation": relation?.toLowerCase(),
       "mobile": mobileCtrl.text,
       "email": emailCtrl.text,
-      "password": "123456", 
+      "password": "123456",
       "gender": gender?.toLowerCase(),
       if (_showAddress)
         "address": {
@@ -72,8 +75,8 @@ class _AddmemberssState extends ConsumerState<Addmemberss> {
           "floor": addressController.floor.text,
           "building": addressController.building.text,
           "aptNo": addressController.aptNo.text,
-          "roadId": addressController.roadId, 
-          "blockId": addressController.blockId, 
+          "roadId": addressController.roadId,
+          "blockId": addressController.blockId,
         },
     };
 
@@ -84,20 +87,23 @@ class _AddmemberssState extends ConsumerState<Addmemberss> {
         body: body,
       );
       setState(() => _isLoading = false);
-      
+
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(loc.memberAddedSuccessfully, style: const TextStyle(fontFamily: 'Poppins')),
+          content: Text(
+            loc.memberAddedSuccessfully,
+            style: const TextStyle(fontFamily: 'Poppins'),
+          ),
           backgroundColor: Colors.green,
         ),
       );
-      
+
       // Refresh profile data natively
       ref.invalidate(profileprovider);
 
       if (mounted) {
-        context.pop(true);
+        GoRouter.of(context).pop(true);
       }
     } on DioException catch (e) {
       if (!mounted) return;
@@ -106,7 +112,8 @@ class _AddmemberssState extends ConsumerState<Addmemberss> {
       if (e.response?.data != null) {
         final data = e.response!.data;
         if (data is Map) {
-          errorMsg = data['message'] ?? data['error'] ?? data['msg'] ?? errorMsg;
+          errorMsg =
+              data['message'] ?? data['error'] ?? data['msg'] ?? errorMsg;
           if (data['errors'] != null && data['errors'] is Map) {
             final errors = data['errors'] as Map;
             final fieldErrors = errors.values
@@ -125,7 +132,10 @@ class _AddmemberssState extends ConsumerState<Addmemberss> {
       }
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(errorMsg, style: const TextStyle(fontFamily: 'Poppins')),
+          content: Text(
+            errorMsg,
+            style: const TextStyle(fontFamily: 'Poppins'),
+          ),
           backgroundColor: Colors.red,
         ),
       );
@@ -134,8 +144,10 @@ class _AddmemberssState extends ConsumerState<Addmemberss> {
       setState(() => _isLoading = false);
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('${loc.somethingWentWrong}: ${e.toString()}',
-              style: const TextStyle(fontFamily: 'Poppins')),
+          content: Text(
+            '${loc.somethingWentWrong}: ${e.toString()}',
+            style: const TextStyle(fontFamily: 'Poppins'),
+          ),
           backgroundColor: Colors.red,
         ),
       );
@@ -199,7 +211,8 @@ class _AddmemberssState extends ConsumerState<Addmemberss> {
                 prefixText: '+973 ',
                 maxLength: 8,
                 inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                validator: (v) => v == null || v.isEmpty ? loc.enterMobile : null,
+                validator: (v) =>
+                    v == null || v.isEmpty ? loc.enterMobile : null,
               ),
               const SizedBox(height: 15),
 
