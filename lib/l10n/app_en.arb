@@ -473,5 +473,15 @@
   "requiredField": "Required",
   "failedToAddMemberTryAgain": "Failed to add member. Please try again.",
   "emailOrPhone": "Email / Phone Number",
-  "more": "More.."
+  "more": "More..",
+  "apartmentRequired": "Apartment is required",
+  "apartmentInvalid": "Please enter valid apartment",
+    "maximum10ImagesAllowed": "Maximum 10 images allowed",
+    "emailPhoneRequired": "Email or phone number is required",
+  "invalidEmailOrPhone": "Enter valid email or 8-digit phone number",
+  "passwordRequired": "Password required",
+  "somethingWentWrong": "Something went wrong",
+  "invalidCredentials": "Invalid credentials",
+  "enterValidEmail": "Enter valid email address"
+
 }

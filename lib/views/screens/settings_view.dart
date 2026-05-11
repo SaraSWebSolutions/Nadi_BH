@@ -50,9 +50,7 @@ class _SettingsViewState extends ConsumerState<SettingsView> {
       duration: const Duration(milliseconds: 200),
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
       decoration: BoxDecoration(
-        color: isActive
-            ? AppColors.app_background_clr
-            : Colors.transparent,
+        color: isActive ? AppColors.app_background_clr : Colors.transparent,
         borderRadius: BorderRadius.circular(12),
       ),
       child: Text(
@@ -89,7 +87,10 @@ class _SettingsViewState extends ConsumerState<SettingsView> {
                     shape: BoxShape.circle,
                     color: Color.fromARGB(255, 166, 176, 219),
                   ),
-                  child: Padding(padding: const EdgeInsets.all(10), child: icon),
+                  child: Padding(
+                    padding: const EdgeInsets.all(10),
+                    child: icon,
+                  ),
                 ),
                 const SizedBox(width: 15),
                 Text(
@@ -130,9 +131,7 @@ class _SettingsViewState extends ConsumerState<SettingsView> {
         duration: const Duration(milliseconds: 200),
         padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 2),
         decoration: BoxDecoration(
-          color: isActive
-              ? AppColors.app_background_clr
-              : Colors.transparent,
+          color: isActive ? AppColors.app_background_clr : Colors.transparent,
           borderRadius: BorderRadius.circular(12),
         ),
         child: Text(
@@ -172,9 +171,10 @@ class _SettingsViewState extends ConsumerState<SettingsView> {
       }
     } catch (_) {}
   }
+
   @override
   Widget build(BuildContext context) {
-      final l10n = AppLocalizations.of(context)!; // ✅ ADD THIS
+    final l10n = AppLocalizations.of(context)!; // ✅ ADD THIS
     Future<void> logout(BuildContext context) async {
       try {
         ///  get FCM token
@@ -208,7 +208,7 @@ class _SettingsViewState extends ConsumerState<SettingsView> {
     List<dynamic> deleteReasons = [];
     String? selectedReasonId;
     bool isLoadingReasons = false;
-   
+
     Future<void> showDeleteAccountDialog(BuildContext context) async {
       setState(() {
         isLoadingReasons = true;
@@ -307,7 +307,7 @@ class _SettingsViewState extends ConsumerState<SettingsView> {
         },
       );
     }
-  
+
     Future<void> notificationToggle() async {
       final newValue = !isToggleOn;
 
@@ -333,13 +333,14 @@ class _SettingsViewState extends ConsumerState<SettingsView> {
         if (context.mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text(AppLocalizations.of(context)!.notificationUpdateFailed),
+              content: Text(
+                AppLocalizations.of(context)!.notificationUpdateFailed,
+              ),
             ),
           );
         }
       }
     }
-
 
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
@@ -364,7 +365,7 @@ class _SettingsViewState extends ConsumerState<SettingsView> {
                       style: TextStyle(
                         fontWeight: FontWeight.w600,
                         fontSize: 20,
-                        color: AppColors.app_background_clr
+                        color: AppColors.app_background_clr,
                       ),
                     ),
                     const SizedBox(width: 20),
@@ -414,7 +415,12 @@ class _SettingsViewState extends ConsumerState<SettingsView> {
                                       width: 40,
                                       decoration: BoxDecoration(
                                         shape: BoxShape.circle,
-                                        color: const Color.fromARGB(255, 166, 176, 219)
+                                        color: const Color.fromARGB(
+                                          255,
+                                          166,
+                                          176,
+                                          219,
+                                        ),
                                       ),
                                       child: Padding(
                                         padding: const EdgeInsets.all(10),
@@ -484,7 +490,12 @@ class _SettingsViewState extends ConsumerState<SettingsView> {
                                   width: 40,
                                   decoration: BoxDecoration(
                                     shape: BoxShape.circle,
-                                    color: const Color.fromARGB(255, 166, 176, 219)
+                                    color: const Color.fromARGB(
+                                      255,
+                                      166,
+                                      176,
+                                      219,
+                                    ),
                                   ),
                                   child: Padding(
                                     padding: const EdgeInsets.all(10),
@@ -506,7 +517,12 @@ class _SettingsViewState extends ConsumerState<SettingsView> {
                                   padding: const EdgeInsets.all(2),
                                   decoration: BoxDecoration(
                                     borderRadius: BorderRadius.circular(12),
-                                    color: const Color.fromARGB(255, 166, 176, 219),
+                                    color: const Color.fromARGB(
+                                      255,
+                                      166,
+                                      176,
+                                      219,
+                                    ),
                                   ),
                                   child: Row(
                                     mainAxisSize: MainAxisSize.min,
@@ -544,7 +560,12 @@ class _SettingsViewState extends ConsumerState<SettingsView> {
                                   width: 40,
                                   decoration: BoxDecoration(
                                     shape: BoxShape.circle,
-                                    color: const Color.fromARGB(255, 166, 176, 219),
+                                    color: const Color.fromARGB(
+                                      255,
+                                      166,
+                                      176,
+                                      219,
+                                    ),
                                   ),
                                   child: Padding(
                                     padding: const EdgeInsets.all(10),
@@ -563,7 +584,12 @@ class _SettingsViewState extends ConsumerState<SettingsView> {
                                 Container(
                                   decoration: BoxDecoration(
                                     borderRadius: BorderRadius.circular(12),
-                                    color: const Color.fromARGB(255, 166, 176, 219)
+                                    color: const Color.fromARGB(
+                                      255,
+                                      166,
+                                      176,
+                                      219,
+                                    ),
                                   ),
                                   child: Row(
                                     mainAxisSize: MainAxisSize.min,
@@ -620,9 +646,8 @@ class _SettingsViewState extends ConsumerState<SettingsView> {
                             final confirmed = await showConfirmDialog(
                               context,
                               title: l10n.logoutTitle,
-                              message:
-                                  l10n.logoutMessage,
-                              confirmText:l10n.logout,
+                              message: l10n.logoutMessage,
+                              confirmText: l10n.logout,
                               icon: Icons.logout_rounded,
                               destructive: true,
                             );
@@ -634,8 +659,8 @@ class _SettingsViewState extends ConsumerState<SettingsView> {
                     ),
                     Padding(
                       padding: const EdgeInsets.symmetric(
-                        horizontal: 5,
-                        vertical: 5,
+                        horizontal: 15,
+                        vertical: 15,
                       ),
                       child: Container(
                         padding: const EdgeInsets.all(15),
@@ -645,7 +670,7 @@ class _SettingsViewState extends ConsumerState<SettingsView> {
                         ),
                         child: settingItem(
                           text: AppLocalizations.of(context)!.accountDelete,
-                          icon: Image.asset("assets/icons/logout.png"),
+                          icon: Image.asset("assets/icons/accout_delete.png"),
                           onTap: () {
                             showDeleteAccountDialog(context);
                           },

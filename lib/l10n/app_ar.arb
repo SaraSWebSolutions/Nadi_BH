@@ -439,5 +439,14 @@
   "failedToAddMemberTryAgain": "فشل إضافة العضو. يرجى المحاولة مرة أخرى.",
 
 "emailOrPhone": "البريد الإلكتروني أو رقم الهاتف",
-"more": "المزيد"
+"more": "المزيد",
+"apartmentRequired": "رقم الشقة مطلوب",
+  "apartmentInvalid": "يرجى إدخال رقم شقة صحيح",
+  "maximum10ImagesAllowed": "يسمح بحد أقصى 10 صور",
+  "emailPhoneRequired": "البريد الإلكتروني أو رقم الهاتف مطلوب",
+  "invalidEmailOrPhone": "أدخل بريدًا إلكترونيًا صالحًا أو رقم هاتف مكون من 8 أرقام",
+  "passwordRequired": "كلمة المرور مطلوبة",
+  "somethingWentWrong": "حدث خطأ ما",
+  "invalidCredentials": "بيانات تسجيل الدخول غير صحيحة",
+  "enterValidEmail": "أدخل بريد إلكتروني صالح"
 }

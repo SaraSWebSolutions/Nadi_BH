@@ -13,6 +13,7 @@ import 'package:nadi_user_app/providers/Questioner_Provider.dart';
 import 'package:nadi_user_app/providers/connectivity_provider.dart';
 import 'package:nadi_user_app/providers/fetchpointsnodification.dart';
 import 'package:nadi_user_app/providers/gift_provider.dart';
+import 'package:nadi_user_app/providers/notification_unread_provider.dart';
 import 'package:nadi_user_app/providers/serviceProvider.dart';
 import 'package:nadi_user_app/providers/userDashboard_provider.dart';
 import 'package:nadi_user_app/services/home_view_service.dart';
@@ -87,27 +88,34 @@ class _DashboardState extends ConsumerState<Dashboard> {
   @override
   void initState() {
     super.initState();
-    get_preferencevalue();
-    fetchongoinproces();
-    fetchapprovetechnician();
 
-    // Fetch cached seen notifications time
-    AppPreferences.getLastSeenNotificationTime().then((val) {
-      if (mounted) setState(() => _lastSeenTime = val);
-    });
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      /// Notification badge listener
+      ref.listen(unreadNotificationCountProvider, (previous, next) {
+        next.whenData((count) {
+          updateAppBadge(count);
+        });
+      });
 
-    Future.microtask(() {
-      ref.read(serviceListProvider.notifier).refresh();
-      ref.refresh(fetchpointsnodification);
-      ref.refresh(fetchadvertisementprovider);
-      ref.refresh(userdashboardprovider);
-    });
-    // ✅ Check gift animation status
-    WidgetsBinding.instance.addPostFrameCallback((_) => _checkGift());
+      /// Question popup listener
+      ref.listen<AsyncValue<Questioner>>(fetchquestionsdataprovider, (
+        previous,
+        next,
+      ) async {
+        if (next is AsyncData<Questioner>) {
+          final data = next.value;
 
-    // Auto-refresh notifications periodically
-    _notificationTimer = Timer.periodic(const Duration(seconds: 30), (_) {
-      ref.invalidate(fetchpointsnodification);
+          if (data.data.isEmpty) return;
+
+          if (ModalRoute.of(context)?.isCurrent != true) return;
+
+          await Future.delayed(const Duration(milliseconds: 300));
+
+          if (!context.mounted) return;
+
+          showQuestionPopup(context, data.data.first);
+        }
+      });
     });
   }
 
@@ -342,7 +350,7 @@ class _DashboardState extends ConsumerState<Dashboard> {
   Widget build(BuildContext context) {
     final services = ref.watch(serviceListProvider);
     final dashboardAsync = ref.watch(userdashboardprovider);
-    final notificationCount = ref.watch(fetchpointsnodification);
+    // final unreadCountAsync = ref.watch(unreadNotificationCountProvider);
     final adAsync = ref.watch(fetchadvertisementprovider);
     final connectivity = ref.watch(connectivityProvider);
     final isDark = Theme.of(context).brightness == Brightness.dark;
@@ -351,19 +359,9 @@ class _DashboardState extends ConsumerState<Dashboard> {
     final t = AppLocalizations.of(context)!;
     final bool isOngoing = data != null && data['status'] == 'inProgress';
     final aprovetech = _aprovetech?['data'];
-    ref.listen(fetchpointsnodification, (previous, next) {
-      next.whenData((response) {
-        int unread = 0;
-
-        if (_lastSeenTime == null) {
-          unread = response.data.length;
-        } else {
-          unread = response.data
-              .where((n) => n.time.isAfter(_lastSeenTime!))
-              .length;
-        }
-
-        updateAppBadge(unread); // ✅ THIS UPDATES APP ICON BADGE
+    ref.listen(unreadNotificationCountProvider, (previous, next) {
+      next.whenData((count) {
+        updateAppBadge(count);
       });
     });
     ref.listen<AsyncValue<Questioner>>(fetchquestionsdataprovider, (
@@ -564,73 +562,73 @@ class _DashboardState extends ConsumerState<Dashboard> {
                                     // Notification envelope widget updated to use time-based logic.
                                     Consumer(
                                       builder: (context, ref, _) {
-                                        int newNotifications = 0;
-                                        notificationCount.whenData((response) {
-                                          if (_lastSeenTime == null) {
-                                            newNotifications =
-                                                response.data.length;
-                                          } else {
-                                            newNotifications = response.data
-                                                .where(
-                                                  (n) => n.time.isAfter(
-                                                    _lastSeenTime!,
-                                                  ),
-                                                )
-                                                .length;
-                                          }
-                                        });
+                                        final unreadCountAsync = ref.watch(
+                                          unreadNotificationCountProvider,
+                                        );
 
-                                        return AnimatedEnvelope(
-                                          unreadCount: newNotifications,
-                                          onTap: () async {
-                                            DateTime seenTime = DateTime.now()
-                                                .toUtc();
-                                            final currentNotifications = ref
-                                                .read(fetchpointsnodification)
-                                                .value
-                                                ?.data;
-                                            if (currentNotifications != null &&
-                                                currentNotifications
-                                                    .isNotEmpty) {
-                                              // Find the newest notification time from the server data
-                                              seenTime = currentNotifications
-                                                  .map((n) => n.time)
-                                                  .reduce(
-                                                    (a, b) =>
-                                                        a.isAfter(b) ? a : b,
-                                                  );
-                                            }
+                                        return unreadCountAsync.when(
+                                          data: (newNotifications) {
+                                            return AnimatedEnvelope(
+                                              unreadCount: newNotifications,
+                                              onTap: () async {
+                                                DateTime seenTime =
+                                                    DateTime.now().toUtc();
 
-                                            await AppPreferences.saveLastSeenNotificationTime(
-                                              seenTime,
+                                                final currentNotifications = ref
+                                                    .read(
+                                                      fetchpointsnodification,
+                                                    )
+                                                    .value
+                                                    ?.data;
+
+                                                if (currentNotifications !=
+                                                        null &&
+                                                    currentNotifications
+                                                        .isNotEmpty) {
+                                                  seenTime =
+                                                      currentNotifications
+                                                          .map((n) => n.time)
+                                                          .reduce(
+                                                            (a, b) =>
+                                                                a.isAfter(b)
+                                                                ? a
+                                                                : b,
+                                                          );
+                                                }
+
+                                                await AppPreferences.saveLastSeenNotificationTime(
+                                                  seenTime,
+                                                );
+
+                                                ref.invalidate(
+                                                  unreadNotificationCountProvider,
+                                                );
+
+                                                if (context.mounted) {
+                                                  context
+                                                      .push(
+                                                        RouteNames
+                                                            .pointnodification,
+                                                      )
+                                                      .then((_) {
+                                                        ref.invalidate(
+                                                          unreadNotificationCountProvider,
+                                                        );
+                                                      });
+                                                }
+
+                                                await updateAppBadge(0);
+                                              },
                                             );
-                                            if (mounted)
-                                              setState(
-                                                () => _lastSeenTime = seenTime,
-                                              );
-
-                                            if (context.mounted) {
-                                              context
-                                                  .push(
-                                                    RouteNames
-                                                        .pointnodification,
-                                                  )
-                                                  .then((_) {
-                                                    AppPreferences.getLastSeenNotificationTime()
-                                                        .then((val) {
-                                                          if (mounted)
-                                                            setState(
-                                                              () =>
-                                                                  _lastSeenTime =
-                                                                      val,
-                                                            );
-                                                        });
-                                                  });
-                                            }
-                                            await updateAppBadge(
-                                              0,
-                                            ); // ✅ CLEAR APP ICON BADGE
                                           },
+                                          loading: () => AnimatedEnvelope(
+                                            unreadCount: 0,
+                                            onTap: () {},
+                                          ),
+                                          error: (_, __) => AnimatedEnvelope(
+                                            unreadCount: 0,
+                                            onTap: () {},
+                                          ),
                                         );
                                       },
                                     ),
@@ -1168,23 +1166,14 @@ class _DashboardState extends ConsumerState<Dashboard> {
                                       image: const SizedBox.shrink(),
                                       centerIcon: Builder(
                                         builder: (_) {
-                                          int unread = 0;
-
-                                          notificationCount.whenData((
-                                            response,
-                                          ) {
-                                            if (_lastSeenTime == null) {
-                                              unread = response.data.length;
-                                            } else {
-                                              unread = response.data
-                                                  .where(
-                                                    (n) => n.time.isAfter(
-                                                      _lastSeenTime!,
-                                                    ),
-                                                  )
-                                                  .length;
-                                            }
-                                          });
+                                          final unread = ref
+                                              .watch(
+                                                unreadNotificationCountProvider,
+                                              )
+                                              .maybeWhen(
+                                                data: (count) => count,
+                                                orElse: () => 0,
+                                              );
 
                                           return Stack(
                                             clipBehavior: Clip.none,
@@ -1251,6 +1240,7 @@ class _DashboardState extends ConsumerState<Dashboard> {
                                       onTap: () async {
                                         DateTime seenTime = DateTime.now()
                                             .toUtc();
+
                                         final currentNotifications = ref
                                             .read(fetchpointsnodification)
                                             .value
@@ -1269,10 +1259,9 @@ class _DashboardState extends ConsumerState<Dashboard> {
                                           seenTime,
                                         );
 
-                                        if (mounted)
-                                          setState(
-                                            () => _lastSeenTime = seenTime,
-                                          );
+                                        ref.invalidate(
+                                          unreadNotificationCountProvider,
+                                        );
 
                                         if (context.mounted) {
                                           context
@@ -1280,20 +1269,13 @@ class _DashboardState extends ConsumerState<Dashboard> {
                                                 RouteNames.pointnodification,
                                               )
                                               .then((_) {
-                                                AppPreferences.getLastSeenNotificationTime()
-                                                    .then((val) {
-                                                      if (mounted)
-                                                        setState(
-                                                          () => _lastSeenTime =
-                                                              val,
-                                                        );
-                                                    });
+                                                ref.invalidate(
+                                                  unreadNotificationCountProvider,
+                                                );
                                               });
                                         }
 
-                                        await updateAppBadge(
-                                          0,
-                                        ); // ✅ clear app icon badge
+                                        await updateAppBadge(0);
                                       },
                                     ),
                                   ),

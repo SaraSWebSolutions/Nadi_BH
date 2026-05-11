@@ -38,7 +38,7 @@ class _EditProfileState extends State<EditProfile> {
   late TextEditingController additionalInfoController;
   final ProfileService _profileService = ProfileService();
   bool _controllersInitialized = false;
-bool _isLoading = false;
+  bool _isLoading = false;
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
@@ -103,7 +103,7 @@ bool _isLoading = false;
   }
 
   Future<void> saveProfile() async {
-      setState(() => _isLoading = true);
+    setState(() => _isLoading = true);
 
     final userId = await AppPreferences.getUserId();
 
@@ -150,7 +150,6 @@ bool _isLoading = false;
     try {
       final response = await _profileService.editProfile(formData: formData);
 
-
       // Update local cache
       final updatedProfile = {
         "data": {
@@ -180,16 +179,15 @@ bool _isLoading = false;
       AppLogger.error(" STATUS: ${e.response?.statusCode}");
       AppLogger.error(" DATA: ${e.response?.data}");
     } catch (e, stack) {
- 
       AppLogger.error(stack.toString());
-    }finally {
-    if (mounted) setState(() => _isLoading = false);
-  }
+    } finally {
+      if (mounted) setState(() => _isLoading = false);
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-      final loc = AppLocalizations.of(context)!;
+    final loc = AppLocalizations.of(context)!;
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: SafeArea(
@@ -212,9 +210,13 @@ bool _isLoading = false;
                       context.pop();
                     },
                   ),
-                   Text(
-                    loc.editProfile ,
-                    style: TextStyle(fontWeight: FontWeight.w600, fontSize: 20,color: Theme.of(context).colorScheme.onSurface, ),
+                  Text(
+                    loc.editProfile,
+                    style: TextStyle(
+                      fontWeight: FontWeight.w600,
+                      fontSize: 20,
+                      color: Theme.of(context).colorScheme.onSurface,
+                    ),
                   ),
                   const Text(""),
                 ],
@@ -231,252 +233,276 @@ bool _isLoading = false;
                   child: Form(
                     key: _formKey,
                     child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Center(
-                        child: Stack(
-                          clipBehavior: Clip.none,
-                          children: [
-                            CircleAvatar(
-                              radius: 50,
-                              backgroundColor: Colors.grey.shade200,
-                              backgroundImage: profileImage != null
-                                  ? FileImage(profileImage!)
-                                  : null,
-                              child: profileImage == null
-                                  ? Container(
-                                      height: 120,
-                                      width: 120,
-                                      decoration: const BoxDecoration(
-                                        shape: BoxShape.circle,
-                                        color: Colors.blue,
-                                      ),
-                                      child: const Icon(
-                                        Icons.person,
-                                        color: Colors.white,
-                                        size: 50,
-                                      ),
-                                    )
-                                  : null,
-                            ),
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Center(
+                          child: Stack(
+                            clipBehavior: Clip.none,
+                            children: [
+                              CircleAvatar(
+                                radius: 50,
+                                backgroundColor: Colors.grey.shade200,
+                                backgroundImage: profileImage != null
+                                    ? FileImage(profileImage!)
+                                    : null,
+                                child: profileImage == null
+                                    ? Container(
+                                        height: 120,
+                                        width: 120,
+                                        decoration: const BoxDecoration(
+                                          shape: BoxShape.circle,
+                                          color: Colors.blue,
+                                        ),
+                                        child: const Icon(
+                                          Icons.person,
+                                          color: Colors.white,
+                                          size: 50,
+                                        ),
+                                      )
+                                    : null,
+                              ),
 
-                            Positioned(
-                              bottom: 0,
-                              right: 0,
-                              child: GestureDetector(
-                                onTap: () {
-                                  pickImage(ImageSource.gallery);
-                                },
-                                child: Container(
-                                  height: 38,
-                                  width: 38,
-                                  decoration: BoxDecoration(
-                                    color: AppColors.app_background_clr,
-                                    shape: BoxShape.circle,
-                                    border: Border.all(
+                              Positioned(
+                                bottom: 0,
+                                right: 0,
+                                child: GestureDetector(
+                                  onTap: () {
+                                    pickImage(ImageSource.gallery);
+                                  },
+                                  child: Container(
+                                    height: 38,
+                                    width: 38,
+                                    decoration: BoxDecoration(
+                                      color: AppColors.app_background_clr,
+                                      shape: BoxShape.circle,
+                                      border: Border.all(
+                                        color: Colors.white,
+                                        width: 2,
+                                      ),
+                                    ),
+                                    child: const Icon(
+                                      Icons.edit_outlined,
                                       color: Colors.white,
-                                      width: 2,
+                                      size: 20,
                                     ),
                                   ),
-                                  child: const Icon(
-                                    Icons.edit_outlined,
-                                    color: Colors.white,
-                                    size: 20,
-                                  ),
                                 ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(height: 30),
+
+                        // Full Name
+                        Text(
+                          loc.fullName,
+                          style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                        const SizedBox(height: 5),
+                        AppTextField(
+                          controller: fullNameController,
+                          validator: (v) => (v == null || v.trim().isEmpty)
+                              ? loc.fullNameRequired
+                              : null,
+                        ),
+                        const SizedBox(height: 15),
+
+                        // Email Address
+                        Text(
+                          loc.emailAddress,
+                          style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                        const SizedBox(height: 5),
+                        AppTextField(
+                          controller: emailController,
+                          keyboardType: TextInputType.emailAddress,
+                          validator: (v) {
+                            if (v == null || v.trim().isEmpty) {
+                              return loc.emailRequired;
+                            }
+                            if (!RegExp(
+                              r'^[\w.-]+@[\w.-]+\.\w+$',
+                            ).hasMatch(v.trim())) {
+                              return loc.emailInvalid;
+                            }
+                            return null;
+                          },
+                        ),
+                        const SizedBox(height: 15),
+
+                        // Phone Number
+                        Text(
+                          loc.phoneNumber,
+                          style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                        const SizedBox(height: 5),
+                        AppTextField(
+                          controller: mobileController,
+                          keyboardType: TextInputType.number,
+                          prefixText: "+973 ",
+                          maxLength: 8,
+
+                          inputFormatters: [
+                            FilteringTextInputFormatter.digitsOnly,
+                            LengthLimitingTextInputFormatter(8),
+                          ],
+
+                          validator: (v) {
+                            final value = v?.trim() ?? '';
+
+                            if (value.isEmpty) {
+                              return loc.mobileNumberRequired;
+                            }
+
+                            if (value.length != 8) {
+                              return loc.phoneMustBe8Digits;
+                            }
+
+                            return null;
+                          },
+                        ),
+                        const SizedBox(height: 15),
+
+                        // Building (Single field)
+                        Text(
+                          loc.building,
+                          style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                        const SizedBox(height: 5),
+                        AppTextField(controller: buildingController),
+                        const SizedBox(height: 15),
+
+                        Row(
+                          children: [
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    loc.city,
+                                    style: TextStyle(
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 5),
+                                  AppTextField(controller: blockController),
+                                ],
+                              ),
+                            ),
+                            const SizedBox(width: 16),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    loc.floor,
+                                    style: TextStyle(
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 5),
+                                  AppTextField(controller: floorController),
+                                ],
                               ),
                             ),
                           ],
                         ),
-                      ),
-                      const SizedBox(height: 30),
+                        const SizedBox(height: 15),
 
-                      // Full Name
-                       Text(
-                      loc.fullName,
-                        style: TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                      const SizedBox(height: 5),
-                      AppTextField(
-                        controller: fullNameController,
-                        validator: (v) =>
-                            (v == null || v.trim().isEmpty)
-                                ? loc.fullNameRequired
-                                : null,
-                      ),
-                      const SizedBox(height: 15),
-
-                      // Email Address
-                       Text(
-                       loc.emailAddress ,
-                        style: TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                      const SizedBox(height: 5),
-                      AppTextField(
-                        controller: emailController,
-                        keyboardType: TextInputType.emailAddress,
-                        validator: (v) {
-                          if (v == null || v.trim().isEmpty) {
-                            return loc.emailRequired;
-                          }
-                          if (!RegExp(r'^[\w.-]+@[\w.-]+\.\w+$').hasMatch(v.trim())) {
-                            return loc.emailInvalid;
-                          }
-                          return null;
-                        },
-                      ),
-                      const SizedBox(height: 15),
-
-                      // Phone Number
-                       Text(
-                         loc.phoneNumber,
-                        style: TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                      const SizedBox(height: 5),
-                      AppTextField(
-                        controller: mobileController,
-                        keyboardType: TextInputType.phone,
-                        maxLength: 12,
-                         prefixText: "+973 ",
-                        inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                        validator: (v) {
-                          if (v == null || v.trim().isEmpty) {
-                            return loc.mobileNumberRequired;
-                          }
-                          if (v.trim().length != 8) {
-                            return loc.phoneMustBe8Digits;
-                          }
-                          return null;
-                        },
-                      ),
-                      const SizedBox(height: 15),
-
-                      // Building (Single field)
-                       Text(
-                         loc.building,
-                        style: TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                      const SizedBox(height: 5),
-                      AppTextField(controller: buildingController),
-                      const SizedBox(height: 15),
-
-                      Row(
-                        children: [
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                 Text(
-                                  loc.city,
-                                  style: TextStyle(
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.w600,
-                                  ),
-                                ),
-                                const SizedBox(height: 5),
-                                AppTextField(controller: blockController),
-                              ],
-                            ),
-                          ),
-                          const SizedBox(width: 16),
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                 Text(
-                                loc.floor ,
-                                  style: TextStyle(
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.w600,
-                                  ),
-                                ),
-                                const SizedBox(height: 5),
-                                AppTextField(controller: floorController),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 15),
-
-                      // More fields
-                       Text(
+                        // More fields
+                        Text(
                           loc.apartment,
-                        style: TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                      const SizedBox(height: 5),
-                      AppTextField(controller: apartmentController),
-                      const SizedBox(height: 15),
-
-                       Text(
-                          loc.additionalInfo,
-                        style: TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                      const SizedBox(height: 5),
-                      AppTextField(
-                        controller: additionalInfoController,
-                      ),
-                      const SizedBox(height: 30),
-
-                      // Buttons
-                      Row(
-                        children: [
-                          Expanded(
-                            child: AppButton(
-                              text: loc.cancel,
-                              onPressed: () {
-                                context.pop();
-                              },
-                              color: AppColors.btn_primery,
-                              width: double.infinity,
-                            ),
+                          style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w600,
                           ),
-                          const SizedBox(width: 20),
-                          Expanded(
-                            child: AppButton(
-                              text: loc.save ,
-                                  isLoading: _isLoading,
+                        ),
+                        const SizedBox(height: 5),
+                        AppTextField(
+                          controller: apartmentController,
+                          keyboardType: TextInputType.number,
+                          inputFormatters: [
+                            FilteringTextInputFormatter.digitsOnly,
+                            LengthLimitingTextInputFormatter(6),
+                          ],
+                          validator: (v) {
+                            if (v == null || v.trim().isEmpty) {
+                              return loc.apartmentRequired;
+                            }
 
-                              onPressed: () async {
-                                if (!_formKey.currentState!.validate()) return;
-                                final confirmed = await showConfirmDialog(
-                                  context,
-                                  title: loc.saveChangesTitle,
-                                  message:
-                                      loc.saveChangesMessage,
-                                  confirmText: loc.save,
-                                  icon: Icons.save_outlined,
-                                );
-                                if (!confirmed) return;
-                                await saveProfile();
-                              },
-                              color: AppColors.app_background_clr,
-                              width: double.infinity,
+                            return null;
+                          },
+                        ),
+                        const SizedBox(height: 15),
+
+                        //  Text(
+                        //     loc.additionalInfo,
+                        //   style: TextStyle(
+                        //     fontSize: 14,
+                        //     fontWeight: FontWeight.w600,
+                        //   ),
+                        // ),
+                        // const SizedBox(height: 5),
+                        // AppTextField(
+                        //   controller: additionalInfoController,
+                        // ),
+                        // const SizedBox(height: 30),
+
+                        // Buttons
+                        Row(
+                          children: [
+                            Expanded(
+                              child: AppButton(
+                                text: loc.cancel,
+                                onPressed: () {
+                                  context.pop();
+                                },
+                                color: AppColors.btn_primery,
+                                width: double.infinity,
+                              ),
                             ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 30),
-                    ],
-                  ),
+                            const SizedBox(width: 20),
+                            Expanded(
+                              child: AppButton(
+                                text: loc.save,
+                                isLoading: _isLoading,
+
+                                onPressed: () async {
+                                  if (!_formKey.currentState!.validate())
+                                    return;
+                                  final confirmed = await showConfirmDialog(
+                                    context,
+                                    title: loc.saveChangesTitle,
+                                    message: loc.saveChangesMessage,
+                                    confirmText: loc.save,
+                                    icon: Icons.save_outlined,
+                                  );
+                                  if (!confirmed) return;
+                                  await saveProfile();
+                                },
+                                color: AppColors.app_background_clr,
+                                width: double.infinity,
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 30),
+                      ],
+                    ),
                   ),
                 ),
               ),

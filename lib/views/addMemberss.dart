@@ -219,8 +219,23 @@ class _AddmemberssState extends ConsumerState<Addmemberss> {
               /// EMAIL
               AppTextField(
                 controller: emailCtrl,
-                label: loc.emailAddress,
-                validator: (v) => v!.isEmpty ? loc.enterEmail : null,
+                label: "${loc.emailAddress} *",
+                keyboardType: TextInputType.emailAddress,
+                validator: (v) {
+                  if (v == null || v.trim().isEmpty) {
+                    return loc.enterEmail;
+                  }
+
+                  final emailRegex = RegExp(
+                    r'^[\w\-\.]+@([\w\-]+\.)+[\w\-]{2,4}$',
+                  );
+
+                  if (!emailRegex.hasMatch(v.trim())) {
+                    return loc.enterValidEmail;
+                  }
+
+                  return null;
+                },
               ),
               const SizedBox(height: 15),
 

@@ -17,7 +17,6 @@ import 'package:nadi_user_app/widgets/my_service_card.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:nadi_user_app/widgets/no_internet_widget.dart';
 
-
 class MyServiceRequest extends ConsumerStatefulWidget {
   const MyServiceRequest({super.key});
 
@@ -36,11 +35,12 @@ class _MyServiceRequestState extends ConsumerState<MyServiceRequest> {
     super.initState();
     myserviceslist();
   }
-// @override
-// void didChangeDependencies() {
-//   super.didChangeDependencies();
-//   myserviceslist();
-// }
+
+  // @override
+  // void didChangeDependencies() {
+  //   super.didChangeDependencies();
+  //   myserviceslist();
+  // }
   String formatDate(String date) {
     if (date.isEmpty) return "";
 
@@ -86,9 +86,9 @@ class _MyServiceRequestState extends ConsumerState<MyServiceRequest> {
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       floatingActionButton: FloatingActionButton(
         backgroundColor: AppColors.btn_primery,
-          shape: const CircleBorder(),
+        shape: const CircleBorder(),
         onPressed: () {
-       context.push(RouteNames.creterequest);
+          context.push(RouteNames.creterequest);
         },
         child: const Icon(Icons.add, color: Colors.white),
       ),
@@ -113,16 +113,16 @@ class _MyServiceRequestState extends ConsumerState<MyServiceRequest> {
                     children: [
                       AppCircleIconButton(
                         icon: Icons.arrow_back,
-                         onPressed: () {
-                            context.push(RouteNames.bottomnav);
-                          },
+                        onPressed: () {
+                          context.push(RouteNames.bottomnav);
+                        },
                       ),
                       Text(
                         t.myServiceRequest,
                         style: TextStyle(
                           fontWeight: FontWeight.w600,
                           fontSize: AppFontSizes.large,
-                          color: AppColors.app_background_clr
+                          color: AppColors.app_background_clr,
                         ),
                       ),
                       const SizedBox(width: 1),
@@ -133,79 +133,83 @@ class _MyServiceRequestState extends ConsumerState<MyServiceRequest> {
                 Divider(),
 
                 Expanded(
-                child:   RefreshIndicator(
-  color: AppColors.app_background_clr,
-  onRefresh: myserviceslist,
-                  child: isLoading
-                      ? ListView.builder(
-                          itemCount: 6,
-                          itemBuilder: (context, index) =>
-                              const ServiceRequestCardShimmer(),
-                        )
-                      : MyServices.isEmpty
-                      ? Center(
-                          child: Column(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              SvgPicture.asset(
-                                "assets/images/no_request_found.svg",
-                                width: 120, // reduce size
-                                height: 120,
-                                colorFilter: const ColorFilter.mode(
-                                  AppColors.app_background_clr,
-                                  BlendMode.srcIn,
-                                ),
-                              ),
-                              const SizedBox(height: 12),
-                              Text(
-                                t.noRequestFound,
-                                style: TextStyle(
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.w500,
-                                  color: AppColors.app_background_clr,
-                                ),
-                              ),
-                            ],
-                          ),
-                        )
-                      : AnimationLimiter(
-                          child: ListView.builder(
-                            itemCount: MyServices.length,
-                            itemBuilder: (context, index) {
-                              final service = MyServices[index];
-
-                              return AnimationConfiguration.staggeredList(
-                                position: index,
-                                duration: const Duration(milliseconds: 700),
-                                child: SlideAnimation(
-                                  verticalOffset: 50, // bottom → top
-                                  curve: Curves.easeOutCubic,
-                                  child: FadeInAnimation(
-                                    child: ServiceRequestCard(
-                                      title: service["serviceRequestID"] ?? "",
-                                      date: formatDate(
-                                        service["createdAt"] ?? ""
-                                      ),
-                                      description: service["feedback"] ?? "",
-                                      serviceStatus:
-                                          service['serviceStatus'] ?? "",
-                                      serviceLogo:
-                                          service["serviceId"]?["serviceLogo"] ??
-                                          "",
-                                      onViewDetails: () {
-                                        context.push(
-                                          RouteNames.serviceRequestDetails,
-                                          extra: service,
-                                        );
-                                      },
-                                    ),
+                  child: RefreshIndicator(
+                    color: AppColors.app_background_clr,
+                    onRefresh: myserviceslist,
+                    child: isLoading
+                        ? ListView.builder(
+                            itemCount: 6,
+                            itemBuilder: (context, index) =>
+                                const ServiceRequestCardShimmer(),
+                          )
+                        : MyServices.isEmpty
+                        ? Center(
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                SvgPicture.asset(
+                                  "assets/images/no_request_found.svg",
+                                  width: 120, // reduce size
+                                  height: 120,
+                                  colorFilter: const ColorFilter.mode(
+                                    AppColors.app_background_clr,
+                                    BlendMode.srcIn,
                                   ),
                                 ),
-                              );
-                            },
+                                const SizedBox(height: 12),
+                                Text(
+                                  t.noRequestFound,
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w500,
+                                    color: AppColors.app_background_clr,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          )
+                        : AnimationLimiter(
+                            child: ListView.builder(
+                              itemCount: MyServices.length,
+                              itemBuilder: (context, index) {
+                                final service = MyServices[index];
+
+                                return AnimationConfiguration.staggeredList(
+                                  position: index,
+                                  duration: const Duration(milliseconds: 700),
+                                  child: SlideAnimation(
+                                    verticalOffset: 50, // bottom → top
+                                    curve: Curves.easeOutCubic,
+                                    child: FadeInAnimation(
+                                      child: ServiceRequestCard(
+                                        title:
+                                            service["serviceRequestID"] ?? "",
+                                        date: formatDate(
+                                          service["createdAt"] ?? "",
+                                        ),
+                                        description: service["feedback"] ?? "",
+                                        serviceStatus:
+                                            service['serviceStatus'] ?? "",
+                                        serviceLogo:
+                                            service["serviceId"]?["serviceLogo"] ??
+                                            "",
+                                        onViewDetails: () async {
+                                          await context.push(
+                                            RouteNames.serviceRequestDetails,
+                                            extra: service,
+                                          );
+
+                                          // ✅ Refresh latest data after back
+                                          myserviceslist();
+                                        },
+                                      ),
+                                    ),
+                                  ),
+                                );
+                              },
+                            ),
                           ),
-                        ),
-                        ),
+                  ),
                 ),
               ],
             ),

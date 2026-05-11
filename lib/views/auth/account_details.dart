@@ -396,99 +396,116 @@ class _AccountDetailsState extends ConsumerState<AccountDetails>
               height: MediaQuery.of(context).size.height * 0.60,
               width: double.infinity,
               padding: const EdgeInsets.all(30),
-              decoration: const BoxDecoration(
-                borderRadius: BorderRadius.only(
+
+              decoration: BoxDecoration(
+                color: Theme.of(context).scaffoldBackgroundColor,
+                borderRadius: const BorderRadius.only(
                   topLeft: Radius.circular(50),
                   topRight: Radius.circular(50),
                 ),
               ),
 
-              /// ✅ DYNAMIC UI
               child: accountTypesAsync.when(
                 loading: () => const Center(child: CircularProgressIndicator()),
 
-                error: (e, _) => Center(child: Text(e.toString())),
+                error: (e, _) => Center(
+                  child: Text(
+                    e.toString(),
+                    style: TextStyle(
+                      color: Theme.of(context).textTheme.bodyLarge?.color,
+                    ),
+                  ),
+                ),
 
                 data: (response) {
                   final list = response.data;
 
-                  return Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        AppLocalizations.of(context)!.accountTypeTitle,
-                        style: const TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 24,
+                  return SingleChildScrollView(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          AppLocalizations.of(context)!.accountTypeTitle,
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 24,
+                            color: Theme.of(context).textTheme.bodyLarge?.color,
+                          ),
                         ),
-                      ),
-                      const SizedBox(height: 25),
 
-                      ...list.map((item) {
-                        final individual = isIndividual(item.type);
-                        final family = isFamily(item.type);
+                        const SizedBox(height: 25),
 
-                        // 🔥 Apply availability filter
-                        if ((individual && !availability.individualEnabled) ||
-                            (family && !availability.familyEnabled)) {
-                          return const SizedBox();
-                        }
+                        ...list.map((item) {
+                          final individual = isIndividual(item.type);
+                          final family = isFamily(item.type);
 
-                        return Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            ScaleTransition(
-                              scale: _animation,
-                              child: AppButton(
-                                text: item.name, // ✅ dynamic
-                                icon: Image.asset(
-                                  individual
-                                      ? "assets/icons/person.png"
-                                      : "assets/icons/persons.png",
-                                  height: 40,
+                          if ((individual && !availability.individualEnabled) ||
+                              (family && !availability.familyEnabled)) {
+                            return const SizedBox();
+                          }
+
+                          return Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              ScaleTransition(
+                                scale: _animation,
+                                child: AppButton(
+                                  text: item.name,
+                                  icon: Image.asset(
+                                    individual
+                                        ? "assets/icons/person.png"
+                                        : "assets/icons/persons.png",
+                                    height: 40,
+                                  ),
+                                  color: AppColors.btn_primery,
+                                  width: double.infinity,
+                                  onPressed: () async {
+                                    final res = await _authService
+                                        .selectAccount(accountTypeId: item.id);
+
+                                    if (res) {
+                                      if (!context.mounted) return;
+
+                                      context.pushNamed(
+                                        RouteNames.stepper,
+                                        extra: item.type == 'IA'
+                                            ? "Individual"
+                                            : "Family",
+                                      );
+                                    }
+                                  },
                                 ),
-                                color: AppColors.btn_primery,
-                                width: double.infinity,
-                                onPressed: () async {
-                                  final res = await _authService.selectAccount(
-                                    accountTypeId: item.id, // ✅ dynamic ID
-                                  );
-
-                                  if (res) {
-                                    if (!context.mounted) return;
-
-                                    context.pushNamed(
-                                      RouteNames.stepper,
-                                      extra: item.type == 'IA'
-                                          ? "Individual"
-                                          : "Family",
-                                    );
-                                  }
-                                },
                               ),
-                            ),
 
-                            const SizedBox(height: 8),
+                              const SizedBox(height: 10),
 
-                            Text(
-                              individual
-                                  ? AppLocalizations.of(
-                                      context,
-                                    )!.individualAccountDesc
-                                  : AppLocalizations.of(
-                                      context,
-                                    )!.familyAccountDesc,
-                              style: TextStyle(
-                                fontSize: AppFontSizes.small,
-                                color: AppColors.borderGrey,
+                              Text(
+                                individual
+                                    ? AppLocalizations.of(
+                                        context,
+                                      )!.individualAccountDesc
+                                    : AppLocalizations.of(
+                                        context,
+                                      )!.familyAccountDesc,
+
+                                style: TextStyle(
+                                  fontSize: AppFontSizes.small,
+
+                                  /// ✅ FIXED FOR DARK MODE
+                                  color: Theme.of(context)
+                                      .textTheme
+                                      .bodyMedium
+                                      ?.color
+                                      ?.withOpacity(0.7),
+                                ),
                               ),
-                            ),
 
-                            const SizedBox(height: 27),
-                          ],
-                        );
-                      }).toList(),
-                    ],
+                              const SizedBox(height: 27),
+                            ],
+                          );
+                        }).toList(),
+                      ],
+                    ),
                   );
                 },
               ),

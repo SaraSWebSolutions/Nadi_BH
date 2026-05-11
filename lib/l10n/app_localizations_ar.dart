@@ -802,7 +802,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get accountRejectedMsg => 'تم رفض تسجيل حسابك. يرجى التواصل مع الدعم.';
 
   @override
-  String get invalidCredentials => 'بيانات الدخول غير صحيحة';
+  String get invalidCredentials => 'بيانات تسجيل الدخول غير صحيحة';
 
   @override
   String get ok => 'حسناً';
@@ -1119,4 +1119,23 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get more => 'المزيد';
+
+  @override
+  String get apartmentRequired => 'رقم الشقة مطلوب';
+
+  @override
+  String get apartmentInvalid => 'يرجى إدخال رقم شقة صحيح';
+
+  @override
+  String get maximum10ImagesAllowed => 'يسمح بحد أقصى 10 صور';
+
+  @override
+  String get emailPhoneRequired => 'البريد الإلكتروني أو رقم الهاتف مطلوب';
+
+  @override
+  String get invalidEmailOrPhone =>
+      'أدخل بريدًا إلكترونيًا صالحًا أو رقم هاتف مكون من 8 أرقام';
+
+  @override
+  String get enterValidEmail => 'أدخل بريد إلكتروني صالح';
 }

@@ -796,7 +796,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get emailRequired => 'Email is required';
 
   @override
-  String get passwordRequired => 'Password is required';
+  String get passwordRequired => 'Password required';
 
   @override
   String get accountDisabled => 'Account Disabled';
@@ -1129,4 +1129,22 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get more => 'More..';
+
+  @override
+  String get apartmentRequired => 'Apartment is required';
+
+  @override
+  String get apartmentInvalid => 'Please enter valid apartment';
+
+  @override
+  String get maximum10ImagesAllowed => 'Maximum 10 images allowed';
+
+  @override
+  String get emailPhoneRequired => 'Email or phone number is required';
+
+  @override
+  String get invalidEmailOrPhone => 'Enter valid email or 8-digit phone number';
+
+  @override
+  String get enterValidEmail => 'Enter valid email address';
 }

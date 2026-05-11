@@ -636,30 +636,40 @@ class _SignInOtpState extends State<SignInOtp> {
     final isRTL = Directionality.of(context) == TextDirection.rtl;
     final l10n = AppLocalizations.of(context)!;
 
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     final defaultPinTheme = PinTheme(
       width: 50,
       height: 50,
       textStyle: TextStyle(
         fontSize: 18,
         fontWeight: FontWeight.w600,
-        color: Theme.of(context).textTheme.bodyMedium?.color,
+        color: Theme.of(context).colorScheme.onSurface,
       ),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: isDark
+            ? Theme.of(context).colorScheme.surfaceContainerHighest
+            : Colors.white,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: AppColors.btn_primery),
+        border: Border.all(
+          color: isDark ? Colors.grey.shade700 : AppColors.btn_primery,
+        ),
       ),
     );
 
-    final errorPinTheme = PinTheme(
-      width: 50,
-      height: 50,
-      textStyle: const TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.red),
+    final focusedPinTheme = defaultPinTheme.copyDecorationWith(
+      border: Border.all(
+        color: Theme.of(context).colorScheme.primary,
+        width: 2,
       ),
+    );
+
+    final submittedPinTheme = defaultPinTheme.copyDecorationWith(
+      border: Border.all(color: Colors.green, width: 1.5),
+    );
+
+    final errorPinTheme = defaultPinTheme.copyDecorationWith(
+      border: Border.all(color: Colors.red, width: 1.5),
     );
 
     return Scaffold(
@@ -730,7 +740,7 @@ class _SignInOtpState extends State<SignInOtp> {
                             prefixText: "+973 ",
                             maxLength: 8,
                             filled: true,
-                            fillColor: Colors.white,
+                            fillColor: Theme.of(context).colorScheme.surface,
                           ),
 
                           const SizedBox(height: 20),
@@ -782,7 +792,10 @@ class _SignInOtpState extends State<SignInOtp> {
                               child: Pinput(
                                 controller: _otpController,
                                 length: 4,
+
                                 defaultPinTheme: defaultPinTheme,
+                                focusedPinTheme: focusedPinTheme,
+                                submittedPinTheme: submittedPinTheme,
                                 errorPinTheme: errorPinTheme,
                                 keyboardType: TextInputType.number,
                                 onChanged: (_) {
