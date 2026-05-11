@@ -693,7 +693,7 @@ class _SignInOtpState extends State<SignInOtp> {
                     constraints: BoxConstraints(
                       minHeight:
                           size.height -
-                          (isIOS ? size.height * 0.60 : size.height * 0.62),
+                          (isIOS ? size.height * 0.60 : size.height * 0.40),
                     ),
                     decoration: BoxDecoration(
                       color: Theme.of(context).scaffoldBackgroundColor,

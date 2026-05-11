@@ -110,7 +110,7 @@ class _ForgotpasswordState extends State<Forgotpassword> {
                                 size.height -
                                 (isIOS
                                     ? size.height * 0.60
-                                    : size.height * 0.62),
+                                    : size.height * 0.40),
                           ),
                           //constraints: BoxConstraints(minHeight: size.height),
                           padding: const EdgeInsets.all(20),
