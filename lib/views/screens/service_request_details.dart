@@ -20,7 +20,8 @@ class ServiceRequestDetails extends StatelessWidget {
     final List<String> images = getServiceImages(serviceData);
 
     /// ---------- TIMELINE ----------
-    final timestamps = (serviceData["statusTimestamps"] as Map<String, dynamic>?) ?? {};
+    final timestamps =
+        (serviceData["statusTimestamps"] as Map<String, dynamic>?) ?? {};
     final String serviceStatus = serviceData["serviceStatus"];
     final List acceptedTechnicians = serviceData["acceptedTechnicians"] ?? [];
 
@@ -490,9 +491,7 @@ class _TimelineTile extends StatelessWidget {
               if (data["time"] != null) ...[
                 const SizedBox(height: 6),
                 Text(
-                  formatIsoDateForUI(
-                    data["time"]
-                  ),
+                  formatIsoDateForUI(data["time"]),
                   style: TextStyle(fontSize: 11, color: Colors.grey.shade500),
                 ),
               ],
@@ -727,8 +726,6 @@ class _FeedbackSectionState extends State<_FeedbackSection> {
     super.dispose();
   }
 }
-
-
 
 // import 'package:cached_network_image/cached_network_image.dart';
 // import 'package:flutter/material.dart';

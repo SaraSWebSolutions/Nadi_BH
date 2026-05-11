@@ -35,12 +35,17 @@ class _PointDetailsState extends ConsumerState<PointDetails> {
   bool isExpanded = false;
   DateTime? _lastSeenTime;
   final int initialCount = 7;
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _loadLastSeenTime();
+  }
 
   @override
   void initState() {
     super.initState();
     _loadUserData();
-     _loadLastSeenTime(); // ✅ ADD THIS
+    _loadLastSeenTime(); // ✅ ADD THIS
 
     Future.microtask(() {
       ref.refresh(pointshistoryprovider);
@@ -51,14 +56,17 @@ class _PointDetailsState extends ConsumerState<PointDetails> {
       ref.refresh(fetchadminquestionerprovider);
     });
   }
-Future<void> _loadLastSeenTime() async {
-  final time = await AppPreferences.getLastSeenNotificationTime();
-  if (mounted) {
+
+  Future<void> _loadLastSeenTime() async {
+    final time = await AppPreferences.getLastSeenNotificationTime();
+
+    if (!mounted) return;
+
     setState(() {
-      _lastSeenTime = time;
+      _lastSeenTime = time?.toUtc();
     });
   }
-}
+
   Future<void> _loadUserData() async {
     final type = await AppPreferences.getaccounttype();
     final name = await AppPreferences.getusername();
@@ -74,17 +82,19 @@ Future<void> _loadLastSeenTime() async {
       userImage = image ?? "";
     });
   }
-Future<void> updateAppBadge(int count) async {
-  try {
-    if (count > 0) {
-      await AppBadgePlus.updateBadge(count);
-    } else {
-      await AppBadgePlus.updateBadge(0); // clears badge
+
+  Future<void> updateAppBadge(int count) async {
+    try {
+      if (count > 0) {
+        await AppBadgePlus.updateBadge(count);
+      } else {
+        await AppBadgePlus.updateBadge(0); // clears badge
+      }
+    } catch (e) {
+      debugPrint("❌ Badge not supported: $e");
     }
-  } catch (e) {
-    debugPrint("❌ Badge not supported: $e");
   }
-}
+
   Future<void> _peopledetails(
     BuildContext context,
     String peopleId,
@@ -108,11 +118,11 @@ Future<void> updateAppBadge(int count) async {
     final pointhistoryAsync = ref.watch(pointshistoryprovider);
     final notificationCount = ref.watch(fetchpointsnodification);
     final familymemberpointlist = ref.watch(FamilymemberpointslistProvider);
-   final t = AppLocalizations.of(context)!;
+    final t = AppLocalizations.of(context)!;
     final requestedpointspeoplelist = ref.watch(fetchrequestpeoplelistprovider);
     final dashboardAsync = ref.watch(userdashboardprovider);
     final adminquestionlist = ref.watch(fetchadminquestionerprovider);
-   
+
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: SingleChildScrollView(
@@ -152,7 +162,7 @@ Future<void> updateAppBadge(int count) async {
                         onPressed: () => Navigator.pop(context),
                       ),
 
-                       Text(
+                      Text(
                         t.pointsDetails,
                         style: TextStyle(
                           fontSize: 20,
@@ -163,34 +173,61 @@ Future<void> updateAppBadge(int count) async {
 
                       InkWell(
                         onTap: () async {
-                                      DateTime seenTime = DateTime.now().toUtc();
-                                      final currentNotifications = ref.read(fetchpointsnodification).value?.data;
-                                      if (currentNotifications != null && currentNotifications.isNotEmpty) {
-                                        // Find the newest notification time from the server data
-                                        seenTime = currentNotifications
-                                            .map((n) => n.time)
-                                            .reduce((a, b) => a.isAfter(b) ? a : b);
-                                      }
-                                      
-                                      await AppPreferences.saveLastSeenNotificationTime(seenTime);
-                                      if (mounted) setState(() => _lastSeenTime = seenTime);
-                                      
-                                      if (context.mounted) {
-                                      context.push(RouteNames.pointnodification).then((_) async {
-  final val = await AppPreferences.getLastSeenNotificationTime();
+                          final notifications =
+                              ref.read(fetchpointsnodification).value?.data ??
+                              [];
 
-  if (mounted) {
-    setState(() {
-      _lastSeenTime = val;
-    });
-  }
+                          DateTime seenTime = DateTime.now().toUtc();
 
-  ref.invalidate(fetchpointsnodification); // 🔥 IMPORTANT
-});
-                                      }
-                                      await updateAppBadge(0); // ✅ CLEAR APP ICON BADGE
-                                    },
+                          if (notifications.isNotEmpty) {
+                            seenTime = notifications
+                                .map((e) => e.time.toUtc())
+                                .reduce((a, b) => a.isAfter(b) ? a : b);
+                          }
+
+                          // ✅ SAVE GLOBAL LAST SEEN TIME
+                          await AppPreferences.saveLastSeenNotificationTime(
+                            seenTime,
+                          );
+
+                          // ✅ UPDATE LOCAL STATE
+                          if (mounted) {
+                            setState(() {
+                              _lastSeenTime = seenTime;
+                            });
+                          }
+
+                          // ✅ CLEAR APP ICON BADGE
+                          await updateAppBadge(0);
+
+                          // ✅ REFRESH PROVIDERS GLOBALLY
+                          ref.invalidate(fetchpointsnodification);
+                          ref.invalidate(userdashboardprovider);
+
+                          // ✅ OPEN NOTIFICATION SCREEN
+                          final result = await context.push(
+                            RouteNames.pointnodification,
+                          );
+
+                          // ✅ WHEN RETURNING FROM NOTIFICATION PAGE
+                          if (mounted) {
+                            final latestSeen =
+                                await AppPreferences.getLastSeenNotificationTime();
+
+                            setState(() {
+                              _lastSeenTime = latestSeen;
+                            });
+
+                            // force rebuild
+                            ref.invalidate(fetchpointsnodification);
+                            ref.invalidate(userdashboardprovider);
+
+                            ref.refresh(fetchpointsnodification);
+                            ref.refresh(userdashboardprovider);
+                          }
+                        },
                         child: Stack(
+                          clipBehavior: Clip.none,
                           children: [
                             Container(
                               height: 40,
@@ -205,27 +242,49 @@ Future<void> updateAppBadge(int count) async {
                                 size: 30,
                               ),
                             ),
+
+                            /// ✅ BADGE
                             notificationCount.when(
                               data: (response) {
-                               final notifications = response.data;
+                                final notifications = response.data;
 
-int unreadCount = 0;
+                                // ✅ SORT NEWEST FIRST
+                                notifications.sort(
+                                  (a, b) => b.time.compareTo(a.time),
+                                );
 
-if (_lastSeenTime == null) {
-  unreadCount = notifications.length;
-} else {
-  unreadCount = notifications
-      .where((n) => n.time.isAfter(_lastSeenTime!))
-      .length;
-}
+                                int unreadCount = 0;
 
-// 👉 hide badge if 0
-if (unreadCount == 0) return const SizedBox();
+                                // ✅ IF NEVER OPENED
+                                if (_lastSeenTime == null) {
+                                  unreadCount = notifications.length;
+                                } else {
+                                  unreadCount = notifications.where((n) {
+                                    return n.time.toUtc().isAfter(
+                                      _lastSeenTime!.toUtc(),
+                                    );
+                                  }).length;
+                                }
 
-final countText = unreadCount > 99 ? "99+" : "$unreadCount";
+                                // ✅ UPDATE APP BADGE
+                                WidgetsBinding.instance.addPostFrameCallback((
+                                  _,
+                                ) {
+                                  updateAppBadge(unreadCount);
+                                });
+
+                                // ✅ HIDE IF ZERO
+                                if (unreadCount <= 0) {
+                                  return const SizedBox.shrink();
+                                }
+
+                                final countText = unreadCount > 99
+                                    ? "99+"
+                                    : unreadCount.toString();
+
                                 return Positioned(
-                                  top: 0,
-                                  right: 5,
+                                  top: -2,
+                                  right: -2,
                                   child: Container(
                                     padding: const EdgeInsets.symmetric(
                                       horizontal: 4,
@@ -235,13 +294,13 @@ final countText = unreadCount > 99 ? "99+" : "$unreadCount";
                                       minWidth: 16,
                                     ),
                                     decoration: const BoxDecoration(
-                                      shape: BoxShape.circle,
                                       color: Colors.white,
+                                      shape: BoxShape.circle,
                                     ),
                                     child: Center(
                                       child: Text(
                                         countText,
-                                        style: TextStyle(
+                                        style: const TextStyle(
                                           color: AppColors.gold_coin,
                                           fontSize: 9,
                                           fontWeight: FontWeight.bold,
@@ -251,8 +310,8 @@ final countText = unreadCount > 99 ? "99+" : "$unreadCount";
                                   ),
                                 );
                               },
-                              error: (_, _) => const SizedBox(),
                               loading: () => const SizedBox(),
+                              error: (_, __) => const SizedBox(),
                             ),
                           ],
                         ),
@@ -353,8 +412,8 @@ final countText = unreadCount > 99 ? "99+" : "$unreadCount";
                                         crossAxisAlignment:
                                             CrossAxisAlignment.start,
                                         children: [
-                                           Text(
-                                           t.welcome,
+                                          Text(
+                                            t.welcome,
                                             style: TextStyle(
                                               color: Colors.white,
                                               fontSize: 13,
@@ -445,7 +504,7 @@ final countText = unreadCount > 99 ? "99+" : "$unreadCount";
                 return Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                     Padding(
+                    Padding(
                       padding: EdgeInsets.only(left: 10, bottom: 4),
                       child: Text(
                         t.pointsRequests,
@@ -485,7 +544,7 @@ final countText = unreadCount > 99 ? "99+" : "$unreadCount";
                             },
                             child: Column(
                               mainAxisSize: MainAxisSize.min,
-                              children:  [
+                              children: [
                                 CircleAvatar(
                                   radius: 24,
                                   backgroundColor: AppColors.gold_coin,
@@ -580,8 +639,8 @@ final countText = unreadCount > 99 ? "99+" : "$unreadCount";
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       const SizedBox(height: 10),
-                       Text(
-                       t.adminRequests,
+                      Text(
+                        t.adminRequests,
                         style: TextStyle(fontWeight: FontWeight.bold),
                       ),
                       const SizedBox(height: 5),
@@ -624,8 +683,8 @@ final countText = unreadCount > 99 ? "99+" : "$unreadCount";
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                   Text(
-                   t.pointHistory ,
+                  Text(
+                    t.pointHistory,
                     style: TextStyle(fontWeight: FontWeight.bold),
                   ),
                   InkWell(
@@ -633,7 +692,7 @@ final countText = unreadCount > 99 ? "99+" : "$unreadCount";
                       context.push(RouteNames.allPointHistorys);
                     },
                     child: Row(
-                      children:  [
+                      children: [
                         Text(
                           t.viewAll,
                           style: TextStyle(
@@ -676,7 +735,9 @@ final countText = unreadCount > 99 ? "99+" : "$unreadCount";
                           data: (response) {
                             final data = response.data;
                             if (data.isEmpty) {
-                              return Text(AppLocalizations.of(context)!.noHistoryFound);
+                              return Text(
+                                AppLocalizations.of(context)!.noHistoryFound,
+                              );
                             }
                             final limitedList = data.take(5).toList();
                             return ListView.builder(
@@ -711,7 +772,7 @@ final countText = unreadCount > 99 ? "99+" : "$unreadCount";
                       data: (familypoints) {
                         final data = familypoints.data;
                         if (data.isEmpty) {
-                          return  Padding(
+                          return Padding(
                             padding: EdgeInsets.all(15),
                             child: Text(t.noFamilyPointsFound),
                           );
@@ -721,7 +782,7 @@ final countText = unreadCount > 99 ? "99+" : "$unreadCount";
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                               Text(
+                              Text(
                                 t.familyPoints,
                                 style: TextStyle(fontWeight: FontWeight.bold),
                               ),

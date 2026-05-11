@@ -1619,7 +1619,7 @@ abstract class AppLocalizations {
   /// No description provided for @passwordRequired.
   ///
   /// In en, this message translates to:
-  /// **'Password is required'**
+  /// **'Password required'**
   String get passwordRequired;
 
   /// No description provided for @accountDisabled.
@@ -2227,6 +2227,42 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'More..'**
   String get more;
+
+  /// No description provided for @apartmentRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Apartment is required'**
+  String get apartmentRequired;
+
+  /// No description provided for @apartmentInvalid.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter valid apartment'**
+  String get apartmentInvalid;
+
+  /// No description provided for @maximum10ImagesAllowed.
+  ///
+  /// In en, this message translates to:
+  /// **'Maximum 10 images allowed'**
+  String get maximum10ImagesAllowed;
+
+  /// No description provided for @emailPhoneRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Email or phone number is required'**
+  String get emailPhoneRequired;
+
+  /// No description provided for @invalidEmailOrPhone.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter valid email or 8-digit phone number'**
+  String get invalidEmailOrPhone;
+
+  /// No description provided for @enterValidEmail.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter valid email address'**
+  String get enterValidEmail;
 }
 
 class _AppLocalizationsDelegate

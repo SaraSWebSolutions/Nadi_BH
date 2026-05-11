@@ -133,9 +133,19 @@ class _CreateServiceRequestState extends ConsumerState<CreateServiceRequest> {
   // }
 
   Future<void> pickImage(ImageSource source) async {
+    final loc = AppLocalizations.of(context)!;
+
+    // Prevent more than 10 images
+    if (selectedImages.length >= 10) {
+      SnackbarHelper.showError(context, loc.maximum10ImagesAllowed);
+      return;
+    }
+
     final XFile? image = await _picker.pickImage(
       source: source,
-      imageQuality: 80,
+      imageQuality: 40,
+      maxWidth: 1280,
+      maxHeight: 1280,
     );
 
     if (image != null) {
@@ -158,6 +168,17 @@ class _CreateServiceRequestState extends ConsumerState<CreateServiceRequest> {
 
   Future<void> SendRequest() async {
     final loc = AppLocalizations.of(context)!;
+
+    // Prevent duplicate taps
+    if (_isLoading) return;
+
+    // Validate image limit BEFORE loading
+    if (selectedImages.length > 10) {
+      SnackbarHelper.showError(context, loc.maximum10ImagesAllowed);
+      return;
+    }
+
+    // Validate dropdowns BEFORE loading
     if (selectcategoryId == null || selectedIssueId == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -184,38 +205,35 @@ class _CreateServiceRequestState extends ConsumerState<CreateServiceRequest> {
       final response = await _requestSerivices.createServiceRequestes(
         serviceId: selectcategoryId!,
         issuesId: selectedIssueId!,
-        feedback: descriptionController.text,
-        scheduleService: _dateController.text,
+        feedback: descriptionController.text.trim(),
+        scheduleService: _dateController.text.trim(),
         immediateAssistance: isChecked,
-        time: _timeController.text,
+        time: _timeController.text.trim(),
         images: selectedImages.map((e) => File(e.path)).toList(),
-        voice: recordedVoice,
+
+        // FIXED
+        voice: voiceFile,
       );
 
-      AppLogger.warn("createServiceRequestes ${jsonEncode(response)}");
+      AppLogger.warn(response?['message']);
       final serviceRequestId = response?['data']?['serviceRequestID']
           ?.toString();
+
       AppLogger.warn("serviceRequestID $serviceRequestId");
+
       if (!mounted) return;
 
-      setState(() => _isLoading = false);
-
+      // SUCCESS
       if (response != null) {
         final message = response['message'];
 
-        //  SUCCESS
         if (message == "Service created successfully" &&
             serviceRequestId != null) {
           context.push(RouteNames.requestcreatesucess, extra: serviceRequestId);
-        }
-        //  ERROR FROM API (ACCOUNT NOT VERIFIED etc.)
-        else {
-          setState(() => _isLoading = false);
+        } else {
           SnackbarHelper.showError(context, message);
         }
       } else {
-        setState(() => _isLoading = false);
-        //  NULL RESPONSE
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(loc.somethingWentWrongTryAgain),
@@ -224,15 +242,20 @@ class _CreateServiceRequestState extends ConsumerState<CreateServiceRequest> {
         );
       }
     } catch (e) {
-      setState(() => _isLoading = false);
       AppLogger.error("SendRequest error: $e");
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(loc.unexpectedErrorOccurred),
-          backgroundColor: Colors.red,
-        ),
-      );
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(loc.unexpectedErrorOccurred),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    } finally {
+      if (mounted) {
+        setState(() => _isLoading = false);
+      }
     }
   }
 

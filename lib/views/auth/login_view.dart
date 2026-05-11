@@ -346,27 +346,37 @@ class _LoginViewState extends State<LoginView> {
   }
 
   Future<void> login(BuildContext context) async {
-     if (_isLoading) return;
+    if (_isLoading) return;
 
-  final input = controller.email.text.trim();
-  final password = controller.password.text.trim();
+    final input = controller.email.text.trim();
+    final password = controller.password.text.trim();
 
-  bool isEmail = RegExp(r'^[^@]+@[^@]+\.[^@]+').hasMatch(input);
-  bool isPhone = RegExp(r'^[0-9]{8}$').hasMatch(input); // ✅ ONLY 8 digits
+    bool isEmail = RegExp(r'^[^@]+@[^@]+\.[^@]+').hasMatch(input);
+    bool isPhone = RegExp(r'^[0-9]{8}$').hasMatch(input); // ✅ ONLY 8 digits
+    final l10n = AppLocalizations.of(context)!;
 
-  setState(() {
-    if (input.isEmpty) {
-      emailError = "Email or phone number is required";
-    } else if (!isEmail && !isPhone) {
-      emailError = "Enter valid email or 8-digit phone number";
-    } else {
-      emailError = null;
-    }
+    setState(() {
+      if (input.isEmpty) {
+        emailError = l10n.emailPhoneRequired;
+      } else if (!isEmail && !isPhone) {
+        emailError = l10n.invalidEmailOrPhone;
+      } else {
+        emailError = null;
+      }
 
-    passwordError = password.isEmpty ? "Password required" : null;
-  });
+      passwordError = password.isEmpty ? l10n.passwordRequired : null;
+    });
+    // setState(() {
+    //   if (input.isEmpty) {
+    //     emailError = "Email or phone number is required";
+    //   } else if (!isEmail && !isPhone) {
+    //     emailError = "Enter valid email or 8-digit phone number";
+    //   } else {
+    //     emailError = null;
+    //   }
 
-  
+    //   passwordError = password.isEmpty ? "Password required" : null;
+    // });
 
     if (emailError != null || passwordError != null) return;
     setState(() => _isLoading = true); // 🔥 START LOADER
@@ -376,8 +386,8 @@ class _LoginViewState extends State<LoginView> {
     AppLogger.info("Login Fcm Token ******************* $fcmToken");
     try {
       final response = await _authService.LoginApi(
-       email: isEmail ? input : null,
-  mobileNumber: isPhone ? input : null,
+        email: isEmail ? input : null,
+        mobileNumber: isPhone ? input : null,
         password: loginData.password,
         fcmToken: fcmToken,
       );
@@ -401,8 +411,7 @@ class _LoginViewState extends State<LoginView> {
         context.go(RouteNames.bottomnav);
       }
     } on DioException catch (e) {
-      final message = e.response?.data?['message'] ?? "Invalid credentials";
-
+      final message = e.response?.data?['message'] ?? l10n.invalidCredentials;
       if (message.toString().toLowerCase().contains('disabled')) {
         if (!mounted) return;
         _showAccountDisabledDialog();

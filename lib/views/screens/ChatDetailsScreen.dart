@@ -379,27 +379,89 @@ class _ChatDetailsScreenState extends ConsumerState<ChatDetailsScreen>
             ),
             StreamChatTheme(
               data: StreamChatThemeData.fromTheme(Theme.of(context)).copyWith(
+                ownMessageTheme: StreamMessageThemeData(
+                  messageBackgroundColor: AppColors.app_background_clr,
+
+                  // ✅ Better visible border
+                  messageBorderColor: Colors.white.withOpacity(0.15),
+
+                  messageTextStyle: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 15,
+                    fontWeight: FontWeight.w500,
+                  ),
+
+                  avatarTheme: const StreamAvatarThemeData(
+                    constraints: BoxConstraints.tightFor(width: 0, height: 0),
+                  ),
+                ),
+
+                otherMessageTheme: StreamMessageThemeData(
+                  // ✅ Better dark mode bubble
+                  messageBackgroundColor:
+                      Theme.of(context).brightness == Brightness.dark
+                      ? const Color(0xFF1F1F1F)
+                      : Colors.grey.shade200,
+
+                  // ✅ Visible border
+                  messageBorderColor:
+                      Theme.of(context).brightness == Brightness.dark
+                      ? Colors.white.withOpacity(0.12)
+                      : Colors.black.withOpacity(0.06),
+
+                  // ✅ Better readable text
+                  messageTextStyle: TextStyle(
+                    color: Theme.of(context).brightness == Brightness.dark
+                        ? Colors.white
+                        : Colors.black87,
+                    fontSize: 15,
+                    fontWeight: FontWeight.w500,
+                  ),
+
+                  avatarTheme: const StreamAvatarThemeData(
+                    constraints: BoxConstraints.tightFor(width: 0, height: 0),
+                  ),
+                ),
+
                 messageInputTheme: StreamMessageInputThemeData(
-                  inputBackgroundColor: Theme.of(context).colorScheme.surface,
+                  inputBackgroundColor:
+                      Theme.of(context).brightness == Brightness.dark
+                      ? const Color(0xFF1A1A1A)
+                      : Theme.of(context).colorScheme.surface,
+
                   borderRadius: BorderRadius.circular(24),
+
                   inputDecoration: InputDecoration(
                     hintText: loc.writeMessage,
+
                     hintStyle: TextStyle(color: Theme.of(context).hintColor),
 
                     border: InputBorder.none,
-                    contentPadding: EdgeInsets.symmetric(
+
+                    contentPadding: const EdgeInsets.symmetric(
                       horizontal: 16,
                       vertical: 10,
                     ),
                   ),
-                  // ✅ FIX: icon colors (left & right)
+
                   actionButtonColor: Theme.of(context).iconTheme.color,
-                  sendButtonColor: Theme.of(context).colorScheme.onSurface,
+
+                  sendButtonColor:
+                      Theme.of(context).brightness == Brightness.dark
+                      ? Colors.white
+                      : Theme.of(context).colorScheme.onSurface,
                 ),
               ),
-              child: StreamMessageInput(
-                attachmentButtonBuilder: (context, onPressed) =>
-                    const SizedBox.shrink(),
+
+              child: Container(
+                color: Theme.of(context).brightness == Brightness.dark
+                    ? const Color(0xFF0D0D0D)
+                    : Colors.white,
+
+                child: StreamMessageInput(
+                  attachmentButtonBuilder: (context, onPressed) =>
+                      const SizedBox.shrink(),
+                ),
               ),
             ),
           ],
