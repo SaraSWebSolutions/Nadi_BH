@@ -288,7 +288,7 @@
   "invalidPhoneLength": "يجب أن يكون رقم الهاتف 8 أرقام",
   "onlyDigitsAllowed": "يسمح بالأرقام فقط",
    "addAddressError": "يرجى إضافة عنوان العضو",
-   "fullNameRequired": "الاسم الكامل مطلوب",
+   "fullNameRequired": "الاسم الأول مطلوب",
    "mobileMustBe8Digits": "يجب أن يكون رقم الجوال 8 أرقام",
   "enterConfirmPassword": "أدخل تأكيد كلمة المرور",
   "passwordsDoNotMatch": "كلمات المرور غير متطابقة",
@@ -448,5 +448,7 @@
   "passwordRequired": "كلمة المرور مطلوبة",
   "somethingWentWrong": "حدث خطأ ما",
   "invalidCredentials": "بيانات تسجيل الدخول غير صحيحة",
-  "enterValidEmail": "أدخل بريد إلكتروني صالح"
+  "enterValidEmail": "أدخل بريد إلكتروني صالح",
+      "pleaseFillMemberDetails": "يرجى ملء تفاصيل العضو"
+
 }

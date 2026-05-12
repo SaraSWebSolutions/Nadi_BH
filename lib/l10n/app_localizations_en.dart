@@ -746,7 +746,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get onlyDigitsAllowed => 'Only digits allowed';
 
   @override
-  String get fullNameRequired => 'Full name is required';
+  String get fullNameRequired => 'FirstName is required';
 
   @override
   String get addAddressError => 'Please add the address details of the member.';
@@ -1147,4 +1147,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get enterValidEmail => 'Enter valid email address';
+
+  @override
+  String get pleaseFillMemberDetails => 'Please fill the member details';
 }

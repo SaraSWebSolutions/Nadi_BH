@@ -333,7 +333,18 @@ class _AddmemberState extends State<Addmember> {
   Future<void> _addMember() async {
     final l10n = AppLocalizations.of(context)!;
     final memberValid = widget.formKey.currentState?.validate() ?? false;
+    final isMemberValid = widget.formKey.currentState?.validate() ?? false;
 
+    /// 1️⃣ FIRST: Validate MEMBER fields
+    if (!isMemberValid) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(l10n.pleaseFillMemberDetails),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
     if (!_isAddress) {
       SnackbarHelper.showError(context, l10n.addAddressError);
       return;

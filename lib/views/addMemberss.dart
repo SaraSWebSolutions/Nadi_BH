@@ -39,7 +39,18 @@ class _AddmemberssState extends ConsumerState<Addmemberss> {
   Future<void> _addMember() async {
     final loc = AppLocalizations.of(context)!;
     final isValid = _formKey.currentState!.validate();
+    final isMemberValid = _formKey.currentState!.validate();
 
+    /// 1️⃣ FIRST: Validate MEMBER fields
+    if (!isMemberValid) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(loc.pleaseFillMemberDetails),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
     if (!_showAddress) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(

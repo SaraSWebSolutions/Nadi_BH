@@ -1523,7 +1523,7 @@ abstract class AppLocalizations {
   /// No description provided for @fullNameRequired.
   ///
   /// In en, this message translates to:
-  /// **'Full name is required'**
+  /// **'FirstName is required'**
   String get fullNameRequired;
 
   /// No description provided for @addAddressError.
@@ -2263,6 +2263,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Enter valid email address'**
   String get enterValidEmail;
+
+  /// No description provided for @pleaseFillMemberDetails.
+  ///
+  /// In en, this message translates to:
+  /// **'Please fill the member details'**
+  String get pleaseFillMemberDetails;
 }
 
 class _AppLocalizationsDelegate

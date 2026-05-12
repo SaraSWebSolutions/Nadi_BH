@@ -739,7 +739,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get onlyDigitsAllowed => 'يسمح بالأرقام فقط';
 
   @override
-  String get fullNameRequired => 'الاسم الكامل مطلوب';
+  String get fullNameRequired => 'الاسم الأول مطلوب';
 
   @override
   String get addAddressError => 'يرجى إضافة عنوان العضو';
@@ -1138,4 +1138,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get enterValidEmail => 'أدخل بريد إلكتروني صالح';
+
+  @override
+  String get pleaseFillMemberDetails => 'يرجى ملء تفاصيل العضو';
 }

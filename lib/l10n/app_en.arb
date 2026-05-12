@@ -320,7 +320,7 @@
   "enterPhone": "Enter the mobile number",
   "invalidPhoneLength": "Mobile must be 8 digits",
   "onlyDigitsAllowed": "Only digits allowed",
-  "fullNameRequired": "Full name is required",
+  "fullNameRequired": "FirstName is required",
  "addAddressError": "Please add the address details of the member.",
  "mobileMustBe8Digits": "Mobile must be 8 digits",
   "enterConfirmPassword": "Enter confirm password",
@@ -482,6 +482,8 @@
   "passwordRequired": "Password required",
   "somethingWentWrong": "Something went wrong",
   "invalidCredentials": "Invalid credentials",
-  "enterValidEmail": "Enter valid email address"
+  "enterValidEmail": "Enter valid email address",
+    "pleaseFillMemberDetails": "Please fill the member details"
+
 
 }

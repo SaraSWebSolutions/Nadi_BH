@@ -279,25 +279,54 @@ class _TimelineTile extends StatelessWidget {
     "completed",
   ];
 
-  bool get isCurrent => data["key"] == data["currentStatus"];
+  String get currentStatus => data["currentStatus"];
+
+  bool get isRejectedFlow => currentStatus == "rejected";
+
+  bool get isCurrent => data["key"] == currentStatus;
 
   bool get isCompleted {
+    /// REJECTED FLOW
+    if (isRejectedFlow) {
+      if (data["key"] == "submitted") return true;
+      return false;
+    }
+
     final int stepIndex = statusOrder.indexOf(data["key"]);
-    final int currentIndex = statusOrder.indexOf(data["currentStatus"]);
+    final int currentIndex = statusOrder.indexOf(currentStatus);
+
     return stepIndex < currentIndex;
   }
 
+  bool get isRejectedStep {
+    return isRejectedFlow && data["key"] == "accepted";
+  }
+
   Color get dotColor {
+    /// completed
     if (isCompleted) return Colors.green;
 
+    /// rejected
+    if (isRejectedStep) return Colors.red;
+
+    /// current
     if (isCurrent) {
       switch (data["key"]) {
         case "technicianAssigned":
           return Colors.blue;
+
         case "inProgress":
           return Colors.orange;
+
         case "paymentInProgress":
           return Colors.green;
+
+        case "completed":
+          return Colors.green;
+
+        case "accepted":
+          return Colors.orange;
+
         default:
           return Colors.orange;
       }
@@ -307,16 +336,31 @@ class _TimelineTile extends StatelessWidget {
   }
 
   Color get chipBg {
-    if (isCompleted) return Colors.green.shade100;
+    if (isCompleted) {
+      return Colors.green.shade100;
+    }
+
+    if (isRejectedStep) {
+      return Colors.red.shade100;
+    }
 
     if (isCurrent) {
       switch (data["key"]) {
         case "technicianAssigned":
           return Colors.blue.shade100;
+
         case "inProgress":
           return Colors.orange.shade100;
+
         case "paymentInProgress":
           return Colors.green.shade100;
+
+        case "completed":
+          return Colors.green.shade100;
+
+        case "accepted":
+          return Colors.orange.shade100;
+
         default:
           return Colors.orange.shade100;
       }
@@ -325,44 +369,37 @@ class _TimelineTile extends StatelessWidget {
     return Colors.grey.shade300;
   }
 
-  // String get label {
-  //   if (isCompleted) return "Completed";
-  //   if (isCurrent) {
-  //     switch (data["key"]) {
-  //       case "submitted"
-  //         return "Submitted";
-  //       case "accepted":
-  //         return "Accepted";
-  //       case "technicianAssigned":
-  //         return "Technician Assigned";
-  //       case "inProgress":
-  //         return "In Progress";
-  //       case "paymentInProgress":
-  //         return "Payment Pending";
-  //       case "completed":
-  //         return "Completed";
-  //     }
-  //   }
-  //   return "Pending";
-  // }
-
   String label(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
 
-    if (isCompleted) return l10n.completed;
+    /// rejected admin step
+    if (isRejectedStep) {
+      return "Rejected";
+    }
 
+    /// completed
+    if (isCompleted) {
+      return l10n.completed;
+    }
+
+    /// current
     if (isCurrent) {
       switch (data["key"]) {
         case "submitted":
           return l10n.submitted;
+
         case "accepted":
           return l10n.accepted;
+
         case "technicianAssigned":
           return l10n.technicianAssigned;
+
         case "inProgress":
           return l10n.inProgress;
+
         case "paymentInProgress":
           return l10n.completed;
+
         case "completed":
           return l10n.completed;
       }
@@ -379,6 +416,7 @@ class _TimelineTile extends StatelessWidget {
         (data["acceptedTechnicians"] as List).isNotEmpty;
 
     final bool showPayment = data["payment"] != null;
+
     final double lineHeight = showTechnicians
         ? 120.0
         : showPayment
@@ -397,10 +435,11 @@ class _TimelineTile extends StatelessWidget {
                 color: dotColor,
                 shape: BoxShape.circle,
               ),
-              child: isCompleted
+              child: (isCompleted || isRejectedStep)
                   ? const Icon(Icons.check, size: 14, color: Colors.white)
                   : null,
             ),
+
             if (!isLast)
               Container(
                 width: 2,
@@ -409,7 +448,9 @@ class _TimelineTile extends StatelessWidget {
               ),
           ],
         ),
+
         const SizedBox(width: 12),
+
         Expanded(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -425,6 +466,7 @@ class _TimelineTile extends StatelessWidget {
                       ),
                     ),
                   ),
+
                   Container(
                     padding: const EdgeInsets.symmetric(
                       horizontal: 10,
@@ -445,48 +487,13 @@ class _TimelineTile extends StatelessWidget {
                   ),
                 ],
               ),
+
               const SizedBox(height: 6),
+
               Text(
                 data["description"],
                 style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
               ),
-
-              ///  TECHNICIAN IMAGE + NAME + TAP
-              if (showTechnicians) ...[
-                const SizedBox(height: 8),
-                SizedBox(
-                  height: 36,
-                  child: Stack(
-                    children: List.generate(data["acceptedTechnicians"].length, (
-                      index,
-                    ) {
-                      final techJson =
-                          data["acceptedTechnicians"][index]["technicianId"];
-                      final techModel = TechnicianModel.fromJson(techJson);
-                      return Positioned(
-                        left: index * 22.0,
-                        child: InkWell(
-                          onTap: () {
-                            _showTechnicianDetails(context, techModel);
-                          },
-                          child: CircleAvatar(
-                            radius: 16,
-                            backgroundColor: Colors.grey.shade200,
-                            backgroundImage: techModel.image.isNotEmpty
-                                ? CachedNetworkImageProvider(
-                                    "${ImageBaseUrl.baseUrl}/${techModel.image}",
-                                  )
-                                : null,
-                            child: techModel.image.isEmpty
-                                ? const Icon(Icons.person, size: 16)
-                                : null,
-                          ),
-                        ),
-                      );
-                    }),
-                  ),
-                ),
-              ],
 
               if (data["time"] != null) ...[
                 const SizedBox(height: 6),
@@ -495,39 +502,7 @@ class _TimelineTile extends StatelessWidget {
                   style: TextStyle(fontSize: 11, color: Colors.grey.shade500),
                 ),
               ],
-              if (showPayment) ...[
-                const SizedBox(height: 5),
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 5),
-                  // decoration: BoxDecoration(
-                  //   color: Colors.green.shade50,
-                  //   borderRadius: BorderRadius.circular(10),
-                  //   border: Border.all(color: Colors.green.shade200),
-                  // ),
-                  // child: Row(
-                  //   children: [
-                  //     const Text(
-                  //       "BHD",
-                  //       style: TextStyle(
-                  //         fontSize: 14,
-                  //         fontWeight: FontWeight.bold,
-                  //         color: Colors.green,
-                  //       ),
-                  //     ),
-                  //     const SizedBox(width: 5),
-                  //     Text(
-                  //       "${AppLocalizations.of(context)!.toPay}:"
-                  //       "${(double.tryParse(data["payment"].toString()) ?? 0.0).toStringAsFixed(3)}",
-                  //       style: const TextStyle(
-                  //         fontSize: 14,
-                  //         fontWeight: FontWeight.w600,
-                  //         color: Colors.green,
-                  //       ),
-                  //     ),
-                  //   ],
-                  // ),
-                ),
-              ],
+
               const SizedBox(height: 10),
             ],
           ),
