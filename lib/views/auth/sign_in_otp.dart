@@ -673,7 +673,10 @@ class _SignInOtpState extends State<SignInOtp> {
     );
 
     return Scaffold(
+      extendBodyBehindAppBar: true,
       resizeToAvoidBottomInset: true,
+      backgroundColor: Colors.transparent,
+
       body: Stack(
         children: [
           /// BACKGROUND
@@ -685,173 +688,195 @@ class _SignInOtpState extends State<SignInOtp> {
             ),
           ),
 
-          /// CONTENT (LOGIN STYLE FIX)
-          SafeArea(
-            child: SingleChildScrollView(
-              physics: const ClampingScrollPhysics(),
-              keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
-              child: Column(
-                children: [
-                  /// TOP SPACE (same idea as login screen)
-                  SizedBox(
-                    height: isIOS ? size.height * 0.36 : size.height * 0.38,
-                  ),
+          /// CONTENT
+          Positioned.fill(
+            child: MediaQuery.removePadding(
+              context: context,
+              removeBottom: true,
+              child: SafeArea(
+                bottom: false,
+                child: SingleChildScrollView(
+                  physics: const ClampingScrollPhysics(),
+                  keyboardDismissBehavior:
+                      ScrollViewKeyboardDismissBehavior.onDrag,
+                  child: ConstrainedBox(
+                    constraints: BoxConstraints(minHeight: size.height),
+                    child: Column(
+                      children: [
+                        /// TOP SPACE
+                        SizedBox(
+                          height: isIOS
+                              ? size.height * 0.36
+                              : size.height * 0.38,
+                        ),
 
-                  /// FORM CARD (NO Expanded, NO IntrinsicHeight)
-                  Container(
-                    width: double.infinity,
-                    constraints: BoxConstraints(
-                      minHeight:
-                          size.height -
-                          (isIOS ? size.height * 0.60 : size.height * 0.40),
-                    ),
-                    decoration: BoxDecoration(
-                      color: Theme.of(context).scaffoldBackgroundColor,
-                      borderRadius: const BorderRadius.only(
-                        topLeft: Radius.circular(30),
-                        topRight: Radius.circular(30),
-                      ),
-                    ),
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 17,
-                      vertical: 20,
-                    ),
-                    child: Form(
-                      key: _formKey,
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Text(
-                            l10n.signInWithOtp,
-                            style: const TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 20,
+                        /// FORM CONTAINER
+                        Container(
+                          width: double.infinity,
+                          constraints: BoxConstraints(
+                            minHeight:
+                                size.height -
+                                (isIOS
+                                    ? size.height * 0.36
+                                    : size.height * 0.38),
+                          ),
+
+                          decoration: BoxDecoration(
+                            color: Theme.of(context).scaffoldBackgroundColor,
+                            borderRadius: const BorderRadius.only(
+                              topLeft: Radius.circular(30),
+                              topRight: Radius.circular(30),
                             ),
                           ),
 
-                          const SizedBox(height: 20),
-
-                          /// PHONE
-                          AppTextField(
-                            label: l10n.enterPhoneNumber,
-                            keyboardType: TextInputType.phone,
-                            controller: _phoneController,
-                            prefixText: "+973 ",
-                            maxLength: 8,
-                            filled: true,
-                            fillColor: Theme.of(context).colorScheme.surface,
+                          padding: EdgeInsets.fromLTRB(
+                            17,
+                            20,
+                            17,
+                            MediaQuery.of(context).padding.bottom + 20,
                           ),
 
-                          const SizedBox(height: 20),
+                          child: Form(
+                            key: _formKey,
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  l10n.signInWithOtp,
+                                  style: const TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 20,
+                                  ),
+                                ),
 
-                          /// SEND OTP
-                          // if (!_showOtp)
-                          /// SEND / RESEND OTP BUTTON
-                          AppButton(
-                            height: 48,
-                            width: double.infinity,
-                            isLoading: _isLoading,
-                            color: AppColors.btn_primery,
-                            text: !_showOtp
-                                ? l10n.sendOtp
-                                : _canResendOtp
-                                ? l10n.resendOtp
-                                : "Resend OTP in ${_secondsRemaining}s",
+                                const SizedBox(height: 20),
 
-                            onPressed: _isLoading
-                                ? null
-                                : () async {
-                                    /// FIRST TIME SEND OTP
-                                    if (!_showOtp) {
-                                      if (_formKey.currentState!.validate()) {
-                                        await sendOtp();
+                                /// PHONE
+                                AppTextField(
+                                  label: l10n.enterPhoneNumber,
+                                  keyboardType: TextInputType.phone,
+                                  controller: _phoneController,
+                                  prefixText: "+973 ",
+                                  maxLength: 8,
+                                  filled: true,
+                                  fillColor: Theme.of(
+                                    context,
+                                  ).colorScheme.surface,
+                                ),
+
+                                const SizedBox(height: 20),
+
+                                /// SEND OTP
+                                AppButton(
+                                  height: 48,
+                                  width: double.infinity,
+                                  isLoading: _isLoading,
+                                  color: AppColors.btn_primery,
+                                  text: !_showOtp
+                                      ? l10n.sendOtp
+                                      : _canResendOtp
+                                      ? l10n.resendOtp
+                                      : "Resend OTP in ${_secondsRemaining}s",
+                                  onPressed: _isLoading
+                                      ? null
+                                      : () async {
+                                          if (!_showOtp) {
+                                            if (_formKey.currentState!
+                                                .validate()) {
+                                              await sendOtp();
+                                            }
+                                            return;
+                                          }
+
+                                          if (_canResendOtp) {
+                                            await sendOtp();
+                                          }
+                                        },
+                                ),
+
+                                /// OTP SECTION
+                                if (_showOtp) ...[
+                                  const SizedBox(height: 20),
+
+                                  Text(
+                                    l10n.enterOtp,
+                                    style: const TextStyle(fontSize: 18),
+                                  ),
+
+                                  const SizedBox(height: 15),
+
+                                  Center(
+                                    child: Pinput(
+                                      controller: _otpController,
+                                      length: 4,
+                                      defaultPinTheme: defaultPinTheme,
+                                      focusedPinTheme: focusedPinTheme,
+                                      submittedPinTheme: submittedPinTheme,
+                                      errorPinTheme: errorPinTheme,
+                                      keyboardType: TextInputType.number,
+                                      onChanged: (_) {
+                                        if (_isOtpError) {
+                                          setState(() => _isOtpError = false);
+                                        }
+                                      },
+                                    ),
+                                  ),
+
+                                  const SizedBox(height: 20),
+
+                                  AppButton(
+                                    height: 48,
+                                    width: double.infinity,
+                                    color: AppColors.btn_primery,
+                                    isLoading: _isLoading,
+                                    text: l10n.signIn,
+                                    onPressed: () async {
+                                      final otp = _otpController.text.trim();
+
+                                      if (otp.isEmpty) {
+                                        setState(() => _isOtpError = true);
+
+                                        ScaffoldMessenger.of(
+                                          context,
+                                        ).showSnackBar(
+                                          const SnackBar(
+                                            content: Text("Please enter OTP"),
+                                            backgroundColor: Colors.red,
+                                          ),
+                                        );
+
+                                        return;
                                       }
-                                      return;
-                                    }
 
-                                    /// RESEND OTP AFTER TIMER COMPLETE
-                                    if (_canResendOtp) {
-                                      await sendOtp();
-                                    }
-                                  },
+                                      if (otp.length != 4) {
+                                        setState(() => _isOtpError = true);
+
+                                        ScaffoldMessenger.of(
+                                          context,
+                                        ).showSnackBar(
+                                          const SnackBar(
+                                            content: Text(
+                                              "OTP must be 4 digits",
+                                            ),
+                                            backgroundColor: Colors.red,
+                                          ),
+                                        );
+
+                                        return;
+                                      }
+
+                                      await OTPphoneverify();
+                                    },
+                                  ),
+                                ],
+                              ],
+                            ),
                           ),
-
-                          /// OTP SECTION
-                          if (_showOtp) ...[
-                            const SizedBox(height: 20),
-
-                            Text(
-                              l10n.enterOtp,
-                              style: const TextStyle(fontSize: 18),
-                            ),
-
-                            const SizedBox(height: 15),
-
-                            Center(
-                              child: Pinput(
-                                controller: _otpController,
-                                length: 4,
-
-                                defaultPinTheme: defaultPinTheme,
-                                focusedPinTheme: focusedPinTheme,
-                                submittedPinTheme: submittedPinTheme,
-                                errorPinTheme: errorPinTheme,
-                                keyboardType: TextInputType.number,
-                                onChanged: (_) {
-                                  if (_isOtpError) {
-                                    setState(() => _isOtpError = false);
-                                  }
-                                },
-                              ),
-                            ),
-
-                            const SizedBox(height: 20),
-
-                            AppButton(
-                              height: 48,
-                              width: double.infinity,
-                              color: AppColors.btn_primery,
-                              isLoading: _isLoading,
-                              text: l10n.signIn,
-                              onPressed: () async {
-                                final otp = _otpController.text.trim();
-
-                                if (otp.isEmpty) {
-                                  setState(() => _isOtpError = true);
-
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    const SnackBar(
-                                      content: Text("Please enter OTP"),
-                                      backgroundColor: Colors.red,
-                                    ),
-                                  );
-
-                                  return;
-                                }
-
-                                if (otp.length != 4) {
-                                  setState(() => _isOtpError = true);
-
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    const SnackBar(
-                                      content: Text("OTP must be 4 digits"),
-                                      backgroundColor: Colors.red,
-                                    ),
-                                  );
-
-                                  return;
-                                }
-
-                                await OTPphoneverify();
-                              },
-                            ),
-                          ],
-                        ],
-                      ),
+                        ),
+                      ],
                     ),
                   ),
-                ],
+                ),
               ),
             ),
           ),
