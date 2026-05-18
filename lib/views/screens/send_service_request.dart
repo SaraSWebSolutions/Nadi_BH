@@ -28,7 +28,6 @@ class SendServiceRequest extends ConsumerStatefulWidget {
   final int points;
   final String? imagePath;
   final List<dynamic> issues;
-
   const SendServiceRequest({
     super.key,
     required this.title,
@@ -56,6 +55,7 @@ class _SendServiceRequestState extends ConsumerState<SendServiceRequest> {
   // bool isRecording = false;
   File? recordedVoice;
   bool isPlaying = false;
+  static const int maxImages = 10;
   final TextEditingController _timeController = TextEditingController();
 
   @override
@@ -116,6 +116,16 @@ class _SendServiceRequestState extends ConsumerState<SendServiceRequest> {
   }
 
   Future<void> pickImage(ImageSource source) async {
+    if (selectedImages.length >= 10) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text("You can only upload up to 10 images"),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
+
     final XFile? image = await _picker.pickImage(
       source: source,
       imageQuality: 80,
@@ -486,12 +496,21 @@ class _SendServiceRequestState extends ConsumerState<SendServiceRequest> {
                         MediaUploadWidget(
                           images: selectedImages,
                           onAddTap: () {
+                            if (selectedImages.length >= maxImages) {
+                              SnackbarHelper.showError(
+                                context,
+                                "Max 10 images allowed",
+                              );
+                              return;
+                            }
                             showImagePickerSheet(context);
                           },
                           onRemoveTap: (index) {
-                            setState(() {
-                              selectedImages.removeAt(index);
-                            });
+                            if (index < selectedImages.length) {
+                              setState(() {
+                                selectedImages.removeAt(index);
+                              });
+                            }
                           },
                         ),
 
