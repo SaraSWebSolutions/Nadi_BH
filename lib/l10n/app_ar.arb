@@ -449,6 +449,7 @@
   "somethingWentWrong": "حدث خطأ ما",
   "invalidCredentials": "بيانات تسجيل الدخول غير صحيحة",
   "enterValidEmail": "أدخل بريد إلكتروني صالح",
-      "pleaseFillMemberDetails": "يرجى ملء تفاصيل العضو"
+      "pleaseFillMemberDetails": "يرجى ملء تفاصيل العضو",
+      "mobileNumberMustBe8Digits": "يجب أن يكون رقم الجوال 8 أرقام"
 
 }

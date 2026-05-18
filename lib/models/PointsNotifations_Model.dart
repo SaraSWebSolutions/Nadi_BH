@@ -4,15 +4,9 @@ class PointsNotifations {
   final bool success;
   final List<Datum> data;
 
-  PointsNotifations({
-    required this.success,
-    required this.data,
-  });
+  PointsNotifations({required this.success, required this.data});
 
-  PointsNotifations copyWith({
-    bool? success,
-    List<Datum>? data,
-  }) {
+  PointsNotifations copyWith({bool? success, List<Datum>? data}) {
     return PointsNotifations(
       success: success ?? this.success,
       data: data ?? this.data,
@@ -28,9 +22,7 @@ class PointsNotifations {
     return PointsNotifations(
       success: json['success'] ?? false,
       data: json['data'] != null
-          ? List<Datum>.from(
-              json['data'].map((x) => Datum.fromJson(x)),
-            )
+          ? List<Datum>.from(json['data'].map((x) => Datum.fromJson(x)))
           : <Datum>[],
     );
   }
@@ -51,6 +43,9 @@ class Datum {
   final DateTime time;
   final int v;
 
+  // ✅ ADD THIS
+  final bool read;
+
   Datum({
     required this.id,
     required this.message,
@@ -58,6 +53,9 @@ class Datum {
     required this.userId,
     required this.time,
     required this.v,
+
+    // ✅ ADD THIS
+    required this.read,
   });
 
   Datum copyWith({
@@ -67,6 +65,9 @@ class Datum {
     String? userId,
     DateTime? time,
     int? v,
+
+    // ✅ ADD THIS
+    bool? read,
   }) {
     return Datum(
       id: id ?? this.id,
@@ -75,11 +76,13 @@ class Datum {
       userId: userId ?? this.userId,
       time: time ?? this.time,
       v: v ?? this.v,
+
+      // ✅ ADD THIS
+      read: read ?? this.read,
     );
   }
 
-  factory Datum.fromRawJson(String str) =>
-      Datum.fromJson(json.decode(str));
+  factory Datum.fromRawJson(String str) => Datum.fromJson(json.decode(str));
 
   String toRawJson() => json.encode(toJson());
 
@@ -93,6 +96,9 @@ class Datum {
           ? DateTime.parse(json['time'])
           : DateTime.now(),
       v: json['__v'] ?? 0,
+
+      // ✅ ADD THIS
+      read: json['read'] ?? false,
     );
   }
 
@@ -104,6 +110,9 @@ class Datum {
       'userId': userId,
       'time': time.toIso8601String(),
       '__v': v,
+
+      // ✅ ADD THIS
+      'read': read,
     };
   }
 }

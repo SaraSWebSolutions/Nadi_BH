@@ -4,34 +4,38 @@ import 'package:nadi_user_app/models/PointsNotifations_Model.dart';
 
 class Notificationapiservice {
   final _dio = DioClient.dio;
-   
-   Future<PointsNotifations> fetchpointsnodification() async{
-    try{
-       final response = await _dio.post('userNotifications/');
-       return PointsNotifations.fromJson(response.data);
-    }on DioException catch(e){
+
+  Future<PointsNotifations> fetchpointsnodification() async {
+    try {
+      final response = await _dio.post('userNotifications/');
+      return PointsNotifations.fromJson(response.data);
+    } on DioException catch (e) {
       final errmsg = e.response?.data['message'];
       throw errmsg;
-    } 
-   }
-    Future<void> deleteonenotification ({
-  required String id
-}) async {
-  try {
-    final response = await _dio.post("userNotifications/clear-notification/$id");
-    print("deleteonenotification ${response.data}");
-  } on DioException {
-    rethrow;
+    }
   }
-}
 
-Future<void>  deleteallnotification()async{
-   try {
-    final response = await _dio.post("userNotifications/clear");
-    print("deleteonenotification ${response.data}");
-  } on DioException {
-    rethrow;
+  Future<void> deleteonenotification({required String id}) async {
+    try {
+      final response = await _dio.post(
+        "userNotifications/clear-notification/$id",
+      );
+      print("deleteonenotification ${response.data}");
+    } on DioException {
+      rethrow;
+    }
   }
-}
 
+  Future<void> deleteallnotification() async {
+    try {
+      final response = await _dio.post("userNotifications/clear");
+      print("deleteonenotification ${response.data}");
+    } on DioException {
+      rethrow;
+    }
+  }
+
+  Future<void> markAllAsRead() async {
+    await _dio.post("userNotifications/all-mark-as-read");
+  }
 }

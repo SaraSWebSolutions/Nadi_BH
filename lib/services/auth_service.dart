@@ -371,51 +371,56 @@ class AuthService {
   }
 
   //Login
- 
-Future<Map<String, dynamic>?> LoginApi({
- String? email,
-  String? mobileNumber,
-  required String password,
-  required String fcmToken,
-}) async {
-  try {
-    /// 🔐 PRINT REQUEST PAYLOAD (safe)
-     final payload = {
-      if (email != null) "email": email,
-      if (mobileNumber != null) "mobileNumber": mobileNumber,
-      "password": password,
-      "fcmToken": fcmToken,
-    };
 
-       print("🚀 LOGIN a: $payload");
+  Future<Map<String, dynamic>?> LoginApi({
+    String? email,
+    String? mobileNumber,
+    required String password,
+    required String fcmToken,
+  }) async {
+    try {
+      /// 🔐 PRINT REQUEST PAYLOAD (safe)
+      final payload = {
+        if (email != null) "email": email,
+        if (mobileNumber != null) "mobileNumber": mobileNumber,
+        "password": password,
+        "fcmToken": fcmToken,
+      };
 
+      print("🚀 LOGIN a: $payload");
 
-   final response = await _dio.post(
-      "user-account/signin",
-      data: payload,
-    );
+      final response = await _dio.post("user-account/signin", data: payload);
 
-    /// ✅ PRINT SUCCESS RESPONSE
-    AppLogger.success(
-      "✅ LOGIN RESPONSE [${response.statusCode}]:\n"
-      "${const JsonEncoder.withIndent('  ').convert(response.data)}",
-    );
+      try {
+        final pretty = const JsonEncoder.withIndent('  ').convert(
+          response.data is String ? jsonDecode(response.data) : response.data,
+        );
+        print("🚀 LOGIN a: $response");
 
-    return response.data;
-  } on DioException catch (e) {
-    /// ❌ PRINT ERROR RESPONSE (IMPORTANT)
-    AppLogger.error("❌ LOGIN ERROR STATUS: ${e.response?.statusCode}");
+        AppLogger.success(
+          "✅ LOGIN RESPONSE [${response.statusCode}]:\n$pretty",
+        );
+      } catch (e) {
+        AppLogger.success(
+          "✅ LOGIN RESPONSE [${response.statusCode}]:\n${response.data}",
+        );
+      }
 
-    if (e.response?.data != null) {
-      AppLogger.error(
-        "❌ LOGIN ERROR RESPONSE:\n"
-        "${const JsonEncoder.withIndent('  ').convert(e.response?.data)}",
-      );
-    } else {
-      AppLogger.error("❌ LOGIN ERROR MESSAGE: ${e.message}");
+      return response.data;
+    } on DioException catch (e) {
+      /// ❌ PRINT ERROR RESPONSE (IMPORTANT)
+      AppLogger.error("❌ LOGIN ERROR STATUS: ${e.response?.statusCode}");
+
+      if (e.response?.data != null) {
+        AppLogger.error(
+          "❌ LOGIN ERROR RESPONSE:\n"
+          "${const JsonEncoder.withIndent('  ').convert(e.response?.data)}",
+        );
+      } else {
+        AppLogger.error("❌ LOGIN ERROR MESSAGE: ${e.message}");
+      }
+
+      rethrow;
     }
-
-    rethrow;
   }
-}
 }

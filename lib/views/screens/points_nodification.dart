@@ -16,8 +16,27 @@ class PointsNodification extends ConsumerStatefulWidget {
 }
 
 class _PointsNodificationState extends ConsumerState<PointsNodification> {
+  final Notificationapiservice _notificationapi = Notificationapiservice();
+
   final Notificationapiservice _notificationapiservice =
       Notificationapiservice();
+  @override
+  void initState() {
+    super.initState();
+
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      try {
+        // ✅ Mark all notifications as read in backend
+        await _notificationapi.markAllAsRead();
+
+        // ✅ Refresh notification provider
+        ref.invalidate(fetchpointsnodification);
+      } catch (e) {
+        debugPrint("Mark all as read error: $e");
+      }
+    });
+  }
+
   void _deletesingle(BuildContext context, String id) async {
     await _notificationapiservice.deleteonenotification(id: id);
   }
@@ -26,11 +45,11 @@ class _PointsNodificationState extends ConsumerState<PointsNodification> {
     await _notificationapiservice.deleteallnotification();
   }
 
-  @override
-  void initState() {
-    super.initState();
-    ref.refresh(fetchpointsnodification);
-  }
+  // @override
+  // void initState() {
+  //   super.initState();
+  //   ref.refresh(fetchpointsnodification);
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -42,7 +61,7 @@ class _PointsNodificationState extends ConsumerState<PointsNodification> {
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: () {
-               context.pop();
+            context.pop();
           },
         ),
         backgroundColor: AppColors.btn_primery,
@@ -65,16 +84,16 @@ class _PointsNodificationState extends ConsumerState<PointsNodification> {
                 final confirmed = await showConfirmDialog(
                   context,
                   title: AppLocalizations.of(context)!.title,
-message: AppLocalizations.of(context)!.message,
-confirmText: AppLocalizations.of(context)!.delete,
-                 
+                  message: AppLocalizations.of(context)!.message,
+                  confirmText: AppLocalizations.of(context)!.delete,
+
                   icon: Icons.delete_sweep_rounded,
                   destructive: true,
                 );
                 if (!context.mounted) return;
                 if (confirmed) {
                   _clearallnotification();
-                  ref.refresh(fetchpointsnodification);
+                  ref.invalidate(fetchpointsnodification);
                 }
               },
               child: Image.asset("assets/images/notification.png"),
@@ -85,9 +104,7 @@ confirmText: AppLocalizations.of(context)!.delete,
       body: asyncNotifications.when(
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (err, _) => Center(
-          child: Text(
-            "${AppLocalizations.of(context)!.errorLabel}: $err",
-          ),
+          child: Text("${AppLocalizations.of(context)!.errorLabel}: $err"),
         ),
         data: (response) {
           final notifications = response.data;
@@ -99,13 +116,13 @@ confirmText: AppLocalizations.of(context)!.delete,
                 children: [
                   Image.asset("assets/images/New.png", height: 160),
                   const SizedBox(height: 16),
-                   Text(
-                   AppLocalizations.of(context)!.noNotifications,
+                  Text(
+                    AppLocalizations.of(context)!.noNotifications,
                     style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                   ),
                   const SizedBox(height: 6),
-                   Text(
-                 AppLocalizations.of(context)!.youAreAllCaughtUp,
+                  Text(
+                    AppLocalizations.of(context)!.youAreAllCaughtUp,
                     style: TextStyle(fontSize: 13, color: Colors.grey),
                   ),
                 ],
@@ -115,7 +132,7 @@ confirmText: AppLocalizations.of(context)!.delete,
 
           return RefreshIndicator(
             onRefresh: () async {
-              ref.refresh(fetchpointsnodification);
+              ref.invalidate(fetchpointsnodification);
             },
             child: ListView.separated(
               padding: const EdgeInsets.all(12),
@@ -148,7 +165,7 @@ confirmText: AppLocalizations.of(context)!.delete,
                   },
                   onDismissed: (direction) async {
                     _deletesingle(context, n.id);
-                    ref.refresh(fetchpointsnodification);
+                    ref.invalidate(fetchpointsnodification);
                   },
                   child: Container(
                     padding: const EdgeInsets.all(14),

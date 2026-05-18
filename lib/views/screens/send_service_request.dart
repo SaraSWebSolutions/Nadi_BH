@@ -27,6 +27,7 @@ class SendServiceRequest extends ConsumerStatefulWidget {
   final String serviceId;
   final int points;
   final String? imagePath;
+  final List<dynamic> issues;
 
   const SendServiceRequest({
     super.key,
@@ -34,6 +35,7 @@ class SendServiceRequest extends ConsumerStatefulWidget {
     this.imagePath,
     required this.serviceId,
     required this.points,
+    required this.issues,
   });
 
   @override
@@ -339,7 +341,13 @@ class _SendServiceRequestState extends ConsumerState<SendServiceRequest> {
                         ),
                         const SizedBox(height: 5),
                         DropdownButtonFormField<String>(
-                          initialValue: selectedIssueId,
+                          value:
+                              widget.issues.any(
+                                (issue) => issue['_id'] == selectedIssueId,
+                              )
+                              ? selectedIssueId
+                              : null,
+
                           decoration: InputDecoration(
                             labelText: t.selectIssue,
                             floatingLabelStyle: const TextStyle(
@@ -358,7 +366,10 @@ class _SendServiceRequestState extends ConsumerState<SendServiceRequest> {
                             filled: true,
                             fillColor: Theme.of(context).colorScheme.surface,
                           ),
-                          items: issueList.map((issue) {
+
+                          items: widget.issues.map<DropdownMenuItem<String>>((
+                            issue,
+                          ) {
                             return DropdownMenuItem<String>(
                               value: issue['_id'],
                               child: Text(
@@ -371,6 +382,7 @@ class _SendServiceRequestState extends ConsumerState<SendServiceRequest> {
                               ),
                             );
                           }).toList(),
+
                           onChanged: (value) {
                             setState(() {
                               selectedIssueId = value;

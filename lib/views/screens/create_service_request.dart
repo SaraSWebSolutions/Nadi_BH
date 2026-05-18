@@ -49,6 +49,7 @@ class _CreateServiceRequestState extends ConsumerState<CreateServiceRequest> {
 
   List<Map<String, dynamic>> issueList = [];
   List<Map<String, dynamic>> serviceLst = [];
+  List<dynamic> filteredIssues = [];
   bool _isLoading = false;
   String? selectedIssueId;
   String? selectcategoryId;
@@ -59,7 +60,7 @@ class _CreateServiceRequestState extends ConsumerState<CreateServiceRequest> {
   @override
   void initState() {
     super.initState();
-    issuseList();
+    //issuseList();
     serviceList();
   }
 
@@ -370,6 +371,12 @@ class _CreateServiceRequestState extends ConsumerState<CreateServiceRequest> {
                               );
 
                               selectedServicePoints = selectedService["points"];
+
+                              // 🔥 filter issues based on selected service
+                              filteredIssues = selectedService["issues"] ?? [];
+
+                              // reset selected issue
+                              selectedIssueId = null;
                             });
                           },
                         ),
@@ -458,22 +465,26 @@ class _CreateServiceRequestState extends ConsumerState<CreateServiceRequest> {
                         ),
                         SizedBox(height: 15),
                         DropdownButtonFormField<String>(
+                          value:
+                              filteredIssues.any(
+                                (issue) => issue['_id'] == selectedIssueId,
+                              )
+                              ? selectedIssueId
+                              : null,
+
                           style: TextStyle(
                             color: Theme.of(
                               context,
                             ).textTheme.bodyMedium?.color,
                           ),
-                          dropdownColor: Theme.of(
-                            context,
-                          ).colorScheme.surface, // 🔥 important
 
-                          initialValue: selectedIssueId,
+                          dropdownColor: Theme.of(context).colorScheme.surface,
+
                           decoration: InputDecoration(
                             labelText: t.selectIssue,
                             labelStyle: TextStyle(
                               color: Theme.of(context).hintColor,
                             ),
-
                             floatingLabelStyle: const TextStyle(
                               color: AppColors.app_background_clr,
                             ),
@@ -490,19 +501,16 @@ class _CreateServiceRequestState extends ConsumerState<CreateServiceRequest> {
                             filled: true,
                             fillColor: Theme.of(context).colorScheme.surface,
                           ),
-                          items: issueList.map((issue) {
+
+                          items: filteredIssues.map<DropdownMenuItem<String>>((
+                            issue,
+                          ) {
                             return DropdownMenuItem<String>(
                               value: issue['_id'],
-                              child: Text(
-                                issue['issue'],
-                                style: TextStyle(
-                                  color: Theme.of(
-                                    context,
-                                  ).textTheme.bodyMedium?.color,
-                                ),
-                              ),
+                              child: Text(issue['issue']),
                             );
                           }).toList(),
+
                           onChanged: (value) {
                             setState(() {
                               selectedIssueId = value;

@@ -1141,4 +1141,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get pleaseFillMemberDetails => 'يرجى ملء تفاصيل العضو';
+
+  @override
+  String get mobileNumberMustBe8Digits => 'يجب أن يكون رقم الجوال 8 أرقام';
 }

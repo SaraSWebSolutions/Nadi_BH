@@ -78,6 +78,7 @@ class _ChatsViewState extends ConsumerState<ChatsView> {
                     ],
                   ),
                 ),
+                const SizedBox(height: 10),
 
                 const Divider(),
 
@@ -100,9 +101,15 @@ class _ChatsViewState extends ConsumerState<ChatsView> {
                       },
                       decoration: InputDecoration(
                         hintText: loc.searchMessage,
-                        prefixIcon: const Icon(Icons.search, color: Colors.grey, size: 22),
+                        prefixIcon: const Icon(
+                          Icons.search,
+                          color: Colors.grey,
+                          size: 22,
+                        ),
                         border: InputBorder.none,
-                        contentPadding: const EdgeInsets.symmetric(vertical: 15),
+                        contentPadding: const EdgeInsets.symmetric(
+                          vertical: 15,
+                        ),
                       ),
                     ),
                   ),
@@ -152,8 +159,7 @@ class _ChatsViewState extends ConsumerState<ChatsView> {
                             final user = filteredChats[index];
 
                             // StreamProvider value — auto-updates on new messages
-                            final unread =
-                                unreadCounts.value?[user.id] ?? 0;
+                            final unread = unreadCounts.value?[user.id] ?? 0;
 
                             final hasUnread = unread > 0;
 
@@ -161,184 +167,199 @@ class _ChatsViewState extends ConsumerState<ChatsView> {
                               onTap: () {
                                 context
                                     .push(
-                                  "/chatDetails",
-                                  extra: {
-                                    "id": user.id,
-                                    "name": user.name,
-                                    "roleName": user.roleName,
-                                  },
-                                )
+                                      "/chatDetails",
+                                      extra: {
+                                        "id": user.id,
+                                        "name": user.name,
+                                        "roleName": user.roleName,
+                                      },
+                                    )
                                     .then((_) {
-                                  ref.invalidate(streamUnreadCountsProvider);
-                                  ref.invalidate(fetchchatslistprovider);
-                                });
+                                      ref.invalidate(
+                                        streamUnreadCountsProvider,
+                                      );
+                                      ref.invalidate(fetchchatslistprovider);
+                                    });
                               },
-                            child: Container(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 16,
-                                vertical: 12,
-                              ),
-                              decoration: BoxDecoration(
-                                color: hasUnread
-                                    ? AppColors.app_background_clr
-                                        .withValues(alpha: 0.04)
-                                    : Colors.transparent,
-                                border: Border(
-                                  bottom: BorderSide(
-                                    color: Colors.grey
-                                        .withValues(alpha: 0.12),
-                                    width: 1,
+                              child: Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 16,
+                                  vertical: 12,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: hasUnread
+                                      ? AppColors.app_background_clr.withValues(
+                                          alpha: 0.04,
+                                        )
+                                      : Colors.transparent,
+                                  border: Border(
+                                    bottom: BorderSide(
+                                      color: Colors.grey.withValues(
+                                        alpha: 0.12,
+                                      ),
+                                      width: 1,
+                                    ),
                                   ),
                                 ),
-                              ),
-                              child: Row(
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                children: [
-                                  /// AVATAR
-                                  Stack(
-                                    children: [
-                                      CircleAvatar(
-                                        radius: 26,
-                                        backgroundColor:
-                                            AppColors.app_background_clr,
-                                        child: Text(
-                                          (user.name?.isNotEmpty ?? false)
-                                              ? user.name![0].toUpperCase()
-                                              : "?",
-                                          style: const TextStyle(
-                                            color: Colors.white,
-                                            fontSize: 20,
-                                            fontWeight: FontWeight.bold,
-                                          ),
-                                        ),
-                                      ),
-
-                                      /// Online-style dot (green) when unread
-                                      if (hasUnread)
-                                        Positioned(
-                                          right: 0,
-                                          bottom: 0,
-                                          child: Container(
-                                            width: 14,
-                                            height: 14,
-                                            decoration: BoxDecoration(
-                                              color: Colors.green,
-                                              shape: BoxShape.circle,
-                                              border: Border.all(
-                                                color: Colors.white,
-                                                width: 2,
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                                    ],
-                                  ),
-
-                                  const SizedBox(width: 14),
-
-                                  /// NAME + LAST MESSAGE
-                                  Expanded(
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
+                                child: Row(
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: [
+                                    /// AVATAR
+                                    Stack(
                                       children: [
-                                        Row(
-                                          children: [
-                                            Flexible(
-                                              child: Text(
-                                                user.name ?? "",
-                                                overflow: TextOverflow.ellipsis,
-                                                style: TextStyle(
-                                                  fontWeight: hasUnread
-                                                      ? FontWeight.w700
-                                                      : FontWeight.w600,
-                                                  fontSize: 15,
+                                        CircleAvatar(
+                                          radius: 26,
+                                          backgroundColor:
+                                              AppColors.app_background_clr,
+                                          child: Text(
+                                            (user.name?.isNotEmpty ?? false)
+                                                ? user.name![0].toUpperCase()
+                                                : "?",
+                                            style: const TextStyle(
+                                              color: Colors.white,
+                                              fontSize: 20,
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                          ),
+                                        ),
+
+                                        /// Online-style dot (green) when unread
+                                        if (hasUnread)
+                                          Positioned(
+                                            right: 0,
+                                            bottom: 0,
+                                            child: Container(
+                                              width: 14,
+                                              height: 14,
+                                              decoration: BoxDecoration(
+                                                color: Colors.green,
+                                                shape: BoxShape.circle,
+                                                border: Border.all(
+                                                  color: Colors.white,
+                                                  width: 2,
                                                 ),
                                               ),
                                             ),
-                                            if (user.roleName != null &&
-                                                user.roleName!.isNotEmpty) ...[
-                                              const SizedBox(width: 6),
-                                              Container(
-                                                padding:
-                                                    const EdgeInsets.symmetric(
-                                                        horizontal: 6,
-                                                        vertical: 2),
-                                                decoration: BoxDecoration(
-                                                  color: AppColors
-                                                      .app_background_clr
-                                                      .withValues(alpha: 0.12),
-                                                  borderRadius:
-                                                      BorderRadius.circular(4),
-                                                ),
+                                          ),
+                                      ],
+                                    ),
+
+                                    const SizedBox(width: 14),
+
+                                    /// NAME + LAST MESSAGE
+                                    Expanded(
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: [
+                                          Row(
+                                            children: [
+                                              Flexible(
                                                 child: Text(
-                                                  user.roleName!,
+                                                  user.name ?? "",
+                                                  overflow:
+                                                      TextOverflow.ellipsis,
                                                   style: TextStyle(
-                                                    fontSize: 10,
-                                                    fontWeight: FontWeight.w600,
-                                                    color: AppColors
-                                                        .app_background_clr,
+                                                    fontWeight: hasUnread
+                                                        ? FontWeight.w700
+                                                        : FontWeight.w600,
+                                                    fontSize: 15,
                                                   ),
                                                 ),
                                               ),
+                                              if (user.roleName != null &&
+                                                  user
+                                                      .roleName!
+                                                      .isNotEmpty) ...[
+                                                const SizedBox(width: 6),
+                                                Container(
+                                                  padding:
+                                                      const EdgeInsets.symmetric(
+                                                        horizontal: 6,
+                                                        vertical: 2,
+                                                      ),
+                                                  decoration: BoxDecoration(
+                                                    color: AppColors
+                                                        .app_background_clr
+                                                        .withValues(
+                                                          alpha: 0.12,
+                                                        ),
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                          4,
+                                                        ),
+                                                  ),
+                                                  child: Text(
+                                                    user.roleName!,
+                                                    style: TextStyle(
+                                                      fontSize: 10,
+                                                      fontWeight:
+                                                          FontWeight.w600,
+                                                      color: AppColors
+                                                          .app_background_clr,
+                                                    ),
+                                                  ),
+                                                ),
+                                              ],
                                             ],
+                                          ),
+                                          if (user.lastMessage?.message !=
+                                                  null &&
+                                              user
+                                                  .lastMessage!
+                                                  .message!
+                                                  .isNotEmpty) ...[
+                                            const SizedBox(height: 3),
+                                            Text(
+                                              user.lastMessage!.message!,
+                                              maxLines: 1,
+                                              overflow: TextOverflow.ellipsis,
+                                              style: TextStyle(
+                                                color: hasUnread
+                                                    ? Colors.black87
+                                                    : Colors.grey,
+                                                fontSize: 13,
+                                                fontWeight: hasUnread
+                                                    ? FontWeight.w500
+                                                    : FontWeight.normal,
+                                              ),
+                                            ),
                                           ],
+                                        ],
+                                      ),
+                                    ),
+
+                                    /// UNREAD COUNT BADGE
+                                    if (hasUnread)
+                                      Container(
+                                        constraints: const BoxConstraints(
+                                          minWidth: 22,
+                                          minHeight: 22,
                                         ),
-                                        if (user.lastMessage?.message !=
-                                                null &&
-                                            user.lastMessage!.message!
-                                                .isNotEmpty) ...[
-                                          const SizedBox(height: 3),
-                                          Text(
-                                            user.lastMessage!.message!,
-                                            maxLines: 1,
-                                            overflow: TextOverflow.ellipsis,
-                                            style: TextStyle(
-                                              color: hasUnread
-                                                  ? Colors.black87
-                                                  : Colors.grey,
-                                              fontSize: 13,
-                                              fontWeight: hasUnread
-                                                  ? FontWeight.w500
-                                                  : FontWeight.normal,
+                                        padding: const EdgeInsets.symmetric(
+                                          horizontal: 6,
+                                          vertical: 2,
+                                        ),
+                                        decoration: const BoxDecoration(
+                                          shape: BoxShape.circle,
+                                          color: AppColors.app_background_clr,
+                                        ),
+                                        child: Center(
+                                          child: Text(
+                                            unread > 99 ? '99+' : '$unread',
+                                            style: const TextStyle(
+                                              color: Colors.white,
+                                              fontSize: 11,
+                                              fontWeight: FontWeight.bold,
                                             ),
                                           ),
-                                        ],
-                                      ],
-                                    ),
-                                  ),
-
-                                  /// UNREAD COUNT BADGE
-                                  if (hasUnread)
-                                    Container(
-                                      constraints: const BoxConstraints(
-                                        minWidth: 22,
-                                        minHeight: 22,
-                                      ),
-                                      padding: const EdgeInsets.symmetric(
-                                        horizontal: 6,
-                                        vertical: 2,
-                                      ),
-                                      decoration: const BoxDecoration(
-                                        shape: BoxShape.circle,
-                                        color: AppColors.app_background_clr,
-                                      ),
-                                      child: Center(
-                                        child: Text(
-                                          unread > 99 ? '99+' : '$unread',
-                                          style: const TextStyle(
-                                            color: Colors.white,
-                                            fontSize: 11,
-                                            fontWeight: FontWeight.bold,
-                                          ),
                                         ),
                                       ),
-                                    ),
-                                ],
+                                  ],
+                                ),
                               ),
-                            ),
                             );
                           },
                         );

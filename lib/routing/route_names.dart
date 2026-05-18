@@ -63,8 +63,9 @@ final appRouter = GoRouter(
     GoRoute(
       path: "/chatDetails",
       builder: (context, state) {
-        final data =
-            (state.extra is Map) ? state.extra as Map<String, dynamic> : const <String, dynamic>{};
+        final data = (state.extra is Map)
+            ? state.extra as Map<String, dynamic>
+            : const <String, dynamic>{};
 
         final adminId = data["id"] as String?;
         final adminName = data["name"] as String?;
@@ -237,6 +238,7 @@ final appRouter = GoRouter(
           imagePath: data['imagePath'],
           serviceId: data['serviceId'],
           points: data['points'],
+          issues: data['issues'] ?? [],
         );
       },
     ),

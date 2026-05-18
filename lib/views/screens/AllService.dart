@@ -2,13 +2,13 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:hive/hive.dart';
 import 'package:nadi_user_app/core/constants/app_consts.dart';
 import 'package:nadi_user_app/core/network/dio_client.dart';
 import 'package:nadi_user_app/providers/serviceProvider.dart';
 import 'package:nadi_user_app/routing/app_router.dart';
 import 'package:nadi_user_app/widgets/app_back.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
-
 
 class Allservice extends ConsumerStatefulWidget {
   const Allservice({super.key});
@@ -19,18 +19,25 @@ class Allservice extends ConsumerStatefulWidget {
 
 class _AllserviceState extends ConsumerState<Allservice> {
   @override
+  void initState() {
+    super.initState();
+
+    Future.microtask(() async {
+      await Hive.box('servicesBox').clear();
+      ref.read(serviceListProvider.notifier).refresh();
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
     final services = ref.watch(serviceListProvider);
-final locale = Localizations.localeOf(context).languageCode;
+    final locale = Localizations.localeOf(context).languageCode;
 
-    return 
-     Scaffold(
+    return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
 
       body: SafeArea(
-
-        child: 
-          Column(
+        child: Column(
           children: [
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
@@ -43,7 +50,11 @@ final locale = Localizations.localeOf(context).languageCode;
                   ),
                   const Text(
                     "Service",
-                    style: TextStyle(fontSize: 19, fontWeight: FontWeight.w600,color: AppColors.app_background_clr),
+                    style: TextStyle(
+                      fontSize: 19,
+                      fontWeight: FontWeight.w600,
+                      color: AppColors.app_background_clr,
+                    ),
                   ),
                   const SizedBox(width: 24),
                 ],
@@ -94,6 +105,8 @@ final locale = Localizations.localeOf(context).languageCode;
                                     'serviceId': serviceId,
                                     'heroTag': "serviceHero$index",
                                     "points": points,
+
+                                    "issues": service["issues"] ?? [],
                                   },
                                 );
                               },
@@ -112,7 +125,8 @@ final locale = Localizations.localeOf(context).languageCode;
                                 ),
                                 child: Column(
                                   mainAxisSize: MainAxisSize.max,
-                                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                                  crossAxisAlignment:
+                                      CrossAxisAlignment.stretch,
                                   children: [
                                     Expanded(
                                       flex: 4,
@@ -128,15 +142,17 @@ final locale = Localizations.localeOf(context).languageCode;
                                                   color: Colors.grey.shade200,
                                                 ),
                                             errorWidget:
-                                                (context, url, error) =>
-                                                    Container(
-                                                      color:
-                                                          Colors.grey.shade200,
-                                                      child: const Icon(
-                                                        Icons.image_not_supported,
-                                                        color: Colors.grey,
-                                                      ),
-                                                    ),
+                                                (
+                                                  context,
+                                                  url,
+                                                  error,
+                                                ) => Container(
+                                                  color: Colors.grey.shade200,
+                                                  child: const Icon(
+                                                    Icons.image_not_supported,
+                                                    color: Colors.grey,
+                                                  ),
+                                                ),
                                           ),
                                         ),
                                       ),
@@ -174,7 +190,6 @@ final locale = Localizations.localeOf(context).languageCode;
               ),
             ),
           ],
-       
         ),
       ),
     );

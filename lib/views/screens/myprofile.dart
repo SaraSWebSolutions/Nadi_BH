@@ -292,7 +292,7 @@ class Myprofile extends ConsumerWidget {
     final profileAsyncValue = ref.watch(profileprovider);
     final loc = AppLocalizations.of(context)!;
     final isDark = Theme.of(context).brightness == Brightness.dark;
-
+    print("PROFILE STATE: $profileAsyncValue");
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: profileAsyncValue.when(
@@ -327,7 +327,9 @@ class Myprofile extends ConsumerWidget {
             add(loc.block, addr['block']);
             add(null, addr['city']);
             add(loc.floor, addr['floor']);
-            add(loc.apartment, addr['aptNo']);
+            if (addr['propertyType'] != 'villa') {
+              add(loc.apartment, addr['aptNo']);
+            }
             add(null, addr['additionalInfo']);
             return parts.join(", ");
           }
@@ -344,9 +346,13 @@ class Myprofile extends ConsumerWidget {
             children: [
               // Header
               Container(
-                height: 180, // slightly reduced height
+                height: 210, // slightly reduced height
                 width: double.infinity,
-                padding: const EdgeInsets.only(top: 35, left: 15, right: 15),
+                padding: EdgeInsets.only(
+                  top: MediaQuery.of(context).padding.top + 10,
+                  left: 15,
+                  right: 15,
+                ),
                 decoration: BoxDecoration(
                   gradient: const LinearGradient(
                     begin: Alignment.topCenter,

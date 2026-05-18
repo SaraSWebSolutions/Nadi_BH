@@ -9,9 +9,13 @@ final unreadNotificationCountProvider = FutureProvider<int>((ref) async {
 
   final notifications = response.data;
 
+  // ✅ First app open
   if (lastSeen == null) {
-    return notifications.length;
+    return notifications.where((n) => n.read == false).length;
   }
 
-  return notifications.where((n) => n.time.isAfter(lastSeen)).length;
+  // ✅ Count only unread + newer than last seen
+  return notifications.where((n) {
+    return n.read == false && n.time.isAfter(lastSeen);
+  }).length;
 });

@@ -106,7 +106,9 @@ class _EditProfileState extends State<EditProfile> {
     setState(() => _isLoading = true);
 
     final userId = await AppPreferences.getUserId();
-
+    final propertyType = addresses.isNotEmpty
+        ? addresses[0]['propertyType']
+        : "flat";
     // Ensure mobile number is numeric
     final mobileNumber = int.tryParse(mobileController.text.trim());
     if (mobileNumber == null) {
@@ -126,7 +128,7 @@ class _EditProfileState extends State<EditProfile> {
         "building": buildingController.text.trim(),
         "city": blockController.text.trim(),
         "floor": floorController.text.trim(),
-        "aptNo": apartmentController.text.trim(),
+        if (propertyType != "villa") "aptNo": apartmentController.text.trim(),
       },
     };
 
@@ -188,6 +190,12 @@ class _EditProfileState extends State<EditProfile> {
   @override
   Widget build(BuildContext context) {
     final loc = AppLocalizations.of(context)!;
+    final propertyType =
+        (addresses.isNotEmpty ? addresses[0]['addressType'] : "flat")
+            .toString()
+            .toLowerCase()
+            .trim();
+
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: SafeArea(
@@ -424,30 +432,31 @@ class _EditProfileState extends State<EditProfile> {
                         const SizedBox(height: 15),
 
                         // More fields
-                        Text(
-                          loc.apartment,
-                          style: TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w600,
+                        if (propertyType != "villa") ...[
+                          Text(
+                            loc.apartment,
+                            style: TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w600,
+                            ),
                           ),
-                        ),
-                        const SizedBox(height: 5),
-                        AppTextField(
-                          controller: apartmentController,
-                          keyboardType: TextInputType.number,
-                          inputFormatters: [
-                            FilteringTextInputFormatter.digitsOnly,
-                            LengthLimitingTextInputFormatter(6),
-                          ],
-                          validator: (v) {
-                            if (v == null || v.trim().isEmpty) {
-                              return loc.apartmentRequired;
-                            }
-
-                            return null;
-                          },
-                        ),
-                        const SizedBox(height: 15),
+                          const SizedBox(height: 5),
+                          AppTextField(
+                            controller: apartmentController,
+                            keyboardType: TextInputType.number,
+                            inputFormatters: [
+                              FilteringTextInputFormatter.digitsOnly,
+                              LengthLimitingTextInputFormatter(6),
+                            ],
+                            validator: (v) {
+                              if (v == null || v.trim().isEmpty) {
+                                return loc.apartmentRequired;
+                              }
+                              return null;
+                            },
+                          ),
+                          const SizedBox(height: 15),
+                        ],
 
                         //  Text(
                         //     loc.additionalInfo,

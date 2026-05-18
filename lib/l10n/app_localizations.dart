@@ -2269,6 +2269,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Please fill the member details'**
   String get pleaseFillMemberDetails;
+
+  /// No description provided for @mobileNumberMustBe8Digits.
+  ///
+  /// In en, this message translates to:
+  /// **'Mobile number must be exactly 8 digits'**
+  String get mobileNumberMustBe8Digits;
 }
 
 class _AppLocalizationsDelegate

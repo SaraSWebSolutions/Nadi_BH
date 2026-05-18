@@ -5,6 +5,7 @@ import 'package:nadi_user_app/l10n/app_localizations.dart';
 
 import 'package:nadi_user_app/providers/active_chat_provider.dart';
 import 'package:nadi_user_app/providers/language_provider.dart';
+import 'package:nadi_user_app/providers/notification_unread_provider.dart';
 import 'firebase_options.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive_flutter/adapters.dart';
@@ -181,6 +182,7 @@ void main() async {
     );
 
     container.invalidate(fetchpointsnodification);
+    container.invalidate(unreadNotificationCountProvider);
   });
   // ✅ Wire GoRouter to NotificationService for tap-to-navigate
   NotificationService.setRouter(appRouter);

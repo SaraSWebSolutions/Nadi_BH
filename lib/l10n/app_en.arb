@@ -483,7 +483,8 @@
   "somethingWentWrong": "Something went wrong",
   "invalidCredentials": "Invalid credentials",
   "enterValidEmail": "Enter valid email address",
-    "pleaseFillMemberDetails": "Please fill the member details"
+    "pleaseFillMemberDetails": "Please fill the member details",
+    "mobileNumberMustBe8Digits": "Mobile number must be exactly 8 digits"
 
 
 }

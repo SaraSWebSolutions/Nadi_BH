@@ -1150,4 +1150,8 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get pleaseFillMemberDetails => 'Please fill the member details';
+
+  @override
+  String get mobileNumberMustBe8Digits =>
+      'Mobile number must be exactly 8 digits';
 }

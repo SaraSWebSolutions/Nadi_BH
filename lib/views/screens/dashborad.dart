@@ -54,6 +54,9 @@ class _DashboardState extends ConsumerState<Dashboard> {
   Map<String, dynamic>? _ongoing;
   Map<String, dynamic>? _aprovetech;
   Timer? _notificationTimer;
+  String? _lastShownQuestionId;
+  bool _isQuestionPopupShowing = false;
+  final Set<String> _shownQuestionIds = {};
   final GlobalKey<RecentActivityState> recentActivityKey =
       GlobalKey<RecentActivityState>();
   Future<void> updateAppBadge(int count) async {
@@ -67,30 +70,23 @@ class _DashboardState extends ConsumerState<Dashboard> {
       debugPrint("❌ Badge not supported: $e");
     }
   }
-  // @override
-  // void initState() {
-  //   super.initState();
-
-  //   get_preferencevalue();
-  //   fetchongoinproces();
-  //   fetchapprovetechnician();
-  //   Future.microtask(() {
-  //     ref.read(serviceListProvider.notifier).refresh();
-  //     ref.refresh(fetchpointsnodification);
-  //     ref.refresh(fetchadvertisementprovider);
-  //     ref.refresh(userdashboardprovider);
-  //     ref.refresh(fetchquestionsdataprovider);
-  //   });
-  // }
-
-  DateTime? _lastSeenTime;
 
   @override
   void initState() {
     super.initState();
 
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      /// Notification badge listener
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      /// 🔥 FORCE DASHBOARD REFRESH ON ENTER
+      ref.refresh(userdashboardprovider);
+      ref.refresh(serviceListProvider);
+      ref.refresh(fetchpointsnodification);
+      ref.refresh(fetchadvertisementprovider);
+      ref.refresh(fetchquestionsdataprovider);
+
+      /// ✅ FORCE GIFT API CALL
+      await _checkGift();
+
+      /// 🔔 Notification badge listener
       ref.listen(unreadNotificationCountProvider, (previous, next) {
         next.whenData((count) {
           updateAppBadge(count);
@@ -102,30 +98,56 @@ class _DashboardState extends ConsumerState<Dashboard> {
         previous,
         next,
       ) async {
-        if (next is AsyncData<Questioner>) {
-          final data = next.value;
+        if (next is! AsyncData<Questioner>) return;
 
-          if (data.data.isEmpty) return;
+        final data = next.value;
 
-          if (ModalRoute.of(context)?.isCurrent != true) return;
+        if (data.data.isEmpty) return;
 
-          await Future.delayed(const Duration(milliseconds: 300));
+        final question = data.data.first;
 
-          if (!context.mounted) return;
-
-          showQuestionPopup(context, data.data.first);
+        /// ✅ Already shown before
+        if (_shownQuestionIds.contains(question.id)) {
+          return;
         }
+
+        if (_isQuestionPopupShowing) return;
+
+        if (ModalRoute.of(context)?.isCurrent != true) return;
+
+        _isQuestionPopupShowing = true;
+
+        /// ✅ Save as shown
+        _shownQuestionIds.add(question.id);
+
+        await Future.delayed(const Duration(milliseconds: 300));
+
+        if (!context.mounted) return;
+
+        await showQuestionPopup(context, question);
+
+        _isQuestionPopupShowing = false;
       });
     });
   }
 
   Future<void> _checkGift() async {
     try {
-      final gift = await ref.read(giftStatusProvider.future);
-      if (gift.showAnimation && mounted) {
+      /// ✅ FORCE API REFRESH
+      final gift = await ref.refresh(giftStatusProvider.future);
+
+      debugPrint("🎁 Gift Response: ${gift?.showAnimation}");
+
+      if (!mounted) return;
+
+      if (gift?.showAnimation == true) {
         ref.read(showGiftOverlayProvider.notifier).updateState(true);
+      } else {
+        ref.read(showGiftOverlayProvider.notifier).updateState(false);
       }
-    } catch (_) {}
+    } catch (e) {
+      debugPrint("Gift check error: $e");
+    }
   }
 
   Future<void> fetchongoinproces() async {
@@ -350,7 +372,10 @@ class _DashboardState extends ConsumerState<Dashboard> {
   Widget build(BuildContext context) {
     final services = ref.watch(serviceListProvider);
     final dashboardAsync = ref.watch(userdashboardprovider);
-    // final unreadCountAsync = ref.watch(unreadNotificationCountProvider);
+
+    debugPrint(
+      "DASHBOARD REBUILD",
+    ); // final unreadCountAsync = ref.watch(unreadNotificationCountProvider);
     final adAsync = ref.watch(fetchadvertisementprovider);
     final connectivity = ref.watch(connectivityProvider);
     final isDark = Theme.of(context).brightness == Brightness.dark;
@@ -368,16 +393,35 @@ class _DashboardState extends ConsumerState<Dashboard> {
       previous,
       next,
     ) async {
-      if (next is AsyncData<Questioner>) {
-        final data = next.value;
-        if (data.data.isEmpty) return;
-        // Prevent duplicate dialog
-        if (ModalRoute.of(context)?.isCurrent != true) return;
-        await Future.delayed(const Duration(milliseconds: 300));
-        if (!context.mounted) return;
+      if (next is! AsyncData<Questioner>) return;
 
-        showQuestionPopup(context, data.data.first);
+      final data = next.value;
+
+      if (data.data.isEmpty) return;
+
+      final question = data.data.first;
+
+      /// ✅ Already shown before
+      if (_shownQuestionIds.contains(question.id)) {
+        return;
       }
+
+      if (_isQuestionPopupShowing) return;
+
+      if (ModalRoute.of(context)?.isCurrent != true) return;
+
+      _isQuestionPopupShowing = true;
+
+      /// ✅ Save as shown
+      _shownQuestionIds.add(question.id);
+
+      await Future.delayed(const Duration(milliseconds: 300));
+
+      if (!context.mounted) return;
+
+      await showQuestionPopup(context, question);
+
+      _isQuestionPopupShowing = false;
     });
 
     // Old gift overlay removed in favor of stack-based component
@@ -412,7 +456,7 @@ class _DashboardState extends ConsumerState<Dashboard> {
                     child: Column(
                       children: [
                         Container(
-                          height: 170,
+                          height: 200,
                           width: double.infinity,
                           padding: const EdgeInsets.only(left: 20, right: 20),
                           decoration: BoxDecoration(
@@ -1107,6 +1151,9 @@ class _DashboardState extends ConsumerState<Dashboard> {
                                                           "${ImageBaseUrl.baseUrl}/${service['serviceImage']}",
                                                       'serviceId': serviceId,
                                                       "points": points,
+                                                      "issues":
+                                                          service["issues"] ??
+                                                          [],
                                                     },
                                                   );
                                                 },
@@ -1461,7 +1508,12 @@ class _DashboardState extends ConsumerState<Dashboard> {
                 ref.read(showGiftOverlayProvider.notifier).updateState(false);
                 try {
                   await ref.read(giftServiceProvider).dismiss();
+
+                  /// refresh dashboard points
                   ref.refresh(userdashboardprovider);
+
+                  /// refresh gift provider
+                  ref.invalidate(giftStatusProvider);
                 } catch (_) {}
               },
             ),

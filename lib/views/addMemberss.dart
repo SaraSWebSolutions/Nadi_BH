@@ -221,9 +221,22 @@ class _AddmemberssState extends ConsumerState<Addmemberss> {
                 keyboardType: TextInputType.phone,
                 prefixText: '+973 ',
                 maxLength: 8,
-                inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                validator: (v) =>
-                    v == null || v.isEmpty ? loc.enterMobile : null,
+                inputFormatters: [
+                  FilteringTextInputFormatter.digitsOnly,
+                  LengthLimitingTextInputFormatter(8), // 🔥 MUST ADD
+                ],
+                // inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                validator: (v) {
+                  if (v == null || v.trim().isEmpty) {
+                    return loc.enterMobile;
+                  }
+
+                  if (v.trim().length != 8) {
+                    return loc.mobileNumberMustBe8Digits;
+                  }
+
+                  return null;
+                },
               ),
               const SizedBox(height: 15),
 

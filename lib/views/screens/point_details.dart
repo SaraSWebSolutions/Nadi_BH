@@ -49,7 +49,7 @@ class _PointDetailsState extends ConsumerState<PointDetails> {
 
     Future.microtask(() {
       ref.refresh(pointshistoryprovider);
-      ref.refresh(fetchpointsnodification);
+      ref.invalidate(fetchpointsnodification);
       ref.refresh(FamilymemberpointslistProvider);
       ref.refresh(fetchrequestpeoplelistprovider);
       ref.refresh(userdashboardprovider);
@@ -222,7 +222,7 @@ class _PointDetailsState extends ConsumerState<PointDetails> {
                             ref.invalidate(fetchpointsnodification);
                             ref.invalidate(userdashboardprovider);
 
-                            ref.refresh(fetchpointsnodification);
+                            ref.invalidate(fetchpointsnodification);
                             ref.refresh(userdashboardprovider);
                           }
                         },
