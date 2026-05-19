@@ -299,7 +299,11 @@ class _BottomNavState extends ConsumerState<BottomNav> {
     final loc = AppLocalizations.of(context)!;
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final unreadMap = ref.watch(streamUnreadCountsProvider).value ?? {};
-    final totalUnread = unreadMap.values.fold(0, (sum, c) => sum + c);
+    debugPrint("📩 UNREAD MAP = $unreadMap");
+
+final totalUnread = unreadMap.values.fold(0, (sum, c) => sum + c);
+
+debugPrint("🔴 TOTAL UNREAD = $totalUnread");
     return Container(
       decoration: BoxDecoration(
         borderRadius: const BorderRadius.only(

@@ -5,7 +5,14 @@ final totalUnreadProvider = Provider<int>((ref) {
   final asyncMap = ref.watch(streamUnreadCountsProvider);
 
   return asyncMap.when(
-    data: (map) => map.values.fold(0, (sum, c) => sum + c),
+    data: (map) {
+      final total = map.values.fold(0, (sum, c) => sum + c);
+
+      // debugPrint("📩 UNREAD MAP = $map");
+      // debugPrint("🔴 TOTAL UNREAD = $total");
+
+      return total;
+    },
     loading: () => 0,
     error: (_, __) => 0,
   );
