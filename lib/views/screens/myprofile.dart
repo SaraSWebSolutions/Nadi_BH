@@ -284,7 +284,7 @@ import 'package:nadi_user_app/widgets/app_back.dart';
 import 'package:nadi_user_app/widgets/confirm_dialog.dart';
 import 'package:nadi_user_app/widgets/inputs/app_text_field.dart';
 import 'package:nadi_user_app/core/utils/snackbar_helper.dart';
-
+import 'dart:io';
 class Myprofile extends ConsumerWidget {
   const Myprofile({super.key});
   @override
@@ -346,7 +346,7 @@ class Myprofile extends ConsumerWidget {
             children: [
               // Header
               Container(
-                height: 210, // slightly reduced height
+                height: Platform.isIOS ? 210 : 190, // slightly reduced height
                 width: double.infinity,
                 padding: EdgeInsets.only(
                   top: MediaQuery.of(context).padding.top + 10,

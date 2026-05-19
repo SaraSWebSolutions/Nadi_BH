@@ -31,7 +31,7 @@ class ThemeNotifier extends Notifier<ThemeMode> {
         break;
 
       default:
-        state = ThemeMode.system;
+        state = ThemeMode.light;
     }
   }
 

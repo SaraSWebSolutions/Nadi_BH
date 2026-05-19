@@ -162,6 +162,7 @@ class _ChatsViewState extends ConsumerState<ChatsView> {
                             final unread = unreadCounts.value?[user.id] ?? 0;
 
                             final hasUnread = unread > 0;
+final theme = Theme.of(context);
 
                             return InkWell(
                               onTap: () {
@@ -313,19 +314,16 @@ class _ChatsViewState extends ConsumerState<ChatsView> {
                                                   .isNotEmpty) ...[
                                             const SizedBox(height: 3),
                                             Text(
-                                              user.lastMessage!.message!,
-                                              maxLines: 1,
-                                              overflow: TextOverflow.ellipsis,
-                                              style: TextStyle(
-                                                color: hasUnread
-                                                    ? Colors.black87
-                                                    : Colors.grey,
-                                                fontSize: 13,
-                                                fontWeight: hasUnread
-                                                    ? FontWeight.w500
-                                                    : FontWeight.normal,
-                                              ),
-                                            ),
+  user.lastMessage!.message!,
+  maxLines: 1,
+  overflow: TextOverflow.ellipsis,
+  style: theme.textTheme.bodyMedium?.copyWith(
+    color: hasUnread
+        ? theme.colorScheme.onSurface
+        : theme.colorScheme.onSurface.withOpacity(0.6),
+    fontWeight: hasUnread ? FontWeight.w500 : FontWeight.normal,
+  ),
+),
                                           ],
                                         ],
                                       ),

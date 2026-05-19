@@ -22,11 +22,11 @@ class StreamChatService {
   /// ✅ Check ACTUAL connection state instead of a stale boolean flag.
   /// The old `_isConnected` flag could get out of sync when the WebSocket
   /// silently disconnects (token expiry, network change, server restart).
-  bool get _isActuallyConnected {
-    final user = _client.state.currentUser;
-    final wsState = _client.wsConnectionStatus;
-    return user != null && wsState == ConnectionStatus.connected;
-  }
+  // bool get _isActuallyConnected {
+  //   final user = _client.state.currentUser;
+  //   final wsState = _client.wsConnectionStatus;
+  //   return user != null && wsState == ConnectionStatus.connected;
+  // }
 
   Future<String> _getToken(String userId) async {
     final response = await _dio.post(
@@ -40,46 +40,56 @@ class StreamChatService {
     return response.data['token'];
   }
 
-  /// ✅ Connect only if not already connected — uses real connection state
-  Future<void> connectUserIfNeeded(String userId) async {
-    // If already connected as this user with an active WebSocket, skip
-    if (_isActuallyConnected && _client.state.currentUser?.id == userId) {
-      debugPrint("✅ Stream Chat already connected for $userId (ws: connected)");
-      return;
-    }
+ bool get _isActuallyConnected {
+  final user = _client.state.currentUser;
+  final wsState = _client.wsConnectionStatus;
 
-    // If connected as a different user, disconnect first
-    if (_client.state.currentUser != null &&
-        _client.state.currentUser?.id != userId) {
-      debugPrint("🔄 Disconnecting previous Stream user: ${_client.state.currentUser?.id}");
-      await _client.disconnectUser();
-    }
+  return user != null &&
+      wsState == ConnectionStatus.connected;
+}
 
-    // If WebSocket died but user object is stale, force disconnect & reconnect
-    if (_client.state.currentUser != null &&
-        _client.wsConnectionStatus != ConnectionStatus.connected) {
-      debugPrint("⚠️ Stream Chat WebSocket is ${_client.wsConnectionStatus} — forcing reconnect");
-      try {
-        await _client.disconnectUser();
-      } catch (e) {
-        debugPrint("⚠️ Disconnect during reconnect failed (OK to ignore): $e");
-      }
-    }
+Future<void> connectUserIfNeeded(String userId) async {
 
-    debugPrint("🔵 Getting Stream Chat token for: $userId");
-    final token = await _getToken(userId);
-    debugPrint("🔵 Token received, connecting user...");
-
-    await _client.connectUser(
-      User(id: userId),
-      token,
-    );
-
-    debugPrint("✅ User connected to Stream Chat (ws: ${_client.wsConnectionStatus})");
-
-    // ✅ Register push token after connection
-    await registerFCMToken();
+  /// Already connected correctly
+  if (_isActuallyConnected &&
+      _client.state.currentUser?.id == userId) {
+    debugPrint("✅ Stream already connected");
+    return;
   }
+
+  /// Wrong user connected
+  if (_client.state.currentUser != null &&
+      _client.state.currentUser?.id != userId) {
+
+    debugPrint("🔄 Disconnecting previous user");
+
+    await _client.disconnectUser();
+  }
+
+  /// Websocket dead but user cached
+  if (_client.state.currentUser != null &&
+      _client.wsConnectionStatus != ConnectionStatus.connected) {
+
+    debugPrint("⚠️ Websocket dead. Reconnecting Stream...");
+
+    try {
+      await _client.disconnectUser();
+    } catch (_) {}
+  }
+
+  final token = await _getToken(userId);
+
+  debugPrint("🔵 Connecting Stream user...");
+
+  await _client.connectUser(
+    User(id: userId),
+    token,
+  );
+
+  debugPrint("✅ Stream connected");
+
+  await registerFCMToken();
+}
 
   /// ✅ Register FCM device token with Stream Chat for push notifications
   Future<void> registerFCMToken() async {
