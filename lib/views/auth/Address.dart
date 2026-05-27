@@ -63,39 +63,39 @@ class _AddressState extends State<Address> {
       if (mounted) setState(() => _isLoading = false);
 
       if (response != null) {
-  if (widget.accountType == "Family") {
-    widget.onNext?.call();
-  } else {
-    if (!context.mounted) return;
+        if (widget.accountType == "Family") {
+          widget.onNext?.call();
+        } else {
+          if (!context.mounted) return;
 
-    /// ✅ CLEAR ALL FIELDS HERE
-    controller.city.clear();
-    controller.building.clear();
-    controller.aptNo.clear();
-    controller.floor.clear();
+          /// ✅ CLEAR ALL FIELDS HERE
+          controller.city.clear();
+          controller.building.clear();
+          controller.aptNo.clear();
+          controller.floor.clear();
 
-    controller.block = null;
-    controller.blockId = null;
+          controller.block = null;
+          controller.blockId = null;
 
-    controller.road = null;
-    controller.roadId = null;
+          controller.road = null;
+          controller.roadId = null;
 
-    controller.roadsForSelectedBlock = [];
+          controller.roadsForSelectedBlock = [];
 
-    setState(() {
-      _hideBottomButton = true;
-    });
+          setState(() {
+            _hideBottomButton = true;
+          });
 
-    SnackbarHelper.ShowSuccess(
-      context,
-      AppLocalizations.of(context)!.accountCreatedSuccessfully,
-    );
+          SnackbarHelper.ShowSuccess(
+            context,
+            AppLocalizations.of(context)!.accountCreatedSuccessfully,
+          );
 
-    Future.delayed(const Duration(seconds: 1), () {
-      if (context.mounted) context.push(RouteNames.accountverfy);
-    });
-  }
-}
+          Future.delayed(const Duration(seconds: 1), () {
+            if (context.mounted) context.push(RouteNames.accountverfy);
+          });
+        }
+      }
     } catch (e) {
       if (!context.mounted) return;
       setState(() => _isLoading = false);
@@ -110,18 +110,19 @@ class _AddressState extends State<Address> {
     final bool isSelected = selected == type;
 
     return GestureDetector(
-onTap: () {
-  setState(() {
-    selected = type;
+      onTap: () {
+        setState(() {
+          selected = type;
 
-    /// ✅ CLEAR fields when villa selected
-    if (type == "Villa") {
-      controller.aptNo.clear();
-      controller.floor.clear();
-    }
-  });
-},      child: Container(
-        padding: EdgeInsets.symmetric(vertical: 10,horizontal: 30),
+          /// ✅ CLEAR fields when villa selected
+          if (type == "Villa") {
+            controller.aptNo.clear();
+            controller.floor.clear();
+          }
+        });
+      },
+      child: Container(
+        padding: EdgeInsets.symmetric(vertical: 10, horizontal: 30),
         decoration: BoxDecoration(
           color: isSelected ? AppColors.btn_primery : Colors.white,
           borderRadius: BorderRadius.circular(12),
@@ -189,38 +190,47 @@ onTap: () {
             ],
           ),
           SizedBox(height: 17),
-          AppTextField(controller: controller.city, label: l10n.enterCity),
+          AppTextField(
+            controller: controller.city,
+            label: l10n.enterCity,
+            keyboardType: TextInputType.streetAddress,
+            textInputAction: TextInputAction.next,
+          ),
           SizedBox(height: 17),
           AppTextField(
             controller: controller.building,
             label: l10n.enterBuilding,
             validator: (value) => controller.validateBuilding(value, l10n),
+            keyboardType: TextInputType.text,
+            textInputAction: TextInputAction.next,
           ),
           SizedBox(height: 17),
           if (selected != l10n.villa) ...[
+            Row(
+              children: [
+                Expanded(
+                  child: AppTextField(
+                    controller: controller.aptNo,
+                    keyboardType: TextInputType.number,
+                    textInputAction: TextInputAction.next,
+                    label: l10n.enterAptNo,
+                    validator: (value) => controller.validateAptNo(value, l10n),
+                  ),
+                ),
+                SizedBox(width: 10),
+                Expanded(
+                  child: AppTextField(
+                    controller: controller.floor,
+                    keyboardType: TextInputType.number,
+                    textInputAction: TextInputAction.done,
 
-          Row(
-            children: [
-              Expanded(
-                child: AppTextField(
-                  controller: controller.aptNo,
-                  keyboardType: TextInputType.number,
-                  label: l10n.enterAptNo,
-                  validator: (value) => controller.validateAptNo(value, l10n),
+                    label: l10n.enterFloorNo,
+                    validator: (value) => controller.validateFloor(value, l10n),
+                  ),
                 ),
-              ),
-              SizedBox(width: 10),
-              Expanded(
-                child: AppTextField(
-                  controller: controller.floor,
-                  keyboardType: TextInputType.number,
-                  label: l10n.enterFloorNo,
-                  validator: (value) => controller.validateFloor(value, l10n),
-                ),
-              ),
-            ],
-          ),
-          SizedBox(height: 17),
+              ],
+            ),
+            SizedBox(height: 17),
           ],
           Consumer(
             builder: (context, ref, child) {

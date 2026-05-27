@@ -326,7 +326,7 @@ class _AccountDetailsState extends ConsumerState<AccountDetails>
 
   late final AnimationController _controller;
   late final Animation<double> _animation;
-
+  bool _isNavigating = false;
   @override
   void initState() {
     super.initState();
@@ -359,7 +359,7 @@ class _AccountDetailsState extends ConsumerState<AccountDetails>
   Widget build(BuildContext context) {
     final accountTypesAsync = ref.watch(accountTypesProvider);
     final availabilityAsync = ref.watch(accountTypeAvailabilityProvider);
-
+    final isArabic = Localizations.localeOf(context).languageCode == 'ar';
     final availability = availabilityAsync.maybeWhen(
       data: (value) => value,
       orElse: () => const AccountTypeAvailability(
@@ -450,7 +450,7 @@ class _AccountDetailsState extends ConsumerState<AccountDetails>
                               ScaleTransition(
                                 scale: _animation,
                                 child: AppButton(
-                                  text: item.name,
+                                  text: isArabic ? item.nameAr : item.nameEn,
                                   icon: Image.asset(
                                     individual
                                         ? "assets/icons/person.png"
@@ -459,21 +459,42 @@ class _AccountDetailsState extends ConsumerState<AccountDetails>
                                   ),
                                   color: AppColors.btn_primery,
                                   width: double.infinity,
-                                  onPressed: () async {
-                                    final res = await _authService
-                                        .selectAccount(accountTypeId: item.id);
+                                  onPressed: _isNavigating
+                                      ? null
+                                      : () async {
+                                          if (_isNavigating) return;
 
-                                    if (res) {
-                                      if (!context.mounted) return;
+                                          setState(() {
+                                            _isNavigating = true;
+                                          });
 
-                                      context.pushNamed(
-                                        RouteNames.stepper,
-                                        extra: item.type == 'IA'
-                                            ? "Individual"
-                                            : "Family",
-                                      );
-                                    }
-                                  },
+                                          try {
+                                            final res = await _authService
+                                                .selectAccount(
+                                                  accountTypeId: item.id,
+                                                );
+
+                                            if (!mounted) return;
+
+                                            if (res) {
+                                              context.pushNamed(
+                                                RouteNames.stepper,
+                                                extra: item.type == 'IA'
+                                                    ? "Individual"
+                                                    : "Family",
+                                              );
+                                            }
+                                            //return;
+                                          } catch (e) {
+                                            debugPrint(e.toString());
+                                          } finally {
+                                            if (mounted) {
+                                              setState(() {
+                                                _isNavigating = false;
+                                              });
+                                            }
+                                          }
+                                        },
                                 ),
                               ),
 

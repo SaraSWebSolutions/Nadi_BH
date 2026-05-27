@@ -6,6 +6,7 @@ import 'package:nadi_user_app/providers/HelpAndSuppord_Provider.dart';
 import 'package:nadi_user_app/services/helpandsupport_service.dart';
 import 'package:nadi_user_app/widgets/inputs/app_text_field.dart';
 import 'package:flutter/services.dart';
+
 class HelpSupportView extends ConsumerStatefulWidget {
   const HelpSupportView({super.key});
 
@@ -28,17 +29,16 @@ class _HelpSupportViewState extends ConsumerState<HelpSupportView> {
     super.initState();
 
     // Smart phone prefix: user cannot remove +973
-   _phoneController.addListener(() {
-  if (!_phoneController.text.startsWith("+973")) {
-    _phoneController.text = "+973";
-  }
+    _phoneController.addListener(() {
+      if (!_phoneController.text.startsWith("+973")) {
+        _phoneController.text = "+973";
+      }
 
-  // Keep cursor after prefix
-  if (_phoneController.selection.start < 4) {
-    _phoneController.selection =
-        const TextSelection.collapsed(offset: 4);
-  }
-});
+      // Keep cursor after prefix
+      if (_phoneController.selection.start < 4) {
+        _phoneController.selection = const TextSelection.collapsed(offset: 4);
+      }
+    });
   }
 
   void _submitEnquiry() async {
@@ -102,8 +102,11 @@ class _HelpSupportViewState extends ConsumerState<HelpSupportView> {
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (e, _) => Center(child: Text(e.toString())),
         data: (help) {
-          final item = help.data.first;
+          if (help.data.isEmpty) {
+            return const Center(child: Text("No help data available"));
+          }
 
+          final item = help.data.first;
           return SingleChildScrollView(
             padding: const EdgeInsets.all(16),
             child: Column(
@@ -150,28 +153,30 @@ class _HelpSupportViewState extends ConsumerState<HelpSupportView> {
                         label: loc.phoneLabel,
                         keyboardType: TextInputType.phone,
                         maxLength: 13,
-            //inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                          inputFormatters: [
-    FilteringTextInputFormatter.allow(RegExp(r'[0-9+]')),
-    LengthLimitingTextInputFormatter(12), // +973 (4) + 8 digits = 12
-  ],
-                validator: (value) {
-  if (value == null || value.isEmpty) {
-    return loc.phoneValidation;
-  }
+                        //inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                        inputFormatters: [
+                          FilteringTextInputFormatter.allow(RegExp(r'[0-9+]')),
+                          LengthLimitingTextInputFormatter(
+                            12,
+                          ), // +973 (4) + 8 digits = 12
+                        ],
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return loc.phoneValidation;
+                          }
 
-  if (!value.startsWith("+973")) {
-    return loc.invalidCountryCode;
-  }
+                          if (!value.startsWith("+973")) {
+                            return loc.invalidCountryCode;
+                          }
 
-  final digits = value.replaceFirst("+973", "").trim();
+                          final digits = value.replaceFirst("+973", "").trim();
 
-  if (digits.length != 8) {
-    return loc.invalidPhoneLength;
-  }
+                          if (digits.length != 8) {
+                            return loc.invalidPhoneLength;
+                          }
 
-  return null;
-},
+                          return null;
+                        },
                       ),
                       const SizedBox(height: 12),
                       AppTextField(

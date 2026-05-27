@@ -485,6 +485,7 @@ class _AddmemberState extends State<Addmember> {
                           controller: controller.familyCount,
                           keyboardType: TextInputType.number,
                           enabled: !_isFamilyCountLocked,
+                          textInputAction: TextInputAction.next,
                           decoration: InputDecoration(
                             labelText: l10n.enterFamilyCount,
                             labelStyle: TextStyle(fontSize: 12),
@@ -568,6 +569,8 @@ class _AddmemberState extends State<Addmember> {
                     controller: controller.fullName,
                     label: l10n.memberFullName,
                     focusNode: _nameFocus, // ✅ add this
+                    keyboardType: TextInputType.name,
+                    textInputAction: TextInputAction.next,
                     validator: (value) =>
                         controller.validatefullname(value, l10n),
                   ),
@@ -597,6 +600,7 @@ class _AddmemberState extends State<Addmember> {
                   AppTextField(
                     controller: controller.mobile,
                     keyboardType: TextInputType.phone,
+                    textInputAction: TextInputAction.next,
                     label: l10n.mobileNumber,
                     prefixText: "+973 ",
                     maxLength: 8,
@@ -613,11 +617,11 @@ class _AddmemberState extends State<Addmember> {
                   //   label: "Password*",
                   //   validator: (value) => controller.validatepassword(value),
                   // ),
-                  const SizedBox(height: 15),
-
+                  // const SizedBox(height: 15),
                   AppTextField(
                     controller: controller.email,
                     keyboardType: TextInputType.emailAddress,
+                    textInputAction: TextInputAction.done,
                     label: '${l10n.emailAddress}*',
                     validator: (value) => controller.validateemail(value, l10n),
                   ),

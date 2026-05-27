@@ -44,6 +44,7 @@ class _AccountFormViewState extends State<AccountFormView> {
         return widget.accountType;
     }
   }
+
   Future<void> submitBasicInfo(BuildContext context) async {
     if (!widget.formKey.currentState!.validate()) return;
 
@@ -55,7 +56,10 @@ class _AccountFormViewState extends State<AccountFormView> {
     if (userId == null || userId.isEmpty) {
       if (!context.mounted) return;
       setState(() => _isLoading = false);
-      SnackbarHelper.showError(context, "Session expired. Please log in again.");
+      SnackbarHelper.showError(
+        context,
+        "Session expired. Please log in again.",
+      );
       return;
     }
 
@@ -63,9 +67,9 @@ class _AccountFormViewState extends State<AccountFormView> {
       final response = await _basicInfo.basicInfo(
         userId: userId,
         fullName: data.firstName,
-          secondName: data.secondName,
-  thirdName: data.thirdName,
-  fourthName: data.fourthName,
+        secondName: data.secondName,
+        thirdName: data.thirdName,
+        fourthName: data.fourthName,
         mobileNumber: data.mobileNumber,
         email: data.email,
         password: data.password,
@@ -147,52 +151,68 @@ class _AccountFormViewState extends State<AccountFormView> {
           // ),
 
           // First Row
-Row(
-  children: [
-    Expanded(
-      child: AppTextField(
-        controller: controller.firstName,
-        label: "${l10n.firstName} *",
-        validator: (value) => controller.validateName(value,l10n),
-      ),
-    ),
-    const SizedBox(width: 12),
-    Expanded(
-      child: AppTextField(
-        controller: controller.secondName,
-        label: l10n.secondName,
-      ),
-    ),
-  ],
-),
-const SizedBox(height: 17),
+          Row(
+            children: [
+              Expanded(
+                child: AppTextField(
+                  controller: controller.firstName,
+                  label: "${l10n.firstName} *",
+                  keyboardType: TextInputType.name,
+                  textInputAction: TextInputAction.next,
 
-// Second Row
-Row(
-  children: [
-    Expanded(
-      child: AppTextField(
-        controller: controller.thirdName,
-        label: l10n.thirdName,
-      ),
-    ),
-    const SizedBox(width: 12),
-    Expanded(
-      child: AppTextField(
-        controller: controller.fourthName,
-        label: l10n.fourthName,
-      ),
-    ),
-  ],
-),
+                  validator: (value) => controller.validateName(value, l10n),
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: AppTextField(
+                  textInputAction: TextInputAction.next,
+
+                  controller: controller.secondName,
+                  keyboardType: TextInputType.name,
+
+                  label: l10n.secondName,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 17),
+
+          // Second Row
+          Row(
+            children: [
+              Expanded(
+                child: AppTextField(
+                  controller: controller.thirdName,
+                  textInputAction: TextInputAction.next,
+
+                  label: l10n.thirdName,
+                  keyboardType: TextInputType.name,
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: AppTextField(
+                  controller: controller.fourthName,
+                  keyboardType: TextInputType.name,
+                  textInputAction: TextInputAction.next,
+
+                  label: l10n.fourthName,
+                ),
+              ),
+            ],
+          ),
           const SizedBox(height: 17),
 
           // Mobile
           AppTextField(
             controller: controller.mobile,
             keyboardType: TextInputType.phone,
+
             label: l10n.mobileNumber,
-            validator: (value) => controller.validateMobile(value,l10n),
+            textInputAction: TextInputAction.next,
+
+            validator: (value) => controller.validateMobile(value, l10n),
             prefixText: "+973 ",
             maxLength: 8,
             inputFormatters: [FilteringTextInputFormatter.digitsOnly],
@@ -203,7 +223,10 @@ Row(
           AppTextField(
             controller: controller.email,
             label: "${l10n.emailAddress}*",
-            validator: (value) => controller.validateEmail(value,l10n),
+            keyboardType: TextInputType.emailAddress,
+            textInputAction: TextInputAction.next,
+
+            validator: (value) => controller.validateEmail(value, l10n),
           ),
           const SizedBox(height: 17),
 
@@ -224,15 +247,20 @@ Row(
             controller: controller.password,
             label: l10n.createPassword,
             isPassword: true,
-            validator: (value) => controller.validatePassword(value,l10n),
+            keyboardType: TextInputType.visiblePassword,
+            textInputAction: TextInputAction.next,
+            validator: (value) => controller.validatePassword(value, l10n),
           ),
           const SizedBox(height: 17),
 
           AppTextField(
             controller: controller.confirmPassword,
             label: l10n.confirmPassword,
+            keyboardType: TextInputType.visiblePassword,
+            textInputAction: TextInputAction.done,
             isPassword: true,
-            validator: (value) => controller.validateConfirmPassword(value,l10n),
+            validator: (value) =>
+                controller.validateConfirmPassword(value, l10n),
           ),
           const SizedBox(height: 40),
 

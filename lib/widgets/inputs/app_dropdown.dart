@@ -20,55 +20,107 @@ class AppDropdown extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return DropdownButtonFormField<String>(
-      initialValue: value,
+      value: value,
+
+      isExpanded: true,
+      isDense: true,
+
+      style: TextStyle(
+        color: Theme.of(context).colorScheme.onSurface,
+        fontSize: 15,
+        height: 1.2,
+      ),
+
+      icon: Padding(
+        padding: const EdgeInsets.only(right: 4),
+        child: Icon(
+          Icons.keyboard_arrow_down_rounded,
+          size: 24,
+          color: Theme.of(context).colorScheme.onSurfaceVariant,
+        ),
+      ),
+
+      dropdownColor: Theme.of(context).colorScheme.surface,
+
       decoration: InputDecoration(
-  labelText: label,
+        labelText: label,
 
-  contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+        helperText: " ",
 
-  // ✅ Dynamic label color
-  labelStyle: TextStyle(
-    fontSize: 14,
-    color: Theme.of(context).colorScheme.onSurfaceVariant,
-  ),
+        errorMaxLines: 3,
 
-  floatingLabelStyle: TextStyle(
-    color: Theme.of(context).colorScheme.primary,
-    fontWeight: FontWeight.w600,
-  ),
+        errorStyle: const TextStyle(
+          fontSize: 12,
+          height: 1.3,
+          color: Colors.red,
+        ),
 
-  border: OutlineInputBorder(
-    borderRadius: BorderRadius.circular(12),
-  ),
+        filled: true,
+        fillColor: Theme.of(context).colorScheme.surface,
 
-  enabledBorder: OutlineInputBorder(
-    borderRadius: BorderRadius.circular(12),
-    borderSide: BorderSide(
-      color: Theme.of(context).colorScheme.outline,
-    ),
-  ),
+        // ✅ PERFECT ALIGNMENT
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 16,
+          vertical: 18,
+        ),
 
-  focusedBorder: OutlineInputBorder(
-    borderRadius: BorderRadius.circular(12),
-    borderSide: BorderSide(
-      color: Theme.of(context).colorScheme.primary,
-      width: 1.2,
-    ),
-  ),
+        labelStyle: TextStyle(
+          fontSize: 15,
+          color: Theme.of(context).colorScheme.onSurfaceVariant,
+          fontWeight: FontWeight.w400,
+        ),
 
-  // ✅ VERY IMPORTANT (fix background issue)
-  filled: true,
-  fillColor: Theme.of(context).colorScheme.surface,
-),
-      items: items
-          .map((e) => DropdownMenuItem(
-                value: e,
-                child: Text(e, style: TextStyle(
-      color: Theme.of(context).colorScheme.onSurface, // ✅ FIX
-    )),
-              ))
-          .toList(),
+        floatingLabelStyle: TextStyle(
+          color: Theme.of(context).colorScheme.primary,
+          fontWeight: FontWeight.w600,
+        ),
+
+        border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide(
+            color: Theme.of(context).colorScheme.outlineVariant,
+          ),
+        ),
+
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide(
+            color: Theme.of(context).colorScheme.primary,
+            width: 1.5,
+          ),
+        ),
+
+        errorBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: const BorderSide(color: Colors.red),
+        ),
+
+        focusedErrorBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: const BorderSide(color: Colors.red, width: 1.5),
+        ),
+      ),
+
+      items: items.map((e) {
+        return DropdownMenuItem<String>(
+          value: e,
+          child: Align(
+            alignment: Alignment.centerLeft,
+            child: Text(
+              e,
+              style: TextStyle(
+                color: Theme.of(context).colorScheme.onSurface,
+                fontSize: 15,
+              ),
+            ),
+          ),
+        );
+      }).toList(),
+
       onChanged: onChanged,
+
       validator: validator,
     );
   }

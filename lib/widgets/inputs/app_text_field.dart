@@ -20,6 +20,7 @@ class AppTextField extends StatefulWidget {
   final Color? fillColor;
   final FocusNode? focusNode;
   final TextStyle? textStyle;
+  final TextInputAction? textInputAction;
   const AppTextField({
     super.key,
     this.controller,
@@ -39,6 +40,7 @@ class AppTextField extends StatefulWidget {
     this.fillColor,
     this.focusNode, // ✅ add here
     this.textStyle, // 👈 ADD THIS
+    this.textInputAction,
   });
   @override
   State<AppTextField> createState() => _AppTextFieldState();
@@ -61,7 +63,7 @@ class _AppTextFieldState extends State<AppTextField> {
       maxLengthEnforcement: MaxLengthEnforcement.enforced,
       inputFormatters: widget.inputFormatters,
       focusNode: widget.focusNode,
-
+      textInputAction: widget.textInputAction,
       style:
           widget.textStyle ??
           TextStyle(
