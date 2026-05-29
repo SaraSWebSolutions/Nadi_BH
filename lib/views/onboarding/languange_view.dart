@@ -101,7 +101,7 @@ class _LanguangeViewState extends ConsumerState<LanguangeView> {
                           const SizedBox(height: 10),
 
                           const Text(
-                            "Your language preference can be changed any time in Settings",
+                            "Your language preference can be changed any time in settings",
                             style: TextStyle(
                               fontSize: AppFontSizes.small,
                               fontWeight: FontWeight.w400,

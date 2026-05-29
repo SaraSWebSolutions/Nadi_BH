@@ -2275,6 +2275,36 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Mobile number must be exactly 8 digits'**
   String get mobileNumberMustBe8Digits;
+
+  /// No description provided for @enterfirstname.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter first name'**
+  String get enterfirstname;
+
+  /// No description provided for @enteryour_build.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter your building'**
+  String get enteryour_build;
+
+  /// No description provided for @enteraptno.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter apt no'**
+  String get enteraptno;
+
+  /// No description provided for @enterFloorno.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter floor no'**
+  String get enterFloorno;
+
+  /// No description provided for @enter_memberFullName.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter member full name'**
+  String get enter_memberFullName;
 }
 
 class _AppLocalizationsDelegate

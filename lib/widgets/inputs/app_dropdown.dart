@@ -21,6 +21,7 @@ class AppDropdown extends StatelessWidget {
   Widget build(BuildContext context) {
     return DropdownButtonFormField<String>(
       value: value,
+      autovalidateMode: AutovalidateMode.onUserInteraction,
 
       isExpanded: true,
       isDense: true,

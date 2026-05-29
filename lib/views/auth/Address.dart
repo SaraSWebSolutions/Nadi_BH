@@ -17,6 +17,7 @@ import 'package:nadi_user_app/widgets/inputs/app_text_field.dart';
 class Address extends StatefulWidget {
   final String accountType;
   final VoidCallback? onNext;
+  final VoidCallback? onChanged;
   final bool family;
   final GlobalKey<FormState> formKey;
   final AddressController controller;
@@ -27,6 +28,7 @@ class Address extends StatefulWidget {
     this.family = false,
     required this.formKey,
     required this.controller,
+    this.onChanged, // ✅ ADD THIS
   });
 
   @override
@@ -37,8 +39,29 @@ class _AddressState extends State<Address> {
   String selected = "Flat";
   bool _isLoading = false;
   bool _hideBottomButton = false;
+  bool get showButton {
+    return controller.city.text.isNotEmpty &&
+        controller.building.text.isNotEmpty &&
+        controller.block != null &&
+        controller.road != null;
+  }
+
+  // GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final AuthService _adressservice = AuthService();
   AddressController get controller => widget.controller;
+  @override
+  void _resetAll() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      controller.clear();
+
+      setState(() {
+        selected = "Flat";
+        _isLoading = false;
+        // _formKey = GlobalKey<FormState>(); // clears validation UI
+      });
+    });
+  }
+
   Future<void> familyAccount(BuildContext context) async {
     final userId = await AppPreferences.getUserId();
 
@@ -84,13 +107,16 @@ class _AddressState extends State<Address> {
 
           setState(() {
             _hideBottomButton = true;
+            // _formKey = GlobalKey<FormState>(); // 🔥 clears validation errors
           });
+
+          _resetAll();
 
           SnackbarHelper.ShowSuccess(
             context,
             AppLocalizations.of(context)!.accountCreatedSuccessfully,
           );
-
+          //_resetAll();
           Future.delayed(const Duration(seconds: 1), () {
             if (context.mounted) context.push(RouteNames.accountverfy);
           });
@@ -106,48 +132,78 @@ class _AddressState extends State<Address> {
     }
   }
 
+  void _onAddressChanged() {
+    if (_hideBottomButton) {
+      setState(() {
+        _hideBottomButton = false;
+      });
+    }
+
+    widget.onChanged?.call();
+  }
+
   Widget buildType(String type, String icon) {
     final bool isSelected = selected == type;
 
-    return GestureDetector(
-      onTap: () {
-        setState(() {
-          selected = type;
+    return Expanded(
+      child: GestureDetector(
+        onTap: () {
+          setState(() {
+            selected = type;
 
-          /// ✅ CLEAR fields when villa selected
-          if (type == "Villa") {
-            controller.aptNo.clear();
-            controller.floor.clear();
-          }
-        });
-      },
-      child: Container(
-        padding: EdgeInsets.symmetric(vertical: 10, horizontal: 30),
-        decoration: BoxDecoration(
-          color: isSelected ? AppColors.btn_primery : Colors.white,
-          borderRadius: BorderRadius.circular(12),
-          border: isSelected
-              ? null
-              : Border.all(color: Colors.grey.shade400, width: 1),
-        ),
-        child: Row(
-          children: [
-            Image.asset(
-              icon,
-              height: 24,
-              width: 24,
-              color: isSelected ? Colors.white : Colors.grey,
+            if (type == "Villa") {
+              controller.aptNo.clear();
+              controller.floor.clear();
+            }
+          });
+        },
+        child: Container(
+          height: 58, // ✅ fixed height
+          margin: const EdgeInsets.symmetric(horizontal: 4),
+          decoration: BoxDecoration(
+            color: isSelected
+                ? AppColors.btn_primery
+                : Theme.of(context).colorScheme.surface,
+
+            borderRadius: BorderRadius.circular(14),
+
+            border: Border.all(
+              color: isSelected ? AppColors.btn_primery : Colors.grey.shade300,
             ),
-            SizedBox(width: 6),
-            Text(
-              type,
-              style: TextStyle(
-                fontSize: 15,
-                color: isSelected ? Colors.white : Colors.grey,
-                fontWeight: FontWeight.w600,
-              ),
+          ),
+
+          child: Center(
+            // ✅ IMPORTANT
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.center, // ✅ FIX
+              children: [
+                Image.asset(
+                  icon,
+                  height: 23,
+                  width: 23,
+                  color: isSelected
+                      ? Colors.white
+                      : Theme.of(context).colorScheme.onSurfaceVariant,
+                ),
+
+                const SizedBox(width: 8),
+
+                Text(
+                  type,
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: 15,
+                    fontWeight: FontWeight.w600,
+                    height: 1, // ✅ FIX TEXT VERTICAL ALIGN
+                    color: isSelected
+                        ? Colors.white
+                        : Theme.of(context).colorScheme.onSurface,
+                  ),
+                ),
+              ],
             ),
-          ],
+          ),
         ),
       ),
     );
@@ -158,6 +214,8 @@ class _AddressState extends State<Address> {
     final l10n = AppLocalizations.of(context)!;
     return Form(
       key: widget.formKey,
+      autovalidateMode: AutovalidateMode.disabled,
+
       child: Column(
         children: [
           // AppTextField(
@@ -195,6 +253,7 @@ class _AddressState extends State<Address> {
             label: l10n.enterCity,
             keyboardType: TextInputType.streetAddress,
             textInputAction: TextInputAction.next,
+            onChanged: (_) => _onAddressChanged(),
           ),
           SizedBox(height: 17),
           AppTextField(
@@ -203,6 +262,7 @@ class _AddressState extends State<Address> {
             validator: (value) => controller.validateBuilding(value, l10n),
             keyboardType: TextInputType.text,
             textInputAction: TextInputAction.next,
+            onChanged: (_) => _onAddressChanged(),
           ),
           SizedBox(height: 17),
           if (selected != l10n.villa) ...[
@@ -214,6 +274,7 @@ class _AddressState extends State<Address> {
                     keyboardType: TextInputType.number,
                     textInputAction: TextInputAction.next,
                     label: l10n.enterAptNo,
+                    onChanged: (_) => _onAddressChanged(),
                     validator: (value) => controller.validateAptNo(value, l10n),
                   ),
                 ),
@@ -223,7 +284,7 @@ class _AddressState extends State<Address> {
                     controller: controller.floor,
                     keyboardType: TextInputType.number,
                     textInputAction: TextInputAction.done,
-
+                    onChanged: (_) => _onAddressChanged(),
                     label: l10n.enterFloorNo,
                     validator: (value) => controller.validateFloor(value, l10n),
                   ),
@@ -238,6 +299,20 @@ class _AddressState extends State<Address> {
 
               return blockAsync.when(
                 data: (blocks) {
+                  if (controller.block != null &&
+                      controller.roadsForSelectedBlock.isEmpty) {
+                    final selectedBlock = blocks.firstWhere(
+                      (b) => b['name'] == controller.block,
+                      orElse: () => {},
+                    );
+
+                    if (selectedBlock.isNotEmpty) {
+                      controller.roadsForSelectedBlock =
+                          List<Map<String, dynamic>>.from(
+                            selectedBlock['roads'] ?? [],
+                          );
+                    }
+                  }
                   return Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -247,6 +322,7 @@ class _AddressState extends State<Address> {
                         items: blocks.map((b) => b['name'] as String).toList(),
                         value: controller.block,
                         onChanged: (val) {
+                          _onAddressChanged();
                           setState(() {
                             final block = blocks.firstWhere(
                               (b) => b['name'] == val,
@@ -274,6 +350,7 @@ class _AddressState extends State<Address> {
                             .toList(),
                         value: controller.road,
                         onChanged: (val) {
+                          _onAddressChanged();
                           setState(() {
                             final road = controller.roadsForSelectedBlock
                                 .firstWhere((r) => r['name'] == val);
@@ -296,22 +373,24 @@ class _AddressState extends State<Address> {
 
           SizedBox(height: 20),
           if (!widget.family)
-            if (!_hideBottomButton)
-              AppButton(
-                text: widget.accountType == "Family"
-                    ? l10n.continueBtn
-                    : l10n.signIn,
-                isLoading: _isLoading,
-                onPressed: () {
-                  final isValid =
-                      widget.formKey.currentState?.validate() ?? false;
+            // if (!widget.family && showButton)
+            // if (!_hideBottomButton)
+            AppButton(
+              text: widget.accountType == "Family"
+                  ? l10n.continueBtn
+                  : l10n.signIn,
+              isLoading: _isLoading,
+              onPressed: () {
+                final isValid =
+                    widget.formKey.currentState?.validate() ?? false;
 
-                  if (!isValid) return;
-                  familyAccount(context);
-                },
-                color: AppColors.btn_primery,
-                width: double.infinity,
-              ),
+                if (!isValid) return;
+
+                familyAccount(context);
+              },
+              color: AppColors.btn_primery,
+              width: double.infinity,
+            ),
 
           SizedBox(height: 10),
         ],

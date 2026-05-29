@@ -21,6 +21,8 @@ class AppTextField extends StatefulWidget {
   final FocusNode? focusNode;
   final TextStyle? textStyle;
   final TextInputAction? textInputAction;
+  final Function(String)? onChanged; // ✅ ADD THIS
+
   const AppTextField({
     super.key,
     this.controller,
@@ -41,6 +43,7 @@ class AppTextField extends StatefulWidget {
     this.focusNode, // ✅ add here
     this.textStyle, // 👈 ADD THIS
     this.textInputAction,
+    this.onChanged, // ✅ ADD THIS
   });
   @override
   State<AppTextField> createState() => _AppTextFieldState();
@@ -64,6 +67,8 @@ class _AppTextFieldState extends State<AppTextField> {
       inputFormatters: widget.inputFormatters,
       focusNode: widget.focusNode,
       textInputAction: widget.textInputAction,
+      autovalidateMode: AutovalidateMode.onUserInteraction,
+      onChanged: widget.onChanged,
       style:
           widget.textStyle ??
           TextStyle(

@@ -450,6 +450,12 @@
   "invalidCredentials": "بيانات تسجيل الدخول غير صحيحة",
   "enterValidEmail": "أدخل بريد إلكتروني صالح",
       "pleaseFillMemberDetails": "يرجى ملء تفاصيل العضو",
-      "mobileNumberMustBe8Digits": "يجب أن يكون رقم الجوال 8 أرقام"
+      "mobileNumberMustBe8Digits": "يجب أن يكون رقم الجوال 8 أرقام",
+      "enterfirstname":"أدخل الاسم الأول",
+       "enteryour_build": "أدخل اسم المبنى",
+  "enteraptno": "أدخل رقم الشقة",
+  "enterFloorno":"أدخل رقم الطابق",
+    "enter_memberFullName": "أدخل اسم العضو بالكامل"
+
 
 }

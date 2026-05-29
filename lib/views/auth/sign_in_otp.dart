@@ -884,7 +884,7 @@ class _SignInOtpState extends State<SignInOtp> {
           /// BACK BUTTON
           SafeArea(
             child: Align(
-              alignment: Alignment.topLeft,
+              alignment: isRTL ? Alignment.topRight : Alignment.topLeft,
               child: Padding(
                 padding: const EdgeInsets.all(12),
                 child: InkWell(
@@ -892,16 +892,16 @@ class _SignInOtpState extends State<SignInOtp> {
                       ? context.pop()
                       : context.go(RouteNames.login),
                   child: Container(
-                    height: 42,
-                    width: 42,
+                    height: 38,
+                    width: 38,
                     decoration: BoxDecoration(
-                      color: Colors.black.withOpacity(0.4),
+                      color: Color.fromARGB(255, 180, 189, 230),
                       shape: BoxShape.circle,
                     ),
                     child: Icon(
-                      isRTL ? Icons.arrow_forward : Icons.arrow_back,
+                      isRTL ? Icons.arrow_back : Icons.arrow_back,
                       color: Colors.white,
-                      size: 18,
+                      size: 17,
                     ),
                   ),
                 ),

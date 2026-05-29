@@ -1154,4 +1154,19 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get mobileNumberMustBe8Digits =>
       'Mobile number must be exactly 8 digits';
+
+  @override
+  String get enterfirstname => 'Enter first name';
+
+  @override
+  String get enteryour_build => 'Enter your building';
+
+  @override
+  String get enteraptno => 'Enter apt no';
+
+  @override
+  String get enterFloorno => 'Enter floor no';
+
+  @override
+  String get enter_memberFullName => 'Enter member full name';
 }

@@ -1144,4 +1144,19 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get mobileNumberMustBe8Digits => 'يجب أن يكون رقم الجوال 8 أرقام';
+
+  @override
+  String get enterfirstname => 'أدخل الاسم الأول';
+
+  @override
+  String get enteryour_build => 'أدخل اسم المبنى';
+
+  @override
+  String get enteraptno => 'أدخل رقم الشقة';
+
+  @override
+  String get enterFloorno => 'أدخل رقم الطابق';
+
+  @override
+  String get enter_memberFullName => 'أدخل اسم العضو بالكامل';
 }

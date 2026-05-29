@@ -103,6 +103,8 @@ class _AccountFormViewState extends State<AccountFormView> {
     final l10n = AppLocalizations.of(context)!;
     return Form(
       key: widget.formKey,
+      autovalidateMode: AutovalidateMode.disabled,
+
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [

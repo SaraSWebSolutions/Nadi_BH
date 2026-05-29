@@ -6,13 +6,13 @@ class AddressController {
   TextEditingController city = TextEditingController();
   TextEditingController aptNo = TextEditingController();
   TextEditingController floor = TextEditingController();
-String? block;
-String? blockId;
+  String? block;
+  String? blockId;
 
-String? road;
-String? roadId;
+  String? road;
+  String? roadId;
 
-List<Map<String, dynamic>> roadsForSelectedBlock = [];
+  List<Map<String, dynamic>> roadsForSelectedBlock = [];
 
   /// For debugging / local use
   Map<String, dynamic> getAddressData() {
@@ -27,25 +27,39 @@ List<Map<String, dynamic>> roadsForSelectedBlock = [];
       "floor": floor.text,
     };
   }
+
   void clear() {
-  city.clear();
-  floor.clear();
-  building.clear();
-  aptNo.clear();
+    city.clear();
+    floor.clear();
+    building.clear();
+    aptNo.clear();
 
-  // ✅ reset dropdown values
-  block = null;
-  blockId = null;
+    // ✅ reset dropdown values
+    block = null;
+    blockId = null;
 
-  road = null;
-  roadId = null;
+    road = null;
+    roadId = null;
 
-  // ✅ clear dependent dropdown list
-  roadsForSelectedBlock = [];
-}
-  Map<String, dynamic> getOnlyAddressMap({
-    required String addressType,
-  }) {
+    // ✅ clear dependent dropdown list
+    roadsForSelectedBlock = [];
+  }
+
+  void loadAddress(Map<String, dynamic> address) {
+    city.text = address["city"] ?? "";
+    building.text = address["building"] ?? "";
+    aptNo.text = address["aptNo"] ?? "";
+    floor.text = address["floor"] ?? "";
+
+    blockId = address["blockId"];
+    roadId = address["roadId"];
+
+    /// OPTIONAL
+    block = address["block"];
+    road = address["road"];
+  }
+
+  Map<String, dynamic> getOnlyAddressMap({required String addressType}) {
     return {
       "city": city.text,
       "addressType": addressType,
@@ -53,7 +67,9 @@ List<Map<String, dynamic>> roadsForSelectedBlock = [];
       "building": building.text,
       "aptNo": aptNo.text,
       "roadId": roadId,
+      "road": road,
       "blockId": blockId,
+      "block": block, // ✅ ADD THIS
     };
   }
 
@@ -71,17 +87,17 @@ List<Map<String, dynamic>> roadsForSelectedBlock = [];
         "floor": floor.text,
         "roadId": roadId,
         "blockId": blockId,
-      }
+      },
     };
   }
 
   // Validators
   String? validateBuilding(String? val, AppLocalizations l10n) =>
-      (val == null || val.isEmpty) ? l10n.requiredField : null;
+      (val == null || val.isEmpty) ? l10n.enteryour_build : null;
 
   String? validateAptNo(String? val, AppLocalizations l10n) =>
-      (val == null || val.isEmpty) ? l10n.requiredField : null;
+      (val == null || val.isEmpty) ? l10n.enteraptno : null;
 
   String? validateFloor(String? val, AppLocalizations l10n) =>
-      (val == null || val.isEmpty) ? l10n.requiredField : null;
+      (val == null || val.isEmpty) ? l10n.enterFloorno : null;
 }

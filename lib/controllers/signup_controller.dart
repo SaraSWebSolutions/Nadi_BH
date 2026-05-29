@@ -36,21 +36,21 @@ class SignupController {
   SignupModel? signupData;
 
   // Validators
-String? validateName(String? v, AppLocalizations l10n) {
-  if (v == null || v.isEmpty) {
-    return l10n.fullNameRequired;
+  String? validateName(String? v, AppLocalizations l10n) {
+    if (v == null || v.isEmpty) {
+      return l10n.enterfirstname;
+    }
+    return null;
   }
-  return null;
-}
 
- String? validateMobile(String? v, AppLocalizations l10n) {
-  if (v == null || v.isEmpty) return l10n.enterMobile;
-  if (v.length != 8) return l10n.mobileMustBe8Digits;
-  if (!RegExp(r'^[0-9]+$').hasMatch(v)) return l10n.onlyDigitsAllowed;
-  return null;
-}
+  String? validateMobile(String? v, AppLocalizations l10n) {
+    if (v == null || v.isEmpty) return l10n.enterMobile;
+    if (v.length != 8) return l10n.mobileMustBe8Digits;
+    if (!RegExp(r'^[0-9]+$').hasMatch(v)) return l10n.onlyDigitsAllowed;
+    return null;
+  }
 
-   String? validateEmail(String? value, AppLocalizations l10n) {
+  String? validateEmail(String? value, AppLocalizations l10n) {
     return Validators.email(value, l10n);
   }
 
@@ -60,30 +60,31 @@ String? validateName(String? v, AppLocalizations l10n) {
   }
 
   String? validateConfirmPassword(String? v, AppLocalizations l10n) {
-  if (v == null || v.isEmpty) {
-    return l10n.enterConfirmPassword;
+    if (v == null || v.isEmpty) {
+      return l10n.enterConfirmPassword;
+    }
+    if (v != password.text) {
+      return l10n.passwordsDoNotMatch;
+    }
+    return null;
   }
-  if (v != password.text) {
-    return l10n.passwordsDoNotMatch;
-  }
-  return null;
-}
 
-String? validateGender(String? v, AppLocalizations l10n) {
-  return v == null ? l10n.selectGender : null;
-}
+  String? validateGender(String? v, AppLocalizations l10n) {
+    return v == null ? l10n.selectGender : null;
+  }
+
   // Save all the data into a model
-void saveToModel() {
-  signupData = SignupModel(
-    accountType: accountType,
-    firstName: firstName.text.trim(),
-    secondName: secondName.text.trim(),
-    thirdName: thirdName.text.trim(),
-    fourthName: fourthName.text.trim(),
-    mobileNumber: mobile.text.trim(),
-    email: email.text.trim(),
-    gender: gender?.toLowerCase() ?? "",
-    password: password.text.trim(),
-  );
-}
+  void saveToModel() {
+    signupData = SignupModel(
+      accountType: accountType,
+      firstName: firstName.text.trim(),
+      secondName: secondName.text.trim(),
+      thirdName: thirdName.text.trim(),
+      fourthName: fourthName.text.trim(),
+      mobileNumber: mobile.text.trim(),
+      email: email.text.trim(),
+      gender: gender?.toLowerCase() ?? "",
+      password: password.text.trim(),
+    );
+  }
 }

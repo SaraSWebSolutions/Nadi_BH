@@ -5,6 +5,7 @@ import 'package:nadi_user_app/l10n/app_localizations.dart';
 import 'package:nadi_user_app/views/auth/AccountFormView.dart';
 import 'package:nadi_user_app/views/auth/AddMember.dart';
 import 'package:nadi_user_app/views/auth/Address.dart';
+import 'package:nadi_user_app/widgets/app_back.dart';
 import 'package:nadi_user_app/widgets/confirm_dialog.dart';
 
 class AccountStepper extends StatefulWidget {
@@ -34,6 +35,7 @@ class _AccountStepperState extends State<AccountStepper> {
         return widget.accountType;
     }
   }
+
   Widget _buildStep() {
     final loc = AppLocalizations.of(context)!;
     switch (_currentStep) {
@@ -118,56 +120,87 @@ class _AccountStepperState extends State<AccountStepper> {
         navigator.pop();
       },
       child: Scaffold(
-      appBar: AppBar(
-        title: Text(
-          loc.accountTypeStepperTitle(_localizedAccountType(loc)),
-          style: const TextStyle(color: Colors.white),
-        ),
-          backgroundColor: AppColors.app_background_clr,
-        iconTheme: const IconThemeData(color: Colors.white),
-        elevation: 0,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: () async {
-            final navigator = Navigator.of(context);
-            final shouldExit = await _confirmExit();
-            if (!shouldExit) return;
-            navigator.pop();
-          },
-        ),),
-
-      body: Column(
-        children: [
-          // CUSTOM STEPPER
-          Padding(
-            padding: const EdgeInsets.only(top: 15,bottom: 5,left: 20,right: 20),
-            child: CustomStepper(currentStep: _currentStep, titles: stepTitles),
+        appBar: AppBar(
+          centerTitle: true,
+          title: Text(
+            loc.accountTypeStepperTitle(_localizedAccountType(loc)),
+            style: const TextStyle(
+              color: Colors.white,
+              fontSize: 20,
+              fontWeight: FontWeight.w500,
+            ),
           ),
+          backgroundColor: AppColors.app_background_clr,
+          iconTheme: const IconThemeData(color: Colors.white),
+          elevation: 0,
 
-          const SizedBox(height: 10),
+          leadingWidth: 56,
 
-          // SCROLLABLE CONTENT
-          Expanded(
-            child: SingleChildScrollView(
-              padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 3),
-
-        
-              child: AnimatedSwitcher(
-                duration: const Duration(milliseconds: 280),
-                transitionBuilder: (child, animation) {
-                  final slide = Tween<Offset>(
-                    begin: const Offset(1, 0), //  Right to Left
-                    end: Offset.zero,
-                  ).animate(animation);
-
-                  return SlideTransition(position: slide, child: child);
-                },
-                child: _buildStep(),
+          leading: Align(
+            alignment: Alignment.centerLeft,
+            child: Padding(
+              padding: const EdgeInsets.only(left: 10),
+              child: SizedBox(
+                width: 38,
+                height: 38,
+                child: FittedBox(
+                  child: AppCircleIconButton(
+                    icon: Icons.arrow_back,
+                    onPressed: () async {
+                      final navigator = Navigator.of(context);
+                      final shouldExit = await _confirmExit();
+                      if (!shouldExit) return;
+                      navigator.pop();
+                    },
+                  ),
+                ),
               ),
             ),
           ),
-        ],
-      ),
+        ),
+
+        body: Column(
+          children: [
+            // CUSTOM STEPPER
+            Padding(
+              padding: const EdgeInsets.only(
+                top: 15,
+                bottom: 5,
+                left: 20,
+                right: 20,
+              ),
+              child: CustomStepper(
+                currentStep: _currentStep,
+                titles: stepTitles,
+              ),
+            ),
+
+            const SizedBox(height: 10),
+
+            // SCROLLABLE CONTENT
+            Expanded(
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 15,
+                  vertical: 3,
+                ),
+
+                child: AnimatedSwitcher(
+                  duration: const Duration(milliseconds: 280),
+                  transitionBuilder: (child, animation) {
+                    final slide = Tween<Offset>(
+                      begin: const Offset(1, 0), //  Right to Left
+                      end: Offset.zero,
+                    ).animate(animation);
+
+                    return SlideTransition(position: slide, child: child);
+                  },
+                  child: _buildStep(),
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

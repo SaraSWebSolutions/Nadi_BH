@@ -484,7 +484,13 @@
   "invalidCredentials": "Invalid credentials",
   "enterValidEmail": "Enter valid email address",
     "pleaseFillMemberDetails": "Please fill the member details",
-    "mobileNumberMustBe8Digits": "Mobile number must be exactly 8 digits"
+    "mobileNumberMustBe8Digits": "Mobile number must be exactly 8 digits",
+    "enterfirstname":"Enter first name",
+     "enteryour_build": "Enter your building",
+  "enteraptno": "Enter apt no",
+  "enterFloorno": "Enter floor no",
+     "enter_memberFullName": "Enter member full name"
+
 
 
 }

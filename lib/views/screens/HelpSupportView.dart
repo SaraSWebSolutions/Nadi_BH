@@ -4,8 +4,10 @@ import 'package:nadi_user_app/core/constants/app_consts.dart';
 import 'package:nadi_user_app/l10n/app_localizations.dart';
 import 'package:nadi_user_app/providers/HelpAndSuppord_Provider.dart';
 import 'package:nadi_user_app/services/helpandsupport_service.dart';
+import 'package:nadi_user_app/widgets/app_back.dart';
 import 'package:nadi_user_app/widgets/inputs/app_text_field.dart';
 import 'package:flutter/services.dart';
+import 'package:go_router/go_router.dart';
 
 class HelpSupportView extends ConsumerStatefulWidget {
   const HelpSupportView({super.key});
@@ -95,8 +97,26 @@ class _HelpSupportViewState extends ConsumerState<HelpSupportView> {
           style: const TextStyle(color: Colors.white),
         ),
         backgroundColor: AppColors.app_background_clr,
-        iconTheme: const IconThemeData(color: Colors.white),
         elevation: 0,
+
+        leadingWidth: 60,
+
+        leading: Padding(
+          padding: const EdgeInsets.only(left: 10),
+          child: Align(
+            alignment: Alignment.centerLeft,
+            child: SizedBox(
+              width: 38,
+              height: 38,
+              child: FittedBox(
+                child: AppCircleIconButton(
+                  icon: Icons.arrow_back,
+                  onPressed: () => context.pop(),
+                ),
+              ),
+            ),
+          ),
+        ),
       ),
       body: helpAsync.when(
         loading: () => const Center(child: CircularProgressIndicator()),
@@ -131,6 +151,8 @@ class _HelpSupportViewState extends ConsumerState<HelpSupportView> {
                       AppTextField(
                         controller: _nameController,
                         label: loc.nameLabel,
+                        keyboardType: TextInputType.name,
+                        textInputAction: TextInputAction.next,
                         validator: (value) =>
                             value!.isEmpty ? loc.nameValidation : null,
                       ),
@@ -139,6 +161,7 @@ class _HelpSupportViewState extends ConsumerState<HelpSupportView> {
                         controller: _emailController,
                         label: loc.emailLabel,
                         keyboardType: TextInputType.emailAddress,
+                        textInputAction: TextInputAction.next,
                         validator: (value) {
                           if (value!.isEmpty) return loc.emailValidation;
                           if (!RegExp(r'\S+@\S+\.\S+').hasMatch(value)) {
@@ -152,6 +175,7 @@ class _HelpSupportViewState extends ConsumerState<HelpSupportView> {
                         controller: _phoneController,
                         label: loc.phoneLabel,
                         keyboardType: TextInputType.phone,
+                        textInputAction: TextInputAction.next,
                         maxLength: 13,
                         //inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                         inputFormatters: [
@@ -182,6 +206,8 @@ class _HelpSupportViewState extends ConsumerState<HelpSupportView> {
                       AppTextField(
                         controller: _messageController,
                         label: loc.messageLabel,
+                        keyboardType: TextInputType.multiline,
+                        textInputAction: TextInputAction.done,
                         minLines: 4,
                         maxLines: 6,
                         validator: (value) =>

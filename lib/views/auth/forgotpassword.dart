@@ -178,22 +178,23 @@ class _ForgotpasswordState extends State<Forgotpassword> {
           /// BACK BUTTON
           SafeArea(
             child: Align(
-              alignment: Alignment.topLeft,
+              alignment: isRTL ? Alignment.topRight : Alignment.topLeft,
               child: GestureDetector(
                 onTap: () {
                   GoRouter.of(context).go('/login');
                 },
                 child: Container(
                   margin: const EdgeInsets.all(12),
-                  height: 42,
-                  width: 42,
+                  height: 38,
+                  width: 38,
                   decoration: BoxDecoration(
-                    color: Colors.black.withOpacity(0.4),
+                    color: Color.fromARGB(255, 180, 189, 230),
                     shape: BoxShape.circle,
                   ),
                   child: Icon(
-                    isRTL ? Icons.arrow_forward : Icons.arrow_back,
+                    isRTL ? Icons.arrow_back : Icons.arrow_back,
                     color: Colors.white,
+                    size: 17,
                   ),
                 ),
               ),

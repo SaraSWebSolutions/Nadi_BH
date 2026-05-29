@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-
 class AppButton extends StatelessWidget {
   final String text;
   final VoidCallback? onPressed;
@@ -31,14 +30,17 @@ class AppButton extends StatelessWidget {
       width: width,
       height: height,
       child: ElevatedButton(
-        onPressed: () {
-          if (!isLoading) {
-            onPressed?.call();
-          }
-        }, //  ignore taps while loading
+        onPressed: isLoading ? null : onPressed,
+        // onPressed: () {
+        //   if (!isLoading) {
+        //     onPressed?.call();
+        //   }
+        // }, //  ignore taps while loading
         style: ElevatedButton.styleFrom(
           backgroundColor: color, // keep full color
-          padding: const EdgeInsets.symmetric(horizontal: 16), // Restoring proper horizontal layout bounds
+          padding: const EdgeInsets.symmetric(
+            horizontal: 20,
+          ), // Restoring proper horizontal layout bounds
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(borderRadius),
           ),
@@ -53,36 +55,34 @@ class AppButton extends StatelessWidget {
                 ),
               )
             : icon == null
-                ? Text(
+            ? Text(
+                text,
+                style: TextStyle(
+                  color: textColor,
+                  fontSize: 16,
+                  fontFamily: 'Poppins',
+                  fontWeight: FontWeight.w500,
+                  height: 1.2, // Perfects Poppins clipping boundary
+                ),
+              )
+            : Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  icon!,
+                  const SizedBox(width: 10),
+                  Text(
                     text,
                     style: TextStyle(
                       color: textColor,
-                      fontSize: 16,
+                      fontSize: 18,
                       fontFamily: 'Poppins',
-                      fontWeight: FontWeight.w500,
+                      fontWeight: FontWeight.w600,
                       height: 1.2, // Perfects Poppins clipping boundary
                     ),
-                  )
-                : Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      icon!,
-                      const SizedBox(width: 10),
-                      Text(
-                        text,
-                        style: TextStyle(
-                          color: textColor,
-                          fontSize: 18,
-                          fontFamily: 'Poppins',
-                          fontWeight: FontWeight.w600,
-                          height: 1.2, // Perfects Poppins clipping boundary
-                        ),
-                      ),
-                    ],
                   ),
+                ],
+              ),
       ),
     );
   }
 }
- 
-

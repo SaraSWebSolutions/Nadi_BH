@@ -327,6 +327,7 @@ class _AccountDetailsState extends ConsumerState<AccountDetails>
   late final AnimationController _controller;
   late final Animation<double> _animation;
   bool _isNavigating = false;
+  String? _loadingAccountId;
   @override
   void initState() {
     super.initState();
@@ -450,22 +451,30 @@ class _AccountDetailsState extends ConsumerState<AccountDetails>
                               ScaleTransition(
                                 scale: _animation,
                                 child: AppButton(
+                                  isLoading: _loadingAccountId == item.id,
+
                                   text: isArabic ? item.nameAr : item.nameEn,
-                                  icon: Image.asset(
-                                    individual
-                                        ? "assets/icons/person.png"
-                                        : "assets/icons/persons.png",
+                                  icon: SizedBox(
+                                    width: 40,
                                     height: 40,
+                                    child: Center(
+                                      child: Image.asset(
+                                        individual
+                                            ? "assets/icons/person.png"
+                                            : "assets/icons/persons.png",
+                                        width: individual ? 23 : 38,
+                                        height: individual ? 23 : 38,
+                                        fit: BoxFit.contain,
+                                      ),
+                                    ),
                                   ),
                                   color: AppColors.btn_primery,
                                   width: double.infinity,
-                                  onPressed: _isNavigating
+                                  onPressed: _loadingAccountId == item.id
                                       ? null
                                       : () async {
-                                          if (_isNavigating) return;
-
                                           setState(() {
-                                            _isNavigating = true;
+                                            _loadingAccountId = item.id;
                                           });
 
                                           try {
@@ -484,13 +493,12 @@ class _AccountDetailsState extends ConsumerState<AccountDetails>
                                                     : "Family",
                                               );
                                             }
-                                            //return;
                                           } catch (e) {
                                             debugPrint(e.toString());
                                           } finally {
                                             if (mounted) {
                                               setState(() {
-                                                _isNavigating = false;
+                                                _loadingAccountId = null;
                                               });
                                             }
                                           }
