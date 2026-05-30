@@ -2305,6 +2305,42 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Enter member full name'**
   String get enter_memberFullName;
+
+  /// No description provided for @buildingRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Building is required'**
+  String get buildingRequired;
+
+  /// No description provided for @floorRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Floor number is required'**
+  String get floorRequired;
+
+  /// No description provided for @pleaseEnterOtp.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter OTP'**
+  String get pleaseEnterOtp;
+
+  /// No description provided for @otpMustBe4Digits.
+  ///
+  /// In en, this message translates to:
+  /// **'OTP must be 4 digits'**
+  String get otpMustBe4Digits;
+
+  /// No description provided for @ofText.
+  ///
+  /// In en, this message translates to:
+  /// **'of'**
+  String get ofText;
+
+  /// No description provided for @added.
+  ///
+  /// In en, this message translates to:
+  /// **'Added'**
+  String get added;
 }
 
 class _AppLocalizationsDelegate

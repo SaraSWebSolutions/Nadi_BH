@@ -277,6 +277,7 @@ import 'package:nadi_user_app/core/constants/app_consts.dart';
 import 'package:nadi_user_app/core/network/dio_client.dart';
 import 'package:nadi_user_app/core/utils/logger.dart';
 import 'package:nadi_user_app/l10n/app_localizations.dart';
+import 'package:nadi_user_app/providers/accountTypeProvider.dart';
 import 'package:nadi_user_app/providers/family_members_manage_provider.dart';
 import 'package:nadi_user_app/providers/profile_provider.dart';
 import 'package:nadi_user_app/routing/app_router.dart';
@@ -285,13 +286,32 @@ import 'package:nadi_user_app/widgets/confirm_dialog.dart';
 import 'package:nadi_user_app/widgets/inputs/app_text_field.dart';
 import 'package:nadi_user_app/core/utils/snackbar_helper.dart';
 import 'dart:io';
-class Myprofile extends ConsumerWidget {
+
+class Myprofile extends ConsumerStatefulWidget {
   const Myprofile({super.key});
+
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<Myprofile> createState() => _MyprofileState();
+}
+
+class _MyprofileState extends ConsumerState<Myprofile> {
+  @override
+  void initState() {
+    super.initState();
+
+    Future.microtask(() {
+      ref.invalidate(profileprovider);
+      ref.invalidate(familyMembersVerifiedProvider);
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final profileAsyncValue = ref.watch(profileprovider);
     final loc = AppLocalizations.of(context)!;
     final isDark = Theme.of(context).brightness == Brightness.dark;
+    final accountTypeAsync = ref.watch(accountTypeProvider);
+
     print("PROFILE STATE: $profileAsyncValue");
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
@@ -340,8 +360,19 @@ class Myprofile extends ConsumerWidget {
                 : "",
           );
           final familyCount = basicData['familyCount'] ?? 0;
-          final accountTypeId = basicData['accountTypeId'] ?? "";
-          final showAddMember = accountTypeId == "693175a0976ca992c877f99b";
+          //final accountTypeId = basicData['accountTypeId'] ?? "";
+
+          final accountTypeIdMap =
+              basicData['accountTypeId'] as Map<String, dynamic>?;
+
+          final accountType = accountTypeIdMap?['type']?.toString() ?? "";
+
+          final showAddMember = accountType == "FA";
+          print(
+            // "accountTypeId: $accountTypeId | "
+            "accountType: $accountType | "
+            "showAddMember: ${accountType == "FA"}",
+          );
           return Column(
             children: [
               // Header
@@ -539,6 +570,8 @@ class Myprofile extends ConsumerWidget {
                               ),
                             ),
                           ],
+                          const SizedBox(height: 20),
+
                           Text(
                             loc.fullName,
                             style: TextStyle(
@@ -556,7 +589,7 @@ class Myprofile extends ConsumerWidget {
                               // color: Theme.of(context).textTheme.bodyLarge?.color,
                             ),
                           ),
-                          const SizedBox(height: 10), // reduced
+                          // const SizedBox(height: 6), // reduced
                           Text(
                             loc.emailAddress,
                             style: TextStyle(
@@ -573,7 +606,7 @@ class Myprofile extends ConsumerWidget {
                               // color: Theme.of(context).textTheme.bodyLarge?.color,
                             ),
                           ),
-                          const SizedBox(height: 10),
+                          // const SizedBox(height: 6),
                           Text(
                             "${loc.phoneNumber}",
                             style: TextStyle(
@@ -591,7 +624,7 @@ class Myprofile extends ConsumerWidget {
                               // color: Theme.of(context).textTheme.bodyLarge?.color,
                             ),
                           ),
-                          const SizedBox(height: 10),
+                          // const SizedBox(height: 6),
                           Text(
                             loc.address,
                             style: TextStyle(
@@ -821,10 +854,10 @@ class _FamilyMembersListSection extends ConsumerWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             _header(context, members.length),
-            const SizedBox(height: 10),
+            const SizedBox(height: 12),
             Wrap(
-              spacing: 8,
-              runSpacing: 8,
+              spacing: 25,
+              runSpacing: 15,
               children: [
                 _statusCountPill(
                   label: loc.active,
@@ -846,7 +879,7 @@ class _FamilyMembersListSection extends ConsumerWidget {
                 ),
               ],
             ),
-            const SizedBox(height: 12),
+            const SizedBox(height: 15),
             ...members.map(
               (m) => _FamilyMemberTile(
                 member: m,

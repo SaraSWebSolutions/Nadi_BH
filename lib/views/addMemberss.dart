@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:nadi_user_app/services/addAdditionalMember.dart';
 import 'package:nadi_user_app/preferences/preferences.dart';
+import 'package:nadi_user_app/widgets/app_back.dart';
 
 import 'package:nadi_user_app/widgets/buttons/primary_button.dart';
 import 'package:nadi_user_app/widgets/inputs/app_text_field.dart';
@@ -178,8 +179,38 @@ class _AddmemberssState extends ConsumerState<Addmemberss> {
     final loc = AppLocalizations.of(context)!;
     return Scaffold(
       appBar: AppBar(
-        title: Text(loc.addMember),
         backgroundColor: AppColors.app_background_clr,
+        elevation: 0,
+        centerTitle: true,
+
+        title: Text(
+          AppLocalizations.of(context)!.addMember,
+          style: const TextStyle(
+            color: Colors.white,
+            fontSize: 20,
+            fontWeight: FontWeight.w600,
+            fontFamily: 'Poppins',
+          ),
+        ),
+
+        leadingWidth: 60,
+
+        leading: Padding(
+          padding: const EdgeInsets.only(left: 10),
+          child: Align(
+            alignment: Alignment.centerLeft,
+            child: SizedBox(
+              width: 38,
+              height: 38,
+              child: FittedBox(
+                child: AppCircleIconButton(
+                  icon: Icons.arrow_back,
+                  onPressed: () => context.pop(),
+                ),
+              ),
+            ),
+          ),
+        ),
       ),
       body: Form(
         key: _formKey,
@@ -188,13 +219,20 @@ class _AddmemberssState extends ConsumerState<Addmemberss> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              const SizedBox(height: 10),
+
               /// FULL NAME
               AppTextField(
                 controller: nameCtrl,
                 label: loc.memberFullName,
-                validator: (v) => v!.isEmpty ? loc.nameValidation : null,
+                inputFormatters: [
+                  FilteringTextInputFormatter.allow(
+                    RegExp(r'[a-zA-Z\u0600-\u06FF ]'),
+                  ),
+                ],
+                validator: (v) => v!.isEmpty ? loc.enter_memberFullName : null,
               ),
-              const SizedBox(height: 15),
+              const SizedBox(height: 10),
 
               /// RELATIONSHIP
               AppDropdown(
@@ -212,7 +250,7 @@ class _AddmemberssState extends ConsumerState<Addmemberss> {
                 onChanged: (val) => setState(() => relation = val),
                 validator: (v) => v == null ? loc.selectRelationship : null,
               ),
-              const SizedBox(height: 15),
+              const SizedBox(height: 10),
 
               /// MOBILE
               AppTextField(
@@ -238,7 +276,7 @@ class _AddmemberssState extends ConsumerState<Addmemberss> {
                   return null;
                 },
               ),
-              const SizedBox(height: 15),
+              const SizedBox(height: 10),
 
               /// EMAIL
               AppTextField(
@@ -261,7 +299,7 @@ class _AddmemberssState extends ConsumerState<Addmemberss> {
                   return null;
                 },
               ),
-              const SizedBox(height: 15),
+              const SizedBox(height: 10),
 
               /// GENDER
               AppDropdown(
@@ -278,6 +316,11 @@ class _AddmemberssState extends ConsumerState<Addmemberss> {
               SizedBox(
                 width: double.infinity,
                 child: OutlinedButton(
+                  style: OutlinedButton.styleFrom(
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                  ),
                   onPressed: () {
                     setState(() {
                       _showAddress = !_showAddress;

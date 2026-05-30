@@ -7,6 +7,7 @@ import 'package:nadi_user_app/providers/AdminQuestionRequest_Provider.dart';
 import 'package:nadi_user_app/providers/AdminQuestioner_Provider.dart';
 import 'package:nadi_user_app/providers/pointshistory_provider.dart';
 import 'package:nadi_user_app/services/admin_questioner.dart';
+import 'package:nadi_user_app/widgets/app_back.dart';
 import 'package:nadi_user_app/widgets/buttons/primary_button.dart';
 
 class AdminQuestionerview extends ConsumerStatefulWidget {
@@ -155,12 +156,36 @@ class _AdminQuestionerviewState extends ConsumerState<AdminQuestionerview>
 
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: AppColors.gold_coin,
+        elevation: 0,
+        centerTitle: true,
         title: Text(
           loc.qaConversation,
-          style: const TextStyle(color: Colors.white),
+          style: const TextStyle(
+            color: Colors.white,
+            fontSize: 20,
+            fontWeight: FontWeight.w600,
+            fontFamily: 'Poppins',
+          ),
         ),
-        backgroundColor: AppColors.gold_coin,
-        iconTheme: const IconThemeData(color: Colors.white),
+        leadingWidth: 60,
+        leading: Padding(
+          padding: const EdgeInsets.only(left: 10),
+          child: Align(
+            alignment: Alignment.centerLeft,
+            child: SizedBox(
+              width: 38,
+              height: 38,
+              child: FittedBox(
+                child: AppCircleIconButton(
+                  icon: Icons.arrow_back,
+                  color: const Color(0xFFF6C956),
+                  onPressed: () => context.pop(),
+                ),
+              ),
+            ),
+          ),
+        ),
       ),
       body: isSuccess
           ? successUI()
@@ -258,17 +283,23 @@ class _AdminQuestionerviewState extends ConsumerState<AdminQuestionerview>
                                         ),
                                         decoration: BoxDecoration(
                                           color: isSelected
-      ? AppColors.gold_coin.withOpacity(isDark ? 0.25 : 0.1)
-      : (isDark
-          ? Theme.of(context).colorScheme.surface
-          : Colors.white),
+                                              ? AppColors.gold_coin.withOpacity(
+                                                  isDark ? 0.25 : 0.1,
+                                                )
+                                              : (isDark
+                                                    ? Theme.of(
+                                                        context,
+                                                      ).colorScheme.surface
+                                                    : Colors.white),
                                           borderRadius: BorderRadius.circular(
                                             12,
                                           ),
                                           border: Border.all(
-                                          color: isSelected
-        ? AppColors.gold_coin
-        : (isDark ? Colors.grey.shade700 : Colors.grey.shade300),
+                                            color: isSelected
+                                                ? AppColors.gold_coin
+                                                : (isDark
+                                                      ? Colors.grey.shade700
+                                                      : Colors.grey.shade300),
                                             width: 1.5,
                                           ),
                                         ),
@@ -282,7 +313,9 @@ class _AdminQuestionerviewState extends ConsumerState<AdminQuestionerview>
                                                   fontWeight: isSelected
                                                       ? FontWeight.w600
                                                       : FontWeight.w400,
-                                                      color:Theme.of(context).textTheme.bodyLarge?.color
+                                                  color: Theme.of(
+                                                    context,
+                                                  ).textTheme.bodyLarge?.color,
                                                 ),
                                               ),
                                             ),

@@ -18,40 +18,49 @@ class _ViewAllLogsState extends State<ViewAllLogs> {
     final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-      body: SafeArea(
-        child: Column(
-          children: [
-            Padding(
-              padding: const EdgeInsets.only(
-                left: 17,
-                right: 17,
-                top: 10,
-                bottom: 2,
-              ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  AppCircleIconButton(icon: Icons.arrow_back, onPressed: () {
-                    context.pop();
-                  }),
-                  Text(
-                  l10n.myRecentActivity,
-                    style: TextStyle(
-                      fontWeight: FontWeight.w600,
-                      fontSize: AppFontSizes.large,
-                    ),
-                  ),
-                const SizedBox(width: 1),
-                ],
+
+      appBar: AppBar(
+        backgroundColor: AppColors.app_background_clr,
+        elevation: 0,
+        centerTitle: true,
+
+        title: Text(
+          AppLocalizations.of(context)!.myRecentActivity,
+          style: const TextStyle(
+            color: Colors.white,
+            fontSize: 20,
+            fontWeight: FontWeight.w600,
+            fontFamily: 'Poppins',
+          ),
+        ),
+
+        leadingWidth: 60,
+        leading: Padding(
+          padding: const EdgeInsets.only(left: 10),
+          child: Align(
+            alignment: Alignment.centerLeft,
+            child: SizedBox(
+              width: 38,
+              height: 38,
+              child: FittedBox(
+                child: AppCircleIconButton(
+                  icon: Icons.arrow_back,
+                  onPressed: () => context.pop(),
+                ),
               ),
             ),
-
-           const SizedBox(height: 10,),
-           const Divider(),
-
-             Expanded(child: RecentActivity( limitLogs: false,))
-          ],
+          ),
         ),
+      ),
+
+      body: Column(
+        children: [
+          const SizedBox(height: 10),
+          const Divider(),
+          const SizedBox(height: 10),
+
+          const Expanded(child: RecentActivity(limitLogs: false)),
+        ],
       ),
     );
   }

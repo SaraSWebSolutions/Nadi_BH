@@ -1534,7 +1534,7 @@ class _AddmemberState extends State<Addmember> {
   // Future<void> _addMember() async {
   //   final l10n = AppLocalizations.of(context)!;
   //   final memberValid = widget.formKey.currentState?.validate() ?? false;
-  //   final isMemberValid = widget.formKey.currentState?.validate() ?? false;
+  // final isMemberValid = widget.formKey.currentState?.validate() ?? false;
 
   //   /// 1️⃣ FIRST: Validate MEMBER fields
   //   if (!isMemberValid) {
@@ -1675,8 +1675,23 @@ class _AddmemberState extends State<Addmember> {
     //   await _submitAllMembers();
     //   return;
     // }
-
     final isMemberValid = widget.formKey.currentState?.validate() ?? false;
+
+    if (!isMemberValid) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(l10n.pleaseFillMemberDetails),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
+    if (!_isAddress) {
+      SnackbarHelper.showError(context, l10n.addAddressError);
+      return;
+    }
+
+    // final isMemberValid = widget.formKey.currentState?.validate() ?? false;
 
     if (!isMemberValid) {
       SnackbarHelper.showError(context, l10n.pleaseFillMemberDetails);
@@ -2003,14 +2018,15 @@ class _AddmemberState extends State<Addmember> {
 
                                     /// PLUS
                                     onTap: () {
+                                      updateCurrentMember();
+
                                       final current =
                                           int.tryParse(
                                             controller.familyCount.text.trim(),
                                           ) ??
                                           0;
 
-                                      if (current >= 10)
-                                        return; // max 20 members
+                                      if (current >= 10) return;
 
                                       final newCount = current + 1;
 
@@ -2018,6 +2034,15 @@ class _AddmemberState extends State<Addmember> {
                                           .toString();
 
                                       _handleMemberCountChange(newCount);
+
+                                      /// Open newly added member
+                                      currentIndex = newCount - 1;
+
+                                      loadMember(currentIndex);
+
+                                      setState(() {
+                                        _currentMemberIndex = currentIndex + 1;
+                                      });
                                     },
                                     child: Container(
                                       width: 48,
@@ -2074,7 +2099,8 @@ class _AddmemberState extends State<Addmember> {
                                       MainAxisAlignment.spaceBetween,
                                   children: [
                                     Text(
-                                      "Member ${currentIndex + 1} of $_totalMembers",
+                                      "${AppLocalizations.of(context)!.member} ${currentIndex + 1} "
+                                      "${AppLocalizations.of(context)!.ofText} $_totalMembers",
                                       style: TextStyle(
                                         fontSize: 13,
                                         color: Colors.grey.shade700,
@@ -2093,7 +2119,8 @@ class _AddmemberState extends State<Addmember> {
                                         borderRadius: BorderRadius.circular(30),
                                       ),
                                       child: Text(
-                                        "${familyMembers.where((e) => (e["fullName"] ?? "").toString().trim().isNotEmpty).length} Added",
+                                        "${familyMembers.where((e) => (e["fullName"] ?? "").toString().trim().isNotEmpty).length} "
+                                        "${AppLocalizations.of(context)!.added}",
                                         style: TextStyle(
                                           color: AppColors.btn_primery,
                                           fontWeight: FontWeight.w600,
@@ -2131,6 +2158,11 @@ class _AddmemberState extends State<Addmember> {
                     onChanged: (_) {
                       updateCurrentMember();
                     },
+                    inputFormatters: [
+                      FilteringTextInputFormatter.allow(
+                        RegExp(r'[a-zA-Z\u0600-\u06FF ]'),
+                      ),
+                    ],
                     // onChanged: (_) => _syncEditingToSaved(),
                     label: l10n.memberFullName,
                     focusNode: _nameFocus, // ✅ add this
@@ -2268,7 +2300,6 @@ class _AddmemberState extends State<Addmember> {
                     : l10n.next,
 
                 isLoading: _isLoading,
-
                 onPressed: () async {
                   final isFamilyCountEmpty = controller.familyCount.text
                       .trim()
@@ -2278,22 +2309,34 @@ class _AddmemberState extends State<Addmember> {
                     _showFamilyCountError = isFamilyCountEmpty;
                   });
 
-                  // Run all validators
-                  final isValid =
+                  // Member form validation
+                  final isMemberValid =
                       widget.formKey.currentState?.validate() ?? false;
 
-                  final addressValid =
-                      !_isAddress ||
-                      (_addressFormKey.currentState?.validate() ?? false);
+                  if (!isMemberValid) {
+                    return; // field errors will show below fields
+                  }
 
-                  // Stop if anything invalid
-                  if (isFamilyCountEmpty || !isValid || !addressValid) {
+                  // Address must be expanded
+                  if (!_isAddress) {
+                    SnackbarHelper.showError(context, l10n.addAddressError);
                     return;
                   }
+
+                  // Address validation
+                  final isAddressValid =
+                      _addressFormKey.currentState?.validate() ?? false;
+
+                  if (!isAddressValid) {
+                    return; // address field errors show below fields
+                  }
+
+                  if (isFamilyCountEmpty) {
+                    return;
+                  }
+
+                  /// Save current member + address locally
                   updateCurrentMember();
-                  debugPrint("Total Members: $_totalMembers");
-                  debugPrint("currentIndex : $currentIndex ");
-                  debugPrint(jsonEncode(familyMembers));
 
                   final completed = completedMembers;
 
@@ -2302,11 +2345,11 @@ class _AddmemberState extends State<Addmember> {
                     return;
                   }
 
-                  // Find next incomplete member
+                  /// Load next member
                   final nextIndex = familyMembers.indexWhere(
                     (m) => !isMemberComplete(m),
                   );
-                  debugPrint("nextIndex : $nextIndex ");
+
                   if (nextIndex != -1) {
                     loadMember(nextIndex);
 
@@ -2314,13 +2357,64 @@ class _AddmemberState extends State<Addmember> {
                       currentIndex = nextIndex;
                       _currentMemberIndex = nextIndex + 1;
                     });
-                    debugPrint("AFTER currentIndex = $currentIndex");
+
                     WidgetsBinding.instance.addPostFrameCallback((_) {
                       _nameFocus.requestFocus();
                     });
                   }
                 },
 
+                // onPressed: () async {
+                //   final isFamilyCountEmpty = controller.familyCount.text
+                //       .trim()
+                //       .isEmpty;
+
+                //   setState(() {
+                //     _showFamilyCountError = isFamilyCountEmpty;
+                //   });
+
+                //   // Run all validators
+                //   final isValid =
+                //       widget.formKey.currentState?.validate() ?? false;
+
+                //   final addressValid =
+                //       !_isAddress ||
+                //       (_addressFormKey.currentState?.validate() ?? false);
+
+                //   // Stop if anything invalid
+                //   if (isFamilyCountEmpty || !isValid || !addressValid) {
+                //     return;
+                //   }
+                //   updateCurrentMember();
+                //   debugPrint("Total Members: $_totalMembers");
+                //   debugPrint("currentIndex : $currentIndex ");
+                //   debugPrint(jsonEncode(familyMembers));
+
+                //   final completed = completedMembers;
+
+                //   if (completed >= _totalMembers) {
+                //     await _submitAllMembers();
+                //     return;
+                //   }
+
+                //   // Find next incomplete member
+                //   final nextIndex = familyMembers.indexWhere(
+                //     (m) => !isMemberComplete(m),
+                //   );
+                //   debugPrint("nextIndex : $nextIndex ");
+                //   if (nextIndex != -1) {
+                //     loadMember(nextIndex);
+
+                //     setState(() {
+                //       currentIndex = nextIndex;
+                //       _currentMemberIndex = nextIndex + 1;
+                //     });
+                //     debugPrint("AFTER currentIndex = $currentIndex");
+                //     WidgetsBinding.instance.addPostFrameCallback((_) {
+                //       _nameFocus.requestFocus();
+                //     });
+                //   }
+                // },
                 color: AppColors.btn_primery,
                 width: double.infinity,
                 //height: 58,

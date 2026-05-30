@@ -36,33 +36,41 @@ class _AllserviceState extends ConsumerState<Allservice> {
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
 
+      appBar: AppBar(
+        backgroundColor: AppColors.app_background_clr,
+        elevation: 0,
+        centerTitle: true,
+        title: const Text(
+          "Service",
+          style: TextStyle(
+            color: Colors.white,
+            fontSize: 20,
+            fontWeight: FontWeight.w600,
+            fontFamily: 'Poppins',
+          ),
+        ),
+        leadingWidth: 60,
+        leading: Padding(
+          padding: const EdgeInsets.only(left: 10),
+          child: Align(
+            alignment: Alignment.centerLeft,
+            child: SizedBox(
+              width: 38,
+              height: 38,
+              child: FittedBox(
+                child: AppCircleIconButton(
+                  icon: Icons.arrow_back,
+                  onPressed: () => context.pop(),
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+
       body: SafeArea(
         child: Column(
           children: [
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  AppCircleIconButton(
-                    icon: Icons.arrow_back,
-                    onPressed: () => context.pop(),
-                  ),
-                  const Text(
-                    "Service",
-                    style: TextStyle(
-                      fontSize: 19,
-                      fontWeight: FontWeight.w600,
-                      color: AppColors.app_background_clr,
-                    ),
-                  ),
-                  const SizedBox(width: 24),
-                ],
-              ),
-            ),
-            const Divider(),
-            const SizedBox(height: 5),
-
             Expanded(
               child: Padding(
                 padding: const EdgeInsets.all(12.0),

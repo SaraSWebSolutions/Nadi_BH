@@ -161,7 +161,11 @@ class _AccountFormViewState extends State<AccountFormView> {
                   label: "${l10n.firstName} *",
                   keyboardType: TextInputType.name,
                   textInputAction: TextInputAction.next,
-
+                  inputFormatters: [
+                    FilteringTextInputFormatter.allow(
+                      RegExp(r'[a-zA-Z\u0600-\u06FF ]'),
+                    ),
+                  ],
                   validator: (value) => controller.validateName(value, l10n),
                 ),
               ),
@@ -169,7 +173,11 @@ class _AccountFormViewState extends State<AccountFormView> {
               Expanded(
                 child: AppTextField(
                   textInputAction: TextInputAction.next,
-
+                  inputFormatters: [
+                    FilteringTextInputFormatter.allow(
+                      RegExp(r'[a-zA-Z\u0600-\u06FF ]'),
+                    ),
+                  ],
                   controller: controller.secondName,
                   keyboardType: TextInputType.name,
 
@@ -187,7 +195,11 @@ class _AccountFormViewState extends State<AccountFormView> {
                 child: AppTextField(
                   controller: controller.thirdName,
                   textInputAction: TextInputAction.next,
-
+                  inputFormatters: [
+                    FilteringTextInputFormatter.allow(
+                      RegExp(r'[a-zA-Z\u0600-\u06FF ]'),
+                    ),
+                  ],
                   label: l10n.thirdName,
                   keyboardType: TextInputType.name,
                 ),
@@ -198,7 +210,11 @@ class _AccountFormViewState extends State<AccountFormView> {
                   controller: controller.fourthName,
                   keyboardType: TextInputType.name,
                   textInputAction: TextInputAction.next,
-
+                  inputFormatters: [
+                    FilteringTextInputFormatter.allow(
+                      RegExp(r'[a-zA-Z\u0600-\u06FF ]'),
+                    ),
+                  ],
                   label: l10n.fourthName,
                 ),
               ),

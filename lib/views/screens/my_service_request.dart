@@ -84,6 +84,41 @@ class _MyServiceRequestState extends ConsumerState<MyServiceRequest> {
     final t = AppLocalizations.of(context)!;
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+
+      appBar: AppBar(
+        backgroundColor: AppColors.app_background_clr,
+        elevation: 0,
+        centerTitle: true,
+        title: Text(
+          t.myServiceRequest,
+          style: const TextStyle(
+            color: Colors.white,
+            fontSize: 20,
+            fontWeight: FontWeight.w600,
+            fontFamily: 'Poppins',
+          ),
+        ),
+        leadingWidth: 60,
+        leading: Padding(
+          padding: const EdgeInsets.only(left: 10),
+          child: Align(
+            alignment: Alignment.centerLeft,
+            child: SizedBox(
+              width: 38,
+              height: 38,
+              child: FittedBox(
+                child: AppCircleIconButton(
+                  icon: Icons.arrow_back,
+                  onPressed: () {
+                    context.push(RouteNames.bottomnav);
+                  },
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+
       floatingActionButton: FloatingActionButton(
         backgroundColor: AppColors.btn_primery,
         shape: const CircleBorder(),
@@ -98,123 +133,91 @@ class _MyServiceRequestState extends ConsumerState<MyServiceRequest> {
           if (!isOnline) {
             return const NoInternetScreen();
           }
-          return SafeArea(
-            child: Column(
-              children: [
-                Padding(
-                  padding: const EdgeInsets.only(
-                    left: 17,
-                    right: 17,
-                    top: 10,
-                    bottom: 2,
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      AppCircleIconButton(
-                        icon: Icons.arrow_back,
-                        onPressed: () {
-                          context.push(RouteNames.bottomnav);
-                        },
-                      ),
-                      Text(
-                        t.myServiceRequest,
-                        style: TextStyle(
-                          fontWeight: FontWeight.w600,
-                          fontSize: AppFontSizes.large,
-                          color: AppColors.app_background_clr,
-                        ),
-                      ),
-                      const SizedBox(width: 1),
-                    ],
-                  ),
-                ),
-                const SizedBox(height: 10),
-                Divider(),
 
-                Expanded(
-                  child: RefreshIndicator(
-                    color: AppColors.app_background_clr,
-                    onRefresh: myserviceslist,
-                    child: isLoading
-                        ? ListView.builder(
-                            itemCount: 6,
-                            itemBuilder: (context, index) =>
-                                const ServiceRequestCardShimmer(),
-                          )
-                        : MyServices.isEmpty
-                        ? Center(
-                            child: Column(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                SvgPicture.asset(
-                                  "assets/images/no_request_found.svg",
-                                  width: 120, // reduce size
-                                  height: 120,
-                                  colorFilter: const ColorFilter.mode(
-                                    AppColors.app_background_clr,
-                                    BlendMode.srcIn,
-                                  ),
+          return Column(
+            children: [
+              Expanded(
+                child: RefreshIndicator(
+                  color: AppColors.app_background_clr,
+                  onRefresh: myserviceslist,
+                  child: isLoading
+                      ? ListView.builder(
+                          itemCount: 6,
+                          itemBuilder: (context, index) =>
+                              const ServiceRequestCardShimmer(),
+                        )
+                      : MyServices.isEmpty
+                      ? Center(
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              SvgPicture.asset(
+                                "assets/images/no_request_found.svg",
+                                width: 120, // reduce size
+                                height: 120,
+                                colorFilter: const ColorFilter.mode(
+                                  AppColors.app_background_clr,
+                                  BlendMode.srcIn,
                                 ),
-                                const SizedBox(height: 12),
-                                Text(
-                                  t.noRequestFound,
-                                  style: TextStyle(
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.w500,
-                                    color: AppColors.app_background_clr,
-                                  ),
+                              ),
+                              const SizedBox(height: 12),
+                              Text(
+                                t.noRequestFound,
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w500,
+                                  color: AppColors.app_background_clr,
                                 ),
-                              ],
-                            ),
-                          )
-                        : AnimationLimiter(
-                            child: ListView.builder(
-                              itemCount: MyServices.length,
-                              itemBuilder: (context, index) {
-                                final service = MyServices[index];
+                              ),
+                            ],
+                          ),
+                        )
+                      : AnimationLimiter(
+                          child: ListView.builder(
+                            itemCount: MyServices.length,
+                            itemBuilder: (context, index) {
+                              final service = MyServices[index];
 
-                                return AnimationConfiguration.staggeredList(
-                                  position: index,
-                                  duration: const Duration(milliseconds: 700),
-                                  child: SlideAnimation(
-                                    verticalOffset: 50, // bottom → top
-                                    curve: Curves.easeOutCubic,
-                                    child: FadeInAnimation(
-                                      child: ServiceRequestCard(
-                                        title:
-                                            service["serviceRequestID"] ?? "",
-                                        date: formatDate(
-                                          service["createdAt"] ?? "",
-                                        ),
-                                        description: service["feedback"] ?? "",
-                                        serviceStatus:
-                                            service['serviceStatus'] ?? "",
-                                        serviceLogo:
-                                            service["serviceId"]?["serviceLogo"] ??
-                                            "",
-                                        onViewDetails: () async {
-                                          await context.push(
-                                            RouteNames.serviceRequestDetails,
-                                            extra: service,
-                                          );
-
-                                          // ✅ Refresh latest data after back
-                                          myserviceslist();
-                                        },
+                              return AnimationConfiguration.staggeredList(
+                                position: index,
+                                duration: const Duration(milliseconds: 700),
+                                child: SlideAnimation(
+                                  verticalOffset: 50, // bottom → top
+                                  curve: Curves.easeOutCubic,
+                                  child: FadeInAnimation(
+                                    child: ServiceRequestCard(
+                                      title: service["serviceRequestID"] ?? "",
+                                      date: formatDate(
+                                        service["createdAt"] ?? "",
                                       ),
+                                      description: service["feedback"] ?? "",
+                                      serviceStatus:
+                                          service['serviceStatus'] ?? "",
+                                      serviceLogo:
+                                          service["serviceId"]?["serviceLogo"] ??
+                                          "",
+                                      onViewDetails: () async {
+                                        await context.push(
+                                          RouteNames.serviceRequestDetails,
+                                          extra: service,
+                                        );
+
+                                        // ✅ Refresh latest data after back
+                                        myserviceslist();
+                                      },
                                     ),
                                   ),
-                                );
-                              },
-                            ),
+                                ),
+                              );
+                            },
                           ),
-                  ),
+                        ),
                 ),
-              ],
-            ),
+              ),
+            ],
           );
         },
+
         loading: () => const Center(child: CircularProgressIndicator()),
 
         error: (e, s) => NoInternetScreen(),

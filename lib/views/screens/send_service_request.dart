@@ -55,6 +55,7 @@ class _SendServiceRequestState extends ConsumerState<SendServiceRequest> {
   // bool isRecording = false;
   File? recordedVoice;
   bool isPlaying = false;
+  String? issueError;
   static const int maxImages = 10;
   final TextEditingController _timeController = TextEditingController();
 
@@ -141,12 +142,9 @@ class _SendServiceRequestState extends ConsumerState<SendServiceRequest> {
   Future<void> SendRequest() async {
     final t = AppLocalizations.of(context)!;
     if (selectedIssueId == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          backgroundColor: Colors.red,
-          content: Text(t.selectServiceIssue),
-        ),
-      );
+      setState(() {
+        issueError = t.selectIssue;
+      });
       return;
     }
     setState(() {
@@ -212,352 +210,359 @@ class _SendServiceRequestState extends ConsumerState<SendServiceRequest> {
 
     final t = AppLocalizations.of(context)!;
     return Scaffold(
-      body: SafeArea(
-        child: Container(
-          decoration: BoxDecoration(
-            color: Theme.of(context).colorScheme.surface,
-            borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+
+      appBar: AppBar(
+        backgroundColor: AppColors.app_background_clr,
+        elevation: 0,
+        centerTitle: true,
+
+        title: Text(
+          widget.title,
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+          style: const TextStyle(
+            color: Colors.white,
+            fontSize: 20,
+            fontWeight: FontWeight.w600,
+            fontFamily: 'Poppins',
           ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // TOP HEADER
-              Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 17,
-                  vertical: 10,
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    AppCircleIconButton(
-                      icon: Icons.arrow_back,
-                      onPressed: () {
-                        Navigator.pop(context);
-                      },
-                    ),
-                    Text(
-                      widget.title,
-                      style: const TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                    const SizedBox(width: 40),
-                  ],
+        ),
+
+        leadingWidth: 60,
+        leading: Padding(
+          padding: const EdgeInsets.only(left: 10),
+          child: Align(
+            alignment: Alignment.centerLeft,
+            child: SizedBox(
+              width: 38,
+              height: 38,
+              child: FittedBox(
+                child: AppCircleIconButton(
+                  icon: Icons.arrow_back,
+                  onPressed: () => context.pop(),
                 ),
               ),
+            ),
+          ),
+        ),
+      ),
 
-              const Divider(),
+      body: Container(
+        decoration: BoxDecoration(
+          color: Theme.of(context).colorScheme.surface,
+          borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const SizedBox(height: 15),
 
-              const SizedBox(height: 15),
-
-              // MAIN CONTENT
-              Expanded(
-                child: SingleChildScrollView(
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 17),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        // SERVICE IMAGE
-                        ClipRRect(
-                          borderRadius: BorderRadius.circular(15),
-                          child: widget.imagePath != null
-                              ? CachedNetworkImage(
-                                  imageUrl: widget.imagePath!,
-                                  width: double.infinity,
-                                  height: 200,
-                                  fit: BoxFit.cover,
-                                  placeholder: (context, url) => imageShimmer(),
-                                )
-                              : imageShimmer(),
-                        ),
-                        const SizedBox(height: 25),
-
-                        Container(
-                          margin: const EdgeInsets.only(bottom: 20),
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 16,
-                            vertical: 14,
-                          ),
-                          decoration: BoxDecoration(
-                            color: AppColors.app_background_clr.withOpacity(
-                              0.08,
-                            ),
-                            borderRadius: BorderRadius.circular(14),
-                            border: Border.all(
-                              color: AppColors.app_background_clr.withOpacity(
-                                0.3,
-                              ),
-                            ),
-                          ),
-                          child: Row(
-                            children: [
-                              /// POINT ICON
-                              Container(
-                                padding: const EdgeInsets.all(10),
-                                decoration: BoxDecoration(
-                                  color: AppColors.btn_primery,
-                                  borderRadius: BorderRadius.circular(10),
-                                ),
-                                child: const Icon(
-                                  Icons.stars_rounded,
-                                  color: Colors.white,
-                                  size: 22,
-                                ),
-                              ),
-
-                              const SizedBox(width: 12),
-
-                              /// TEXT
-                              Expanded(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      t.servicePointsRequired,
-                                      style: TextStyle(
-                                        fontSize: 13,
-                                        fontWeight: FontWeight.w500,
-                                        color: Colors.grey,
-                                      ),
-                                    ),
-                                    const SizedBox(height: 2),
-                                    Text(
-                                      widget.points == 0
-                                          ? t.serviceFree
-                                          : t.pointsLabel(
-                                              widget.points.toString(),
-                                            ),
-                                      style: const TextStyle(
-                                        fontSize: 18,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-
-                        Text(
-                          t.issueDetails,
-                          style: TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                        const SizedBox(height: 5),
-                        DropdownButtonFormField<String>(
-                          value:
-                              widget.issues.any(
-                                (issue) => issue['_id'] == selectedIssueId,
+            // MAIN CONTENT
+            Expanded(
+              child: SingleChildScrollView(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 17),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // SERVICE IMAGE
+                      ClipRRect(
+                        borderRadius: BorderRadius.circular(15),
+                        child: widget.imagePath != null
+                            ? CachedNetworkImage(
+                                imageUrl: widget.imagePath!,
+                                width: double.infinity,
+                                height: 200,
+                                fit: BoxFit.cover,
+                                placeholder: (context, url) => imageShimmer(),
                               )
-                              ? selectedIssueId
-                              : null,
+                            : imageShimmer(),
+                      ),
+                      const SizedBox(height: 25),
 
-                          decoration: InputDecoration(
-                            labelText: t.selectIssue,
-                            floatingLabelStyle: const TextStyle(
-                              color: AppColors.app_background_clr,
-                            ),
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            focusedBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(12),
-                              borderSide: BorderSide(
-                                color: AppColors.app_background_clr,
-                                width: 1.5,
-                              ),
-                            ),
-                            filled: true,
-                            fillColor: Theme.of(context).colorScheme.surface,
-                          ),
-
-                          items: widget.issues.map<DropdownMenuItem<String>>((
-                            issue,
-                          ) {
-                            return DropdownMenuItem<String>(
-                              value: issue['_id'],
-                              child: Text(
-                                issue['issue'],
-                                style: TextStyle(
-                                  color: Theme.of(
-                                    context,
-                                  ).textTheme.bodyMedium?.color,
-                                ),
-                              ),
-                            );
-                          }).toList(),
-
-                          onChanged: (value) {
-                            setState(() {
-                              selectedIssueId = value;
-                            });
-                          },
+                      Container(
+                        margin: const EdgeInsets.only(bottom: 20),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 14,
                         ),
-                        const SizedBox(height: 15),
-
-                        // DESCRIPTION FIELD
-                        TextField(
-                          controller: descriptionController,
-                          minLines: 5,
-                          maxLines: null,
-                          keyboardType: TextInputType.multiline,
-                          decoration: InputDecoration(
-                            labelText: t.describeIssue,
-                            floatingLabelStyle: const TextStyle(
-                              color: AppColors.app_background_clr,
+                        decoration: BoxDecoration(
+                          color: AppColors.app_background_clr.withOpacity(0.08),
+                          borderRadius: BorderRadius.circular(14),
+                          border: Border.all(
+                            color: AppColors.app_background_clr.withOpacity(
+                              0.3,
                             ),
-                            alignLabelWithHint: true,
-                            contentPadding: EdgeInsets.all(14),
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            focusedBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(12),
-                              borderSide: BorderSide(
-                                color: AppColors.app_background_clr,
-                                width: 1.5,
-                              ),
-                            ),
-                            filled: true,
-                            fillColor: Theme.of(context).colorScheme.surface,
                           ),
                         ),
+                        child: Row(
+                          children: [
+                            /// POINT ICON
+                            Container(
+                              padding: const EdgeInsets.all(10),
+                              decoration: BoxDecoration(
+                                color: AppColors.btn_primery,
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                              child: const Icon(
+                                Icons.stars_rounded,
+                                color: Colors.white,
+                                size: 22,
+                              ),
+                            ),
 
-                        // const SizedBox(height: 22),
-                        // const Text(
-                        //   "Perfered Date",
-                        //   style: TextStyle(
-                        //     fontSize: 18,
-                        //     fontWeight: FontWeight.w600,
-                        //   ),
-                        // ),
+                            const SizedBox(width: 12),
 
-                        // const SizedBox(height: 10),
+                            /// TEXT
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    t.servicePointsRequired,
+                                    style: TextStyle(
+                                      fontSize: 13,
+                                      fontWeight: FontWeight.w500,
+                                      color: Colors.grey,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 2),
+                                  Text(
+                                    widget.points == 0
+                                        ? t.serviceFree
+                                        : t.pointsLabel(
+                                            widget.points.toString(),
+                                          ),
+                                    style: const TextStyle(
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
 
-                        // AppDatePicker(
-                        //   controller: _dateController,
-                        //   label: "Select Date",
-                        //   onDateSelected: (date) {
-                        //     print("Selected Date: $date");
-                        //   },
-                        // ),
-                        // const SizedBox(height: 10),
-                        // const Text(
-                        //   "Perfered Time",
-                        //   style: TextStyle(
-                        //     fontSize: 18,
-                        //     fontWeight: FontWeight.w600,
-                        //   ),
-                        // ),
-                        // const SizedBox(height: 10),
-                        // AppTimePicker(
-                        //   controller: _timeController,
-                        //   label: "selected Time",
-                        //   onTimeSelected: (time) {
-                        //     // Do something with the selected time
-                        //     print("User selected********************8: $time");
-                        //   },
-                        // ),
-                        const SizedBox(height: 22),
+                      Text(
+                        t.issueDetails,
+                        style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      const SizedBox(height: 5),
+                      DropdownButtonFormField<String>(
+                        value:
+                            widget.issues.any(
+                              (issue) => issue['_id'] == selectedIssueId,
+                            )
+                            ? selectedIssueId
+                            : null,
 
-                        Text(
-                          t.mediaUploadOptional,
-                          style: TextStyle(
-                            fontSize: 17,
-                            fontWeight: FontWeight.w600,
-                            color: Theme.of(
+                        decoration: InputDecoration(
+                          labelText: t.selectIssue,
+                          errorText: issueError, // 👈 show error below dropdown
+
+                          floatingLabelStyle: const TextStyle(
+                            color: AppColors.app_background_clr,
+                          ),
+
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                            borderSide: const BorderSide(
+                              color: AppColors.app_background_clr,
+                              width: 1.5,
+                            ),
+                          ),
+
+                          filled: true,
+                          fillColor: Theme.of(context).colorScheme.surface,
+                        ),
+
+                        items: widget.issues.map<DropdownMenuItem<String>>((
+                          issue,
+                        ) {
+                          return DropdownMenuItem<String>(
+                            value: issue['_id'],
+                            child: Text(
+                              issue['issue'],
+                              style: TextStyle(
+                                color: Theme.of(
+                                  context,
+                                ).textTheme.bodyMedium?.color,
+                              ),
+                            ),
+                          );
+                        }).toList(),
+
+                        onChanged: (value) {
+                          setState(() {
+                            selectedIssueId = value;
+                            issueError = null;
+                          });
+                        },
+                      ),
+                      const SizedBox(height: 15),
+
+                      // DESCRIPTION FIELD
+                      TextField(
+                        controller: descriptionController,
+                        minLines: 5,
+                        maxLines: null,
+                        keyboardType: TextInputType.multiline,
+                        decoration: InputDecoration(
+                          labelText: t.describeIssue,
+                          floatingLabelStyle: const TextStyle(
+                            color: AppColors.app_background_clr,
+                          ),
+                          alignLabelWithHint: true,
+                          contentPadding: EdgeInsets.all(14),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                            borderSide: BorderSide(
+                              color: AppColors.app_background_clr,
+                              width: 1.5,
+                            ),
+                          ),
+                          filled: true,
+                          fillColor: Theme.of(context).colorScheme.surface,
+                        ),
+                      ),
+
+                      // const SizedBox(height: 22),
+                      // const Text(
+                      //   "Perfered Date",
+                      //   style: TextStyle(
+                      //     fontSize: 18,
+                      //     fontWeight: FontWeight.w600,
+                      //   ),
+                      // ),
+
+                      // const SizedBox(height: 10),
+
+                      // AppDatePicker(
+                      //   controller: _dateController,
+                      //   label: "Select Date",
+                      //   onDateSelected: (date) {
+                      //     print("Selected Date: $date");
+                      //   },
+                      // ),
+                      // const SizedBox(height: 10),
+                      // const Text(
+                      //   "Perfered Time",
+                      //   style: TextStyle(
+                      //     fontSize: 18,
+                      //     fontWeight: FontWeight.w600,
+                      //   ),
+                      // ),
+                      // const SizedBox(height: 10),
+                      // AppTimePicker(
+                      //   controller: _timeController,
+                      //   label: "selected Time",
+                      //   onTimeSelected: (time) {
+                      //     // Do something with the selected time
+                      //     print("User selected********************8: $time");
+                      //   },
+                      // ),
+                      const SizedBox(height: 22),
+
+                      Text(
+                        t.mediaUploadOptional,
+                        style: TextStyle(
+                          fontSize: 17,
+                          fontWeight: FontWeight.w600,
+                          color: Theme.of(context).textTheme.bodyMedium?.color,
+                        ),
+                      ),
+
+                      const SizedBox(height: 3),
+                      Text(
+                        t.imagesSelectedCount(selectedImages.length.toString()),
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: selectedImages.length == 10
+                              ? Colors.red
+                              : Colors.grey,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+
+                      const SizedBox(height: 8),
+                      // UPLOAD BUTTON
+                      MediaUploadWidget(
+                        images: selectedImages,
+                        onAddTap: () {
+                          if (selectedImages.length >= maxImages) {
+                            SnackbarHelper.showError(
                               context,
-                            ).textTheme.bodyMedium?.color,
-                          ),
-                        ),
-
-                        const SizedBox(height: 3),
-                        Text(
-                          t.imagesSelectedCount(
-                            selectedImages.length.toString(),
-                          ),
-                          style: TextStyle(
-                            fontSize: 12,
-                            color: selectedImages.length == 10
-                                ? Colors.red
-                                : Colors.grey,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-
-                        const SizedBox(height: 8),
-                        // UPLOAD BUTTON
-                        MediaUploadWidget(
-                          images: selectedImages,
-                          onAddTap: () {
-                            if (selectedImages.length >= maxImages) {
-                              SnackbarHelper.showError(
-                                context,
-                                "Max 10 images allowed",
-                              );
-                              return;
-                            }
-                            showImagePickerSheet(context);
-                          },
-                          onRemoveTap: (index) {
-                            if (index < selectedImages.length) {
-                              setState(() {
-                                selectedImages.removeAt(index);
-                              });
-                            }
-                          },
-                        ),
-
-                        const SizedBox(height: 15),
-                        // Row(
-                        //   children: [
-                        //     Checkbox(
-                        //       value: isChecked,
-                        //       activeColor: AppColors.btn_primery,
-                        //       checkColor: Colors.white,
-                        //       onChanged: (bool? newValue) {
-                        //         setState(() {
-                        //           isChecked = newValue!;
-                        //         });
-                        //       },
-                        //     ),
-                        //     const Text("Need immitated Asstience"),
-                        //   ],
-                        // ),
-                        RecordWidget(
-                          onRecordComplete: (file) {
+                              "Max 10 images allowed",
+                            );
+                            return;
+                          }
+                          showImagePickerSheet(context);
+                        },
+                        onRemoveTap: (index) {
+                          if (index < selectedImages.length) {
                             setState(() {
-                              recordedVoice = file;
+                              selectedImages.removeAt(index);
                             });
-                          },
-                        ),
+                          }
+                        },
+                      ),
 
-                        const SizedBox(height: 15),
-                        // ACTION BUTTONS
-                        AppButton(
-                          text: t.sendRequest,
-                          onPressed: () {
-                            SendRequest();
-                          },
-                          isLoading: _isLoading,
-                          color: AppColors.btn_primery,
-                          width: double.infinity,
-                        ),
+                      const SizedBox(height: 15),
+                      // Row(
+                      //   children: [
+                      //     Checkbox(
+                      //       value: isChecked,
+                      //       activeColor: AppColors.btn_primery,
+                      //       checkColor: Colors.white,
+                      //       onChanged: (bool? newValue) {
+                      //         setState(() {
+                      //           isChecked = newValue!;
+                      //         });
+                      //       },
+                      //     ),
+                      //     const Text("Need immitated Asstience"),
+                      //   ],
+                      // ),
+                      RecordWidget(
+                        onRecordComplete: (file) {
+                          setState(() {
+                            recordedVoice = file;
+                          });
+                        },
+                      ),
 
-                        const SizedBox(height: 30),
-                      ],
-                    ),
+                      const SizedBox(height: 15),
+                      // ACTION BUTTONS
+                      AppButton(
+                        text: t.sendRequest,
+                        onPressed: () {
+                          SendRequest();
+                        },
+                        isLoading: _isLoading,
+                        color: AppColors.btn_primery,
+                        width: double.infinity,
+                      ),
+
+                      const SizedBox(height: 30),
+                    ],
                   ),
                 ),
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );

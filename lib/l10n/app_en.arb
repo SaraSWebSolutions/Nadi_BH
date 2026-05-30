@@ -489,7 +489,14 @@
      "enteryour_build": "Enter your building",
   "enteraptno": "Enter apt no",
   "enterFloorno": "Enter floor no",
-     "enter_memberFullName": "Enter member full name"
+     "enter_memberFullName": "Enter member full name",
+       "buildingRequired": "Building is required",
+  "floorRequired": "Floor number is required",
+  "pleaseEnterOtp": "Please enter OTP",
+  "otpMustBe4Digits": "OTP must be 4 digits",
+   "member": "Member",
+  "ofText": "of",
+  "added": "Added"
 
 
 

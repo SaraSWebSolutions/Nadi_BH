@@ -5,6 +5,7 @@ import 'package:nadi_user_app/core/constants/app_consts.dart';
 import 'package:nadi_user_app/l10n/app_localizations.dart';
 import 'package:nadi_user_app/preferences/preferences.dart';
 import 'package:nadi_user_app/providers/active_chat_provider.dart';
+import 'package:nadi_user_app/widgets/app_back.dart';
 import 'package:stream_chat_flutter/stream_chat_flutter.dart';
 import 'package:nadi_user_app/services/Stream_Chat_Service.dart';
 
@@ -169,60 +170,39 @@ class _ChatDetailsScreenState extends ConsumerState<ChatDetailsScreen>
 
   AppBar _buildAppBar() {
     final loc = AppLocalizations.of(context)!;
+
     return AppBar(
-      backgroundColor: _isAdmin ? AppColors.app_background_clr : Colors.white,
-      elevation: 1,
-      leading: IconButton(
-        icon: Icon(
-          Icons.arrow_back,
-          color: _isAdmin ? Colors.white : Colors.black,
+      backgroundColor: AppColors.app_background_clr,
+      elevation: 0,
+      centerTitle: true,
+
+      title: Text(
+        widget.adminName ?? loc.chat,
+        style: const TextStyle(
+          color: Colors.white,
+          fontSize: 20,
+          fontWeight: FontWeight.w600,
+          fontFamily: 'Poppins',
         ),
-        onPressed: () => Navigator.pop(context),
+        overflow: TextOverflow.ellipsis,
       ),
-      title: Row(
-        children: [
-          CircleAvatar(
-            radius: 18,
-            backgroundColor: _isAdmin
-                ? Colors.white.withValues(alpha: 0.25)
-                : _otherPartyColor,
-            child: Text(
-              (widget.adminName?.isNotEmpty ?? false)
-                  ? widget.adminName![0].toUpperCase()
-                  : '?',
-              style: TextStyle(
-                color: _isAdmin ? Colors.white : Colors.white,
-                fontWeight: FontWeight.bold,
+
+      leadingWidth: 60,
+      leading: Padding(
+        padding: const EdgeInsets.only(left: 10),
+        child: Align(
+          alignment: Alignment.centerLeft,
+          child: SizedBox(
+            width: 38,
+            height: 38,
+            child: FittedBox(
+              child: AppCircleIconButton(
+                icon: Icons.arrow_back,
+                onPressed: () => Navigator.pop(context),
               ),
             ),
           ),
-          const SizedBox(width: 10),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text(
-                  widget.adminName ?? loc.chat,
-                  style: TextStyle(
-                    color: _isAdmin ? Colors.white : Colors.black,
-                    fontSize: 15,
-                    fontWeight: FontWeight.w600,
-                  ),
-                  overflow: TextOverflow.ellipsis,
-                ),
-                if (widget.roleName != null && widget.roleName!.isNotEmpty)
-                  Text(
-                    widget.roleName!,
-                    style: TextStyle(
-                      color: _isAdmin ? Colors.white70 : Colors.grey[600],
-                      fontSize: 11,
-                    ),
-                  ),
-              ],
-            ),
-          ),
-        ],
+        ),
       ),
     );
   }
@@ -424,32 +404,47 @@ class _ChatDetailsScreenState extends ConsumerState<ChatDetailsScreen>
                 ),
 
                 messageInputTheme: StreamMessageInputThemeData(
-                  inputBackgroundColor:
-                      Theme.of(context).brightness == Brightness.dark
-                      ? const Color(0xFF1A1A1A)
-                      : Theme.of(context).colorScheme.surface,
-
-                  borderRadius: BorderRadius.circular(24),
+                  inputBackgroundColor: Colors.transparent,
+                  borderRadius: BorderRadius.circular(30),
 
                   inputDecoration: InputDecoration(
                     hintText: loc.writeMessage,
 
-                    hintStyle: TextStyle(color: Theme.of(context).hintColor),
-
-                    border: InputBorder.none,
+                    filled: true,
+                    fillColor: Theme.of(context).colorScheme.surface,
 
                     contentPadding: const EdgeInsets.symmetric(
-                      horizontal: 16,
-                      vertical: 10,
+                      horizontal: 20,
+                      vertical: 14,
+                    ),
+
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(30),
+                      borderSide: BorderSide(
+                        color: AppColors.app_background_clr,
+                      ),
+                    ),
+
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(30),
+                      borderSide: BorderSide(
+                        color: AppColors.app_background_clr,
+                        // width: 1,
+                      ),
+                    ),
+
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(30),
+                      borderSide: BorderSide(
+                        color: AppColors.button_secondary,
+                        //width: 2,
+                      ),
                     ),
                   ),
 
                   actionButtonColor: Theme.of(context).iconTheme.color,
 
-                  sendButtonColor:
-                      Theme.of(context).brightness == Brightness.dark
-                      ? Colors.white
-                      : Theme.of(context).colorScheme.onSurface,
+                  sendButtonColor: AppColors.app_background_clr,
                 ),
               ),
 

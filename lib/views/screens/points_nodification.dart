@@ -6,6 +6,7 @@ import 'package:nadi_user_app/core/constants/app_consts.dart';
 import 'package:nadi_user_app/l10n/app_localizations.dart';
 import 'package:nadi_user_app/providers/fetchpointsnodification.dart';
 import 'package:nadi_user_app/services/NotificationApiService.dart';
+import 'package:nadi_user_app/widgets/app_back.dart';
 import 'package:nadi_user_app/widgets/confirm_dialog.dart';
 
 class PointsNodification extends ConsumerStatefulWidget {
@@ -57,14 +58,9 @@ class _PointsNodificationState extends ConsumerState<PointsNodification> {
 
     return Scaffold(
       appBar: AppBar(
-        // automaticallyImplyLeading: true,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: () {
-            context.pop();
-          },
-        ),
-        backgroundColor: AppColors.btn_primery,
+        backgroundColor: AppColors.app_background_clr,
+        elevation: 0,
+        centerTitle: true,
         title: Text(
           asyncNotifications.maybeWhen(
             data: (response) => response.data.isEmpty
@@ -72,31 +68,52 @@ class _PointsNodificationState extends ConsumerState<PointsNodification> {
                 : AppLocalizations.of(context)!.notifications,
             orElse: () => AppLocalizations.of(context)!.notifications,
           ),
-          style: const TextStyle(color: Colors.white),
+          style: const TextStyle(
+            color: Colors.white,
+            fontSize: 20,
+            fontWeight: FontWeight.w600,
+            fontFamily: 'Poppins',
+          ),
         ),
-        iconTheme: const IconThemeData(color: Colors.white),
-        centerTitle: true,
+        leadingWidth: 60,
+        leading: Padding(
+          padding: const EdgeInsets.only(left: 10),
+          child: Align(
+            alignment: Alignment.centerLeft,
+            child: SizedBox(
+              width: 38,
+              height: 38,
+              child: FittedBox(
+                child: AppCircleIconButton(
+                  icon: Icons.arrow_back,
+                  onPressed: () => context.pop(),
+                ),
+              ),
+            ),
+          ),
+        ),
         actions: [
           Padding(
             padding: const EdgeInsets.only(right: 12),
-            child: TextButton(
+            child: IconButton(
               onPressed: () async {
                 final confirmed = await showConfirmDialog(
                   context,
                   title: AppLocalizations.of(context)!.title,
                   message: AppLocalizations.of(context)!.message,
                   confirmText: AppLocalizations.of(context)!.delete,
-
                   icon: Icons.delete_sweep_rounded,
                   destructive: true,
                 );
+
                 if (!context.mounted) return;
+
                 if (confirmed) {
                   _clearallnotification();
                   ref.invalidate(fetchpointsnodification);
                 }
               },
-              child: Image.asset("assets/images/notification.png"),
+              icon: const Icon(Icons.delete_sweep_rounded, color: Colors.white),
             ),
           ),
         ],

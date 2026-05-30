@@ -262,6 +262,7 @@ import 'package:nadi_user_app/services/MqttNotificationService.dart';
 import 'package:nadi_user_app/widgets/buttons/primary_button.dart';
 import 'package:nadi_user_app/widgets/inputs/app_text_field.dart';
 import 'package:pinput/pinput.dart';
+import 'package:nadi_user_app/controllers/signup_controller.dart';
 
 class SignInOtp extends StatefulWidget {
   const SignInOtp({super.key});
@@ -271,6 +272,8 @@ class SignInOtp extends StatefulWidget {
 }
 
 class _SignInOtpState extends State<SignInOtp> {
+  final controller = SignupController();
+
   final _formKey = GlobalKey<FormState>();
   final _phoneController = TextEditingController();
   final _otpController = TextEditingController();
@@ -281,6 +284,7 @@ class _SignInOtpState extends State<SignInOtp> {
   bool _otpSent = false;
   int _secondsRemaining = 30;
   bool _canResendOtp = false;
+  String? _otpErrorMessage;
   void _startOtpTimer() {
     _secondsRemaining = 30;
     _canResendOtp = false;
@@ -762,6 +766,18 @@ class _SignInOtpState extends State<SignInOtp> {
                                   fillColor: Theme.of(
                                     context,
                                   ).colorScheme.surface,
+                                  validator: (value) =>
+                                      controller.validateMobile(value, l10n),
+
+                                  // validator: (value) {
+                                  //   if (value == null || value.isEmpty) {
+                                  //     return "Please enter phone number";
+                                  //   } else if (value.length != 8 ||
+                                  //       !RegExp(r'^[0-9]+$').hasMatch(value)) {
+                                  //     return "Phone number must be 8 digits";
+                                  //   }
+                                  //   return null;
+                                  // },
                                 ),
 
                                 const SizedBox(height: 20),
@@ -816,12 +832,30 @@ class _SignInOtpState extends State<SignInOtp> {
                                       keyboardType: TextInputType.number,
                                       onChanged: (_) {
                                         if (_isOtpError) {
-                                          setState(() => _isOtpError = false);
+                                          setState(
+                                            () => {
+                                              _isOtpError = false,
+                                              _otpErrorMessage = null,
+                                            },
+                                          );
                                         }
                                       },
                                     ),
                                   ),
-
+                                  if (_otpErrorMessage != null) ...[
+                                    const SizedBox(height: 8),
+                                    Center(
+                                      child: Text(
+                                        _otpErrorMessage!,
+                                        style: const TextStyle(
+                                          color: Colors.red,
+                                          fontSize: 13,
+                                          fontWeight: FontWeight.w500,
+                                        ),
+                                        textAlign: TextAlign.center,
+                                      ),
+                                    ),
+                                  ],
                                   const SizedBox(height: 20),
 
                                   AppButton(
@@ -833,35 +867,52 @@ class _SignInOtpState extends State<SignInOtp> {
                                     onPressed: () async {
                                       final otp = _otpController.text.trim();
 
+                                      // if (otp.isEmpty) {
+                                      //   setState(() => _isOtpError = true);
+
+                                      //   ScaffoldMessenger.of(
+                                      //     context,
+                                      //   ).showSnackBar(
+                                      //     const SnackBar(
+                                      //       content: Text("Please enter OTP"),
+                                      //       backgroundColor: Colors.red,
+                                      //     ),
+                                      //   );
+
+                                      //   return;
+                                      // }
+
+                                      // if (otp.length != 4) {
+                                      //   setState(() => _isOtpError = true);
+
+                                      //   ScaffoldMessenger.of(
+                                      //     context,
+                                      //   ).showSnackBar(
+                                      //     const SnackBar(
+                                      //       content: Text(
+                                      //         "OTP must be 4 digits",
+                                      //       ),
+                                      //       backgroundColor: Colors.red,
+                                      //     ),
+                                      //   );
+
+                                      //   return;
+                                      // }
                                       if (otp.isEmpty) {
-                                        setState(() => _isOtpError = true);
-
-                                        ScaffoldMessenger.of(
-                                          context,
-                                        ).showSnackBar(
-                                          const SnackBar(
-                                            content: Text("Please enter OTP"),
-                                            backgroundColor: Colors.red,
-                                          ),
-                                        );
-
+                                        setState(() {
+                                          _isOtpError = true;
+                                          _otpErrorMessage =
+                                              l10n.pleaseEnterOtp;
+                                        });
                                         return;
                                       }
 
                                       if (otp.length != 4) {
-                                        setState(() => _isOtpError = true);
-
-                                        ScaffoldMessenger.of(
-                                          context,
-                                        ).showSnackBar(
-                                          const SnackBar(
-                                            content: Text(
-                                              "OTP must be 4 digits",
-                                            ),
-                                            backgroundColor: Colors.red,
-                                          ),
-                                        );
-
+                                        setState(() {
+                                          _isOtpError = true;
+                                          _otpErrorMessage =
+                                              l10n.otpMustBe4Digits;
+                                        });
                                         return;
                                       }
 

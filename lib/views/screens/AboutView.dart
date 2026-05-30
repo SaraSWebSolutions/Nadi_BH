@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:nadi_user_app/core/constants/app_consts.dart';
 import 'package:nadi_user_app/l10n/app_localizations.dart';
 import 'package:nadi_user_app/providers/aboutProvider.dart';
+import 'package:nadi_user_app/widgets/app_back.dart';
 
 class AboutsView extends ConsumerWidget {
   const AboutsView({super.key});
@@ -11,12 +12,37 @@ class AboutsView extends ConsumerWidget {
     final aboutAsync = ref.watch(aboutProvider);
     return Scaffold(
       appBar: AppBar(
-        title:  Text(
-        AppLocalizations.of(context)!.aboutApp,
-        style: TextStyle(color: Colors.white)),
         backgroundColor: AppColors.app_background_clr,
-        iconTheme: const IconThemeData(color: Colors.white),
         elevation: 0,
+        centerTitle: true,
+
+        title: Text(
+          AppLocalizations.of(context)!.aboutApp,
+          style: const TextStyle(
+            color: Colors.white,
+            fontSize: 20,
+            fontWeight: FontWeight.w600,
+            fontFamily: 'Poppins',
+          ),
+        ),
+
+        leadingWidth: 60,
+        leading: Padding(
+          padding: const EdgeInsets.only(left: 10),
+          child: Align(
+            alignment: Alignment.centerLeft,
+            child: SizedBox(
+              width: 38,
+              height: 38,
+              child: FittedBox(
+                child: AppCircleIconButton(
+                  icon: Icons.arrow_back,
+                  onPressed: () => Navigator.pop(context),
+                ),
+              ),
+            ),
+          ),
+        ),
       ),
       body: aboutAsync.when(
         loading: () => const Center(child: CircularProgressIndicator()),
@@ -36,21 +62,28 @@ class AboutsView extends ConsumerWidget {
                   child: SingleChildScrollView(
                     child: Column(
                       children: item.content.isEmpty
-                          ? [Padding(
-                              padding: EdgeInsets.only(bottom: 10),
-                              child: Text(
-                                AppLocalizations.of(context)!.noContentAvailable,
-                                textAlign: TextAlign.center,
-                              ),
-                            )]
-                          : item.content
-                              .map(
-                                (text) => Padding(
-                                  padding: const EdgeInsets.only(bottom: 10),
-                                  child: Text(text, textAlign: TextAlign.center),
+                          ? [
+                              Padding(
+                                padding: EdgeInsets.only(bottom: 10),
+                                child: Text(
+                                  AppLocalizations.of(
+                                    context,
+                                  )!.noContentAvailable,
+                                  textAlign: TextAlign.center,
                                 ),
-                              )
-                              .toList(),
+                              ),
+                            ]
+                          : item.content
+                                .map(
+                                  (text) => Padding(
+                                    padding: const EdgeInsets.only(bottom: 10),
+                                    child: Text(
+                                      text,
+                                      textAlign: TextAlign.center,
+                                    ),
+                                  ),
+                                )
+                                .toList(),
                     ),
                   ),
                 ),

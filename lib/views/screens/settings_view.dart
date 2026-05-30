@@ -344,344 +344,305 @@ class _SettingsViewState extends ConsumerState<SettingsView> {
 
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-      body: SafeArea(
-        child: SingleChildScrollView(
-          child: Column(
-            children: [
-              Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 15,
-                  vertical: 10,
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    AppCircleIconButton(
-                      icon: Icons.arrow_back,
-                      onPressed: () => context.push(RouteNames.bottomnav),
-                    ),
-                    Text(
-                      AppLocalizations.of(context)!.settings,
-                      style: TextStyle(
-                        fontWeight: FontWeight.w600,
-                        fontSize: 20,
-                        color: AppColors.app_background_clr,
-                      ),
-                    ),
-                    const SizedBox(width: 20),
-                  ],
+
+      appBar: AppBar(
+        backgroundColor: AppColors.app_background_clr,
+        elevation: 0,
+        centerTitle: true,
+
+        title: Text(
+          AppLocalizations.of(context)!.settings,
+          style: const TextStyle(
+            color: Colors.white,
+            fontSize: 20,
+            fontWeight: FontWeight.w600,
+            fontFamily: 'Poppins',
+          ),
+        ),
+
+        leadingWidth: 60,
+
+        leading: Padding(
+          padding: const EdgeInsets.only(left: 10),
+          child: Align(
+            alignment: Alignment.centerLeft,
+            child: SizedBox(
+              width: 38,
+              height: 38,
+              child: FittedBox(
+                child: AppCircleIconButton(
+                  icon: Icons.arrow_back,
+                  onPressed: () => context.pop(),
                 ),
               ),
+            ),
+          ),
+        ),
+      ),
 
-              const Divider(),
-              const SizedBox(height: 10),
-              SingleChildScrollView(
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            const SizedBox(height: 10),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 15),
+              child: Container(
+                padding: const EdgeInsets.all(15),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(12),
+                  color: Theme.of(context).colorScheme.surface,
+                ),
                 child: Column(
                   children: [
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 15),
-                      child: Container(
-                        padding: const EdgeInsets.all(15),
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(12),
-                          color: Theme.of(context).colorScheme.surface,
-                        ),
-                        child: Column(
+                    settingItem(
+                      text: AppLocalizations.of(context)!.aboutApp,
+                      icon: Image.asset("assets/icons/i.png"),
+                      onTap: () {
+                        context.push(RouteNames.aboutscreen);
+                      },
+                    ),
+                    const SizedBox(height: 15),
+                    settingItem(
+                      text: AppLocalizations.of(context)!.helpSupport,
+                      icon: Image.asset("assets/icons/help.png"),
+                      onTap: () {
+                        context.push(RouteNames.helpSupport);
+                      },
+                    ),
+
+                    const SizedBox(height: 15),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Row(
                           children: [
-                            settingItem(
-                              text: AppLocalizations.of(context)!.aboutApp,
-                              icon: Image.asset("assets/icons/i.png"),
-                              onTap: () {
-                                context.push(RouteNames.aboutscreen);
-                              },
+                            Container(
+                              height: 40,
+                              width: 40,
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                color: const Color.fromARGB(255, 166, 176, 219),
+                              ),
+                              child: Padding(
+                                padding: const EdgeInsets.all(10),
+                                child: Image.asset("assets/icons/noti.png"),
+                              ),
                             ),
-                            const SizedBox(height: 15),
-                            settingItem(
-                              text: AppLocalizations.of(context)!.helpSupport,
-                              icon: Image.asset("assets/icons/help.png"),
-                              onTap: () {
-                                context.push(RouteNames.helpSupport);
-                              },
-                            ),
-
-                            const SizedBox(height: 15),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Row(
-                                  children: [
-                                    Container(
-                                      height: 40,
-                                      width: 40,
-                                      decoration: BoxDecoration(
-                                        shape: BoxShape.circle,
-                                        color: const Color.fromARGB(
-                                          255,
-                                          166,
-                                          176,
-                                          219,
-                                        ),
-                                      ),
-                                      child: Padding(
-                                        padding: const EdgeInsets.all(10),
-                                        child: Image.asset(
-                                          "assets/icons/noti.png",
-                                        ),
-                                      ),
-                                    ),
-                                    const SizedBox(width: 15),
-                                    Text(
-                                      AppLocalizations.of(
-                                        context,
-                                      )!.notification,
-                                      style: TextStyle(
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.w400,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                                GestureDetector(
-                                  onTap: notificationToggle,
-                                  child: AnimatedContainer(
-                                    duration: const Duration(milliseconds: 200),
-                                    width: 45,
-                                    height: 25,
-                                    padding: const EdgeInsets.symmetric(
-                                      horizontal: 3,
-                                    ),
-                                    decoration: BoxDecoration(
-                                      color: isToggleOn
-                                          ? AppColors.app_background_clr
-                                          : Colors.grey,
-                                      borderRadius: BorderRadius.circular(20),
-                                    ),
-                                    child: AnimatedAlign(
-                                      duration: const Duration(
-                                        milliseconds: 200,
-                                      ),
-                                      alignment: isToggleOn
-                                          ? Alignment.centerRight
-                                          : Alignment.centerLeft,
-                                      child: Container(
-                                        width: 18,
-                                        height: 18,
-                                        decoration: const BoxDecoration(
-                                          color: Colors.white,
-                                          shape: BoxShape.circle,
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                            const SizedBox(height: 15),
-
-                            // settingItem(
-                            //   text: "Change Language",
-                            //   icon: Image.asset("assets/icons/global.png"),
-                            //   onTap: () {},
-                            // ),
-                            Row(
-                              children: [
-                                Container(
-                                  height: 40,
-                                  width: 40,
-                                  decoration: BoxDecoration(
-                                    shape: BoxShape.circle,
-                                    color: const Color.fromARGB(
-                                      255,
-                                      166,
-                                      176,
-                                      219,
-                                    ),
-                                  ),
-                                  child: Padding(
-                                    padding: const EdgeInsets.all(10),
-                                    child: Image.asset(
-                                      "assets/icons/global.png",
-                                    ),
-                                  ),
-                                ),
-                                const SizedBox(width: 10),
-                                Text(
-                                  AppLocalizations.of(context)!.changeLanguage,
-                                  style: TextStyle(
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.w400,
-                                  ),
-                                ),
-                                const Spacer(),
-                                Container(
-                                  padding: const EdgeInsets.all(2),
-                                  decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(12),
-                                    color: const Color.fromARGB(
-                                      255,
-                                      166,
-                                      176,
-                                      219,
-                                    ),
-                                  ),
-                                  child: Row(
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      languageOption("BH"),
-                                      languageOption("ENG"),
-                                    ],
-                                  ),
-                                ),
-                              ],
-                            ),
-
-                            const SizedBox(height: 15),
-                            settingItem(
-                              text: AppLocalizations.of(context)!.history,
-                              icon: Image.asset("assets/icons/menu.png"),
-                              onTap: () {
-                                context.push(RouteNames.viewalllogs);
-                              },
-                            ),
-                            const SizedBox(height: 15),
-                            settingItem(
-                              text: AppLocalizations.of(context)!.privacyPolicy,
-
-                              icon: Image.asset("assets/icons/policy.png"),
-                              onTap: () {
-                                context.push(RouteNames.privacyPolicy);
-                              },
-                            ),
-                            const SizedBox(height: 20),
-                            Row(
-                              children: [
-                                Container(
-                                  height: 40,
-                                  width: 40,
-                                  decoration: BoxDecoration(
-                                    shape: BoxShape.circle,
-                                    color: const Color.fromARGB(
-                                      255,
-                                      166,
-                                      176,
-                                      219,
-                                    ),
-                                  ),
-                                  child: Padding(
-                                    padding: const EdgeInsets.all(10),
-                                    child: Image.asset("assets/icons/idea.png"),
-                                  ),
-                                ),
-                                const SizedBox(width: 10),
-                                Text(
-                                  AppLocalizations.of(context)!.theme,
-                                  style: TextStyle(
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.w400,
-                                  ),
-                                ),
-                                const Spacer(),
-                                Container(
-                                  decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(12),
-                                    color: const Color.fromARGB(
-                                      255,
-                                      166,
-                                      176,
-                                      219,
-                                    ),
-                                  ),
-                                  child: Row(
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      GestureDetector(
-                                        onTap: () {
-                                          ref
-                                              .read(themeProvider.notifier)
-                                              .changeTheme(ThemeMode.light);
-                                        },
-                                        child: themeOption("Light"),
-                                      ),
-                                      GestureDetector(
-                                        onTap: () {
-                                          ref
-                                              .read(themeProvider.notifier)
-                                              .changeTheme(ThemeMode.dark);
-                                        },
-                                        child: themeOption("Dark"),
-                                      ),
-                                      GestureDetector(
-                                        onTap: () {
-                                          ref
-                                              .read(themeProvider.notifier)
-                                              .changeTheme(ThemeMode.system);
-                                        },
-                                        child: themeOption("System"),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ],
+                            const SizedBox(width: 15),
+                            Text(
+                              AppLocalizations.of(context)!.notification,
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w400,
+                              ),
                             ),
                           ],
                         ),
-                      ),
+                        GestureDetector(
+                          onTap: notificationToggle,
+                          child: AnimatedContainer(
+                            duration: const Duration(milliseconds: 200),
+                            width: 45,
+                            height: 25,
+                            padding: const EdgeInsets.symmetric(horizontal: 3),
+                            decoration: BoxDecoration(
+                              color: isToggleOn
+                                  ? AppColors.app_background_clr
+                                  : Colors.grey,
+                              borderRadius: BorderRadius.circular(20),
+                            ),
+                            child: AnimatedAlign(
+                              duration: const Duration(milliseconds: 200),
+                              alignment: isToggleOn
+                                  ? Alignment.centerRight
+                                  : Alignment.centerLeft,
+                              child: Container(
+                                width: 18,
+                                height: 18,
+                                decoration: const BoxDecoration(
+                                  color: Colors.white,
+                                  shape: BoxShape.circle,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
-                    const SizedBox(height: 25),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 15,
-                        vertical: 15,
-                      ),
-                      child: Container(
-                        padding: const EdgeInsets.all(15),
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(12),
-                          color: Theme.of(context).colorScheme.surface,
+                    const SizedBox(height: 15),
+
+                    // settingItem(
+                    //   text: "Change Language",
+                    //   icon: Image.asset("assets/icons/global.png"),
+                    //   onTap: () {},
+                    // ),
+                    Row(
+                      children: [
+                        Container(
+                          height: 40,
+                          width: 40,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: const Color.fromARGB(255, 166, 176, 219),
+                          ),
+                          child: Padding(
+                            padding: const EdgeInsets.all(10),
+                            child: Image.asset("assets/icons/global.png"),
+                          ),
                         ),
-                        child: settingItem(
-                          text: AppLocalizations.of(context)!.logout,
-                          icon: Image.asset("assets/icons/logout.png"),
-                          onTap: () async {
-                            final confirmed = await showConfirmDialog(
-                              context,
-                              title: l10n.logoutTitle,
-                              message: l10n.logoutMessage,
-                              confirmText: l10n.logout,
-                              icon: Icons.logout_rounded,
-                              destructive: true,
-                            );
-                            if (!context.mounted) return;
-                            if (confirmed) logout(context);
-                          },
+                        const SizedBox(width: 10),
+                        Text(
+                          AppLocalizations.of(context)!.changeLanguage,
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w400,
+                          ),
                         ),
-                      ),
+                        const Spacer(),
+                        Container(
+                          padding: const EdgeInsets.all(2),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(12),
+                            color: const Color.fromARGB(255, 166, 176, 219),
+                          ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              languageOption("BH"),
+                              languageOption("ENG"),
+                            ],
+                          ),
+                        ),
+                      ],
                     ),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 15,
-                        vertical: 15,
-                      ),
-                      child: Container(
-                        padding: const EdgeInsets.all(15),
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(12),
-                          color: Theme.of(context).colorScheme.surface,
+
+                    const SizedBox(height: 15),
+                    settingItem(
+                      text: AppLocalizations.of(context)!.history,
+                      icon: Image.asset("assets/icons/menu.png"),
+                      onTap: () {
+                        context.push(RouteNames.viewalllogs);
+                      },
+                    ),
+                    const SizedBox(height: 15),
+                    settingItem(
+                      text: AppLocalizations.of(context)!.privacyPolicy,
+
+                      icon: Image.asset("assets/icons/policy.png"),
+                      onTap: () {
+                        context.push(RouteNames.privacyPolicy);
+                      },
+                    ),
+                    const SizedBox(height: 20),
+                    Row(
+                      children: [
+                        Container(
+                          height: 40,
+                          width: 40,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: const Color.fromARGB(255, 166, 176, 219),
+                          ),
+                          child: Padding(
+                            padding: const EdgeInsets.all(10),
+                            child: Image.asset("assets/icons/idea.png"),
+                          ),
                         ),
-                        child: settingItem(
-                          text: AppLocalizations.of(context)!.accountDelete,
-                          icon: Image.asset("assets/icons/accout_delete.png"),
-                          onTap: () {
-                            showDeleteAccountDialog(context);
-                          },
+                        const SizedBox(width: 10),
+                        Text(
+                          AppLocalizations.of(context)!.theme,
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w400,
+                          ),
                         ),
-                      ),
+                        const Spacer(),
+                        Container(
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(12),
+                            color: const Color.fromARGB(255, 166, 176, 219),
+                          ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              GestureDetector(
+                                onTap: () {
+                                  ref
+                                      .read(themeProvider.notifier)
+                                      .changeTheme(ThemeMode.light);
+                                },
+                                child: themeOption("Light"),
+                              ),
+                              GestureDetector(
+                                onTap: () {
+                                  ref
+                                      .read(themeProvider.notifier)
+                                      .changeTheme(ThemeMode.dark);
+                                },
+                                child: themeOption("Dark"),
+                              ),
+                              GestureDetector(
+                                onTap: () {
+                                  ref
+                                      .read(themeProvider.notifier)
+                                      .changeTheme(ThemeMode.system);
+                                },
+                                child: themeOption("System"),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
                     ),
                   ],
                 ),
               ),
-            ],
-          ),
+            ),
+            const SizedBox(height: 25),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 15),
+              child: Container(
+                padding: const EdgeInsets.all(15),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(12),
+                  color: Theme.of(context).colorScheme.surface,
+                ),
+                child: settingItem(
+                  text: AppLocalizations.of(context)!.logout,
+                  icon: Image.asset("assets/icons/logout.png"),
+                  onTap: () async {
+                    final confirmed = await showConfirmDialog(
+                      context,
+                      title: l10n.logoutTitle,
+                      message: l10n.logoutMessage,
+                      confirmText: l10n.logout,
+                      icon: Icons.logout_rounded,
+                      destructive: true,
+                    );
+                    if (!context.mounted) return;
+                    if (confirmed) logout(context);
+                  },
+                ),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 15),
+              child: Container(
+                padding: const EdgeInsets.all(15),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(12),
+                  color: Theme.of(context).colorScheme.surface,
+                ),
+                child: settingItem(
+                  text: AppLocalizations.of(context)!.accountDelete,
+                  icon: Image.asset("assets/icons/accout_delete.png"),
+                  onTap: () {
+                    showDeleteAccountDialog(context);
+                  },
+                ),
+              ),
+            ),
+          ],
         ),
       ),
     );

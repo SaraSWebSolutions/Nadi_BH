@@ -115,7 +115,14 @@ class _EditProfileState extends State<EditProfile> {
       AppLogger.error(" Invalid mobile number");
       return;
     }
+    // if (floorController.text.trim().isEmpty) {
+    //   ScaffoldMessenger.of(
+    //     context,
+    //   ).showSnackBar(const SnackBar(content: Text("Floor number is required")));
 
+    //   setState(() => _isLoading = false); // ✅ FIX
+    //   return;
+    // }
     // Build payload as Map (not JSON string)
     final Map<String, dynamic> payload = {
       "userId": userId,
@@ -198,39 +205,44 @@ class _EditProfileState extends State<EditProfile> {
 
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-      body: SafeArea(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Padding(
-              padding: const EdgeInsets.only(
-                left: 15,
-                right: 15,
-                top: 20,
-                bottom: 0,
-              ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  AppCircleIconButton(
-                    icon: Icons.arrow_back,
-                    onPressed: () {
-                      context.pop();
-                    },
-                  ),
-                  Text(
-                    loc.editProfile,
-                    style: TextStyle(
-                      fontWeight: FontWeight.w600,
-                      fontSize: 20,
-                      color: Theme.of(context).colorScheme.onSurface,
-                    ),
-                  ),
-                  const Text(""),
-                ],
+
+      appBar: AppBar(
+        backgroundColor: AppColors.app_background_clr,
+        elevation: 0,
+        centerTitle: true,
+
+        title: Text(
+          AppLocalizations.of(context)!.editProfile,
+          style: const TextStyle(
+            color: Colors.white,
+            fontSize: 20,
+            fontWeight: FontWeight.w600,
+            fontFamily: 'Poppins',
+          ),
+        ),
+
+        leadingWidth: 60,
+        leading: Padding(
+          padding: const EdgeInsets.only(left: 10),
+          child: Align(
+            alignment: Alignment.centerLeft,
+            child: SizedBox(
+              width: 38,
+              height: 38,
+              child: FittedBox(
+                child: AppCircleIconButton(
+                  icon: Icons.arrow_back,
+                  onPressed: () => context.pop(),
+                ),
               ),
             ),
-            Divider(),
+          ),
+        ),
+      ),
+
+      body: SafeArea(
+        child: Column(
+          children: [
             Expanded(
               child: SingleChildScrollView(
                 child: Padding(
@@ -309,14 +321,19 @@ class _EditProfileState extends State<EditProfile> {
                             fontWeight: FontWeight.w600,
                           ),
                         ),
-                        const SizedBox(height: 5),
+                        // const SizedBox(height: 5),
                         AppTextField(
                           controller: fullNameController,
+                          inputFormatters: [
+                            FilteringTextInputFormatter.allow(
+                              RegExp(r'[a-zA-Z\u0600-\u06FF ]'),
+                            ),
+                          ],
                           validator: (v) => (v == null || v.trim().isEmpty)
                               ? loc.fullNameRequired
                               : null,
                         ),
-                        const SizedBox(height: 15),
+                        const SizedBox(height: 6),
 
                         // Email Address
                         Text(
@@ -342,7 +359,7 @@ class _EditProfileState extends State<EditProfile> {
                             return null;
                           },
                         ),
-                        const SizedBox(height: 15),
+                        const SizedBox(height: 6),
 
                         // Phone Number
                         Text(
@@ -378,7 +395,7 @@ class _EditProfileState extends State<EditProfile> {
                             return null;
                           },
                         ),
-                        const SizedBox(height: 15),
+                        const SizedBox(height: 6),
 
                         // Building (Single field)
                         Text(
@@ -389,8 +406,17 @@ class _EditProfileState extends State<EditProfile> {
                           ),
                         ),
                         const SizedBox(height: 5),
-                        AppTextField(controller: buildingController),
-                        const SizedBox(height: 15),
+                        AppTextField(
+                          controller: buildingController,
+                          validator: (v) {
+                            if (v == null || v.trim().isEmpty) {
+                              return loc.buildingRequired;
+                            }
+                            return null;
+                          },
+                        ),
+
+                        const SizedBox(height: 6),
 
                         Row(
                           children: [
@@ -411,25 +437,40 @@ class _EditProfileState extends State<EditProfile> {
                               ),
                             ),
                             const SizedBox(width: 16),
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    loc.floor,
-                                    style: TextStyle(
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.w600,
+                            if (propertyType != "villa") ...[
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      loc.floor,
+                                      style: TextStyle(
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.w600,
+                                      ),
                                     ),
-                                  ),
-                                  const SizedBox(height: 5),
-                                  AppTextField(controller: floorController),
-                                ],
+                                    const SizedBox(height: 5),
+                                    AppTextField(
+                                      controller: floorController,
+                                      keyboardType: TextInputType.number,
+                                      inputFormatters: [
+                                        FilteringTextInputFormatter.digitsOnly,
+                                      ],
+                                      validator: (v) {
+                                        if (v == null || v.trim().isEmpty) {
+                                          return loc.floorRequired;
+                                        }
+                                        return null;
+                                      },
+                                    ),
+                                  ],
+                                ),
                               ),
-                            ),
+                            ],
                           ],
                         ),
-                        const SizedBox(height: 15),
+
+                        const SizedBox(height: 6),
 
                         // More fields
                         if (propertyType != "villa") ...[
@@ -491,8 +532,10 @@ class _EditProfileState extends State<EditProfile> {
                                 isLoading: _isLoading,
 
                                 onPressed: () async {
-                                  if (!_formKey.currentState!.validate())
+                                  if (!_formKey.currentState!.validate()) {
                                     return;
+                                  }
+
                                   final confirmed = await showConfirmDialog(
                                     context,
                                     title: loc.saveChangesTitle,
@@ -500,7 +543,9 @@ class _EditProfileState extends State<EditProfile> {
                                     confirmText: loc.save,
                                     icon: Icons.save_outlined,
                                   );
+
                                   if (!confirmed) return;
+
                                   await saveProfile();
                                 },
                                 color: AppColors.app_background_clr,

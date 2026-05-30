@@ -1169,4 +1169,22 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get enter_memberFullName => 'Enter member full name';
+
+  @override
+  String get buildingRequired => 'Building is required';
+
+  @override
+  String get floorRequired => 'Floor number is required';
+
+  @override
+  String get pleaseEnterOtp => 'Please enter OTP';
+
+  @override
+  String get otpMustBe4Digits => 'OTP must be 4 digits';
+
+  @override
+  String get ofText => 'of';
+
+  @override
+  String get added => 'Added';
 }

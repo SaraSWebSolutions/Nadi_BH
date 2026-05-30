@@ -5,6 +5,7 @@ import 'package:nadi_user_app/core/constants/app_consts.dart';
 import 'package:nadi_user_app/core/network/dio_client.dart';
 import 'package:nadi_user_app/l10n/app_localizations.dart';
 import 'package:nadi_user_app/providers/Privacypolicy_Provider.dart';
+import 'package:nadi_user_app/widgets/app_back.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class PrivacyPolicyView extends ConsumerWidget {
@@ -17,10 +18,37 @@ class PrivacyPolicyView extends ConsumerWidget {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     return Scaffold(
       appBar: AppBar(
-        title: Text(l10n.privacyPolicy, style: TextStyle(color: Colors.white)),
         backgroundColor: AppColors.app_background_clr,
-        iconTheme: const IconThemeData(color: Colors.white),
         elevation: 0,
+        centerTitle: true,
+
+        title: Text(
+          AppLocalizations.of(context)!.privacyPolicy,
+          style: const TextStyle(
+            color: Colors.white,
+            fontSize: 20,
+            fontWeight: FontWeight.w600,
+            fontFamily: 'Poppins',
+          ),
+        ),
+
+        leadingWidth: 60,
+        leading: Padding(
+          padding: const EdgeInsets.only(left: 10),
+          child: Align(
+            alignment: Alignment.centerLeft,
+            child: SizedBox(
+              width: 38,
+              height: 38,
+              child: FittedBox(
+                child: AppCircleIconButton(
+                  icon: Icons.arrow_back,
+                  onPressed: () => Navigator.pop(context),
+                ),
+              ),
+            ),
+          ),
+        ),
       ),
       body: privacyAsync.when(
         loading: () => const Center(child: CircularProgressIndicator()),

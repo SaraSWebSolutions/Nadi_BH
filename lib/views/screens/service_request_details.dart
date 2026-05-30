@@ -24,6 +24,8 @@ class ServiceRequestDetails extends StatelessWidget {
         (serviceData["statusTimestamps"] as Map<String, dynamic>?) ?? {};
     final String serviceStatus = serviceData["serviceStatus"];
     final List acceptedTechnicians = serviceData["acceptedTechnicians"] ?? [];
+    String? serviceError;
+    String? issueError;
 
     final l10n = AppLocalizations.of(context)!;
     final steps = [

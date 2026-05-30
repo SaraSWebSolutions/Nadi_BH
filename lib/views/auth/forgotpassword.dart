@@ -136,7 +136,7 @@ class _ForgotpasswordState extends State<Forgotpassword> {
                               controller: _emailCtrl,
                               validator: (v) {
                                 if (v == null || v.trim().isEmpty) {
-                                  return loc.emailRequired;
+                                  return loc.enterEmail;
                                 }
 
                                 if (!RegExp(

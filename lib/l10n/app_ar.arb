@@ -455,7 +455,14 @@
        "enteryour_build": "أدخل اسم المبنى",
   "enteraptno": "أدخل رقم الشقة",
   "enterFloorno":"أدخل رقم الطابق",
-    "enter_memberFullName": "أدخل اسم العضو بالكامل"
+    "enter_memberFullName": "أدخل اسم العضو بالكامل",
+     "buildingRequired": "المبنى مطلوب",
+  "floorRequired": "رقم الطابق مطلوب",
+  "pleaseEnterOtp": "يرجى إدخال رمز التحقق",
+  "otpMustBe4Digits": "يجب أن يتكون رمز التحقق من 4 أرقام",
+  "member": "العضو",
+  "ofText": "من",
+  "added": "تمت الإضافة"
 
 
 }

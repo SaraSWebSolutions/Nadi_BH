@@ -952,7 +952,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get discard => 'إلغاء';
 
   @override
-  String get member => 'عضو';
+  String get member => 'العضو';
 
   @override
   String get account => 'الحساب';
@@ -1159,4 +1159,22 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get enter_memberFullName => 'أدخل اسم العضو بالكامل';
+
+  @override
+  String get buildingRequired => 'المبنى مطلوب';
+
+  @override
+  String get floorRequired => 'رقم الطابق مطلوب';
+
+  @override
+  String get pleaseEnterOtp => 'يرجى إدخال رمز التحقق';
+
+  @override
+  String get otpMustBe4Digits => 'يجب أن يتكون رمز التحقق من 4 أرقام';
+
+  @override
+  String get ofText => 'من';
+
+  @override
+  String get added => 'تمت الإضافة';
 }
