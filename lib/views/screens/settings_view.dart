@@ -273,34 +273,110 @@ class _SettingsViewState extends ConsumerState<SettingsView> {
                           ],
                         ),
                 ),
+                actionsAlignment: MainAxisAlignment.center,
+                actionsPadding: const EdgeInsets.only(
+                  left: 20,
+                  right: 20,
+                  bottom: 20,
+                ),
                 actions: [
-                  TextButton(
-                    onPressed: () {
-                      Navigator.pop(context);
-                    },
-                    child: Text(l10n.cancel),
+                  SizedBox(
+                    width: 120,
+                    height: 48,
+                    child: OutlinedButton(
+                      onPressed: () => Navigator.pop(context),
+                      style: OutlinedButton.styleFrom(
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(16),
+                        ),
+                        side: BorderSide(color: Colors.grey.shade400),
+                      ),
+                      child: Text(
+                        l10n.cancel,
+                        style: TextStyle(
+                          color: Theme.of(context).colorScheme.onSurface,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
                   ),
-                  TextButton(
-                    onPressed: () async {
-                      if (selectedReasonId == null) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text(l10n.pleaseSelectReason)),
+
+                  const SizedBox(width: 12),
+
+                  SizedBox(
+                    width: 120,
+                    height: 48,
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.red,
+                        foregroundColor: Colors.white,
+                        textStyle: const TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.w600,
+                        ),
+                        elevation: 0,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(16),
+                        ),
+                      ),
+                      onPressed: () async {
+                        if (selectedReasonId == null) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text(l10n.pleaseSelectReason)),
+                          );
+                          return;
+                        }
+
+                        await accountDelete.fetchdeleteaccount(
+                          reasonId: selectedReasonId!,
                         );
-                        return;
-                      }
-                      await accountDelete.fetchdeleteaccount(
-                        reasonId: selectedReasonId!,
-                      );
-                      await AppPreferences.clearAll();
-                      await AppPreferences.setLoggedIn(false);
-                      if (context.mounted) context.go(RouteNames.splash);
-                    },
-                    child: Text(
-                      l10n.delete,
-                      style: TextStyle(color: Colors.red),
+
+                        await AppPreferences.clearAll();
+                        await AppPreferences.setLoggedIn(false);
+
+                        if (context.mounted) {
+                          context.go(RouteNames.splash);
+                        }
+                      },
+                      child: Text(
+                        l10n.delete,
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.w600,
+                          fontSize: 16,
+                        ),
+                      ),
                     ),
                   ),
                 ],
+                // actions: [
+                //   TextButton(
+                //     onPressed: () {
+                //       Navigator.pop(context);
+                //     },
+                //     child: Text(l10n.cancel),
+                //   ),
+                //   TextButton(
+                //     onPressed: () async {
+                //       if (selectedReasonId == null) {
+                //         ScaffoldMessenger.of(context).showSnackBar(
+                //           SnackBar(content: Text(l10n.pleaseSelectReason)),
+                //         );
+                //         return;
+                //       }
+                //       await accountDelete.fetchdeleteaccount(
+                //         reasonId: selectedReasonId!,
+                //       );
+                //       await AppPreferences.clearAll();
+                //       await AppPreferences.setLoggedIn(false);
+                //       if (context.mounted) context.go(RouteNames.splash);
+                //     },
+                //     child: Text(
+                //       l10n.delete,
+                //       style: TextStyle(color: Colors.red),
+                //     ),
+                //   ),
+                // ],
               );
             },
           );
@@ -370,10 +446,10 @@ class _SettingsViewState extends ConsumerState<SettingsView> {
               width: 38,
               height: 38,
               child: FittedBox(
-                child: AppCircleIconButton(
-                  icon: Icons.arrow_back,
-                  onPressed: () => context.pop(),
-                ),
+                // child: AppCircleIconButton(
+                //   icon: Icons.arrow_back,
+                //   onPressed: () => context.pop(),
+                // ),
               ),
             ),
           ),

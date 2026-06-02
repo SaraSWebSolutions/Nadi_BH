@@ -26,6 +26,7 @@ class ServiceRequestDetails extends StatelessWidget {
     final List acceptedTechnicians = serviceData["acceptedTechnicians"] ?? [];
     String? serviceError;
     String? issueError;
+    final isRTL = Directionality.of(context) == TextDirection.rtl;
 
     final l10n = AppLocalizations.of(context)!;
     final steps = [
@@ -77,11 +78,13 @@ class ServiceRequestDetails extends StatelessWidget {
           children: [
             /// HEADER IMAGE (MULTI IMAGE)
             Stack(
+              alignment: isRTL ? Alignment.topRight : Alignment.topLeft,
+
               children: [
                 ServiceImagePager(images: images, height: 220),
-                Positioned(
+                PositionedDirectional(
                   top: 50,
-                  left: 20,
+                  start: 20,
                   child: AppCircleIconButton(
                     icon: Icons.arrow_back,
                     onPressed: () => Navigator.pop(context),

@@ -119,7 +119,7 @@ class _AboutViewState extends ConsumerState<AboutView> {
                               //     : Colors.white.withOpacity(0.25),
                             ),
                             child: Icon(
-                              isRTL ? Icons.arrow_forward : Icons.arrow_back,
+                              isRTL ? Icons.arrow_back : Icons.arrow_back,
                               color: Colors.white,
                               size: 20,
                             ),

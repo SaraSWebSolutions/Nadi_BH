@@ -280,7 +280,7 @@ class _AccountFormViewState extends State<AccountFormView> {
             validator: (value) =>
                 controller.validateConfirmPassword(value, l10n),
           ),
-          const SizedBox(height: 40),
+          const SizedBox(height: 30),
 
           AppButton(
             text: l10n.continueButton,

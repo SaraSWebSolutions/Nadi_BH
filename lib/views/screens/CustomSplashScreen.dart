@@ -218,7 +218,10 @@ class _CustomSplashScreenState extends State<CustomSplashScreen>
     _setupAnimation();
 
     WidgetsBinding.instance.addPostFrameCallback((_) async {
-      await Future.wait([_initNotifications(), _loadSplashMedia()]);
+      Future.wait([_initNotifications(), _loadSplashMedia()]).then((_) {
+        _decideNavigation();
+      });
+      ;
 
       if (mounted) {
         setState(() {
@@ -320,20 +323,31 @@ class _CustomSplashScreenState extends State<CustomSplashScreen>
   Future<void> _decideNavigation() async {
     if (_hasNavigated) return;
     _hasNavigated = true;
-
+    final isFirstLaunch = !(await AppPreferences.hasSeenAbout());
     final isLoggedIn = await AppPreferences.isLoggedIn();
-    final hasSeenAbout = await AppPreferences.hasSeenAbout();
     final token = await AppPreferences.getToken();
 
-    if (!mounted) return;
-
-    if (!hasSeenAbout) {
+    if (isFirstLaunch) {
       context.go(RouteNames.language);
-    } else if (token != null && token.isNotEmpty) {
+    } else if (isLoggedIn && token.isNotEmpty) {
       context.go(RouteNames.bottomnav);
     } else {
       context.go(RouteNames.login);
     }
+
+    // final isLoggedIn = await AppPreferences.isLoggedIn();
+    // final hasSeenAbout = await AppPreferences.hasSeenAbout();
+    // final token = await AppPreferences.getToken();
+
+    // if (!mounted) return;
+
+    // if (!hasSeenAbout) {
+    //   context.go(RouteNames.language);
+    // } else if (token != null && token.isNotEmpty) {
+    //   context.go(RouteNames.bottomnav);
+    // } else {
+    //   context.go(RouteNames.login);
+    // }
   }
 
   // ================= UI =================

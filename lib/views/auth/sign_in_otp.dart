@@ -742,6 +742,9 @@ class _SignInOtpState extends State<SignInOtp> {
 
                           child: Form(
                             key: _formKey,
+                            autovalidateMode:
+                                AutovalidateMode.onUserInteraction,
+
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
@@ -759,6 +762,11 @@ class _SignInOtpState extends State<SignInOtp> {
                                 AppTextField(
                                   label: l10n.enterPhoneNumber,
                                   keyboardType: TextInputType.phone,
+                                  onChanged: (_) {
+                                    if (_formKey.currentState != null) {
+                                      _formKey.currentState!.validate();
+                                    }
+                                  },
                                   controller: _phoneController,
                                   prefixText: "+973 ",
                                   maxLength: 8,

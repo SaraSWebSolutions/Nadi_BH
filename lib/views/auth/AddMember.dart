@@ -1233,6 +1233,8 @@ class _AddmemberState extends State<Addmember> {
   int? editingIndex;
   int currentIndex = 0;
   bool _showFamilyCountError = false;
+
+  bool _isFamilyCountEditable = true;
   final TextEditingController nameController = TextEditingController();
   final TextEditingController mobileController = TextEditingController();
 
@@ -1511,12 +1513,15 @@ class _AddmemberState extends State<Addmember> {
 
     _totalMembers = 0;
     _currentMemberIndex = 1;
+    currentIndex = 0;
 
-    // _isFamilyCountLocked = false;
-    //_hideBottomButton = false;
+    familyMembers.clear(); // ✅ IMPORTANT FIX
+
     _isAddress = false;
 
     addressController.clear();
+
+    setState(() {}); // ✅ IMPORTANT FIX
   }
   // void updateMemberCount(int count) {
   //   setState(() {
@@ -1748,13 +1753,17 @@ class _AddmemberState extends State<Addmember> {
   //   );
   // }
   bool isMemberComplete(Map<String, dynamic> member) {
+    final address = member["address"];
+
     return (member["fullName"] ?? "").toString().trim().isNotEmpty &&
         (member["mobile"] ?? "").toString().trim().isNotEmpty &&
         (member["email"] ?? "").toString().trim().isNotEmpty &&
         member["relation"] != null &&
         member["gender"] != null &&
-        member["address"] != null &&
-        (member["address"]["city"] ?? "").toString().trim().isNotEmpty;
+        address != null &&
+        (address["building"] ?? "").toString().trim().isNotEmpty &&
+        address["blockId"] != null &&
+        address["roadId"] != null;
   }
 
   Future<void> _submitAllMembers() async {
@@ -1983,30 +1992,344 @@ class _AddmemberState extends State<Addmember> {
                                         inputFormatters: [
                                           FilteringTextInputFormatter
                                               .digitsOnly,
+                                          LengthLimitingTextInputFormatter(2),
                                         ],
-                                        // validator: (value) => controller
-                                        //     .validatefamilycount(value, l10n),
                                         onChanged: (val) {
-                                          final count = int.tryParse(val);
+                                          updateCurrentMember();
 
-                                          /// Prevent 0
-                                          if (count == null || count <= 0) {
-                                            controller.familyCount.clear();
+                                          /// Allow temporary empty state while editing
+                                          if (val.isEmpty) {
+                                            return;
+                                          }
 
-                                            setState(() {
-                                              _totalMembers = 0;
-                                            });
+                                          final current =
+                                              familyMembers.isNotEmpty
+                                              ? familyMembers[currentIndex]
+                                              : null;
+
+                                          /// Don't allow count change if current member incomplete
+                                          if (current != null &&
+                                              !isMemberComplete(current)) {
+                                            final previousValue = _totalMembers
+                                                .toString();
+
+                                            controller
+                                                .familyCount
+                                                .value = TextEditingValue(
+                                              text: previousValue,
+                                              selection:
+                                                  TextSelection.collapsed(
+                                                    offset:
+                                                        previousValue.length,
+                                                  ),
+                                            );
+
+                                            FocusScope.of(context).unfocus();
+
+                                            SnackbarHelper.showError(
+                                              context,
+                                              "Please fill current member first",
+                                            );
 
                                             return;
                                           }
 
-                                          /// VALID
+                                          final count = int.tryParse(val);
+
+                                          if (count == null) {
+                                            return;
+                                          }
+
+                                          /// Prevent 0
+                                          if (count <= 0) {
+                                            controller
+                                                .familyCount
+                                                .value = TextEditingValue(
+                                              text: _totalMembers.toString(),
+                                              selection:
+                                                  TextSelection.collapsed(
+                                                    offset: _totalMembers
+                                                        .toString()
+                                                        .length,
+                                                  ),
+                                            );
+
+                                            SnackbarHelper.showError(
+                                              context,
+                                              "Family count must be greater than 0",
+                                            );
+
+                                            return;
+                                          }
+
+                                          /// Limit to 10
+                                          if (count >= 10) {
+                                            controller.familyCount.value =
+                                                const TextEditingValue(
+                                                  text: "10",
+                                                  selection:
+                                                      TextSelection.collapsed(
+                                                        offset: 2,
+                                                      ),
+                                                );
+
+                                            SnackbarHelper.showError(
+                                              context,
+                                              "Maximum family count is 10",
+                                            );
+
+                                            _handleMemberCountChange(10);
+
+                                            return;
+                                          }
+
                                           setState(() {
                                             _showFamilyCountError = false;
                                           });
+                                          final previousCount = _totalMembers;
+
                                           _handleMemberCountChange(count);
+
+                                          /// User increased count
+                                          if (count > previousCount) {
+                                            /// Find first incomplete member
+                                            final nextIndex = familyMembers
+                                                .indexWhere(
+                                                  (m) => !isMemberComplete(m),
+                                                );
+
+                                            if (nextIndex != -1) {
+                                              currentIndex = nextIndex;
+
+                                              loadMember(nextIndex);
+
+                                              setState(() {
+                                                _currentMemberIndex =
+                                                    nextIndex + 1;
+                                              });
+
+                                              WidgetsBinding.instance
+                                                  .addPostFrameCallback((_) {
+                                                    _nameFocus.requestFocus();
+                                                  });
+                                            }
+
+                                            return;
+                                          }
+                                          // final previousCount = _totalMembers;
+
+                                          // /// User is increasing count
+                                          // if (count > previousCount) {
+                                          //   /// Allow only next member creation
+                                          //   final newCount = previousCount + 1;
+
+                                          //   controller.familyCount.value =
+                                          //       TextEditingValue(
+                                          //         text: newCount.toString(),
+                                          //         selection:
+                                          //             TextSelection.collapsed(
+                                          //               offset: newCount
+                                          //                   .toString()
+                                          //                   .length,
+                                          //             ),
+                                          //       );
+
+                                          //   _handleMemberCountChange(newCount);
+
+                                          //   currentIndex = newCount - 1;
+
+                                          //   loadMember(currentIndex);
+
+                                          //   setState(() {
+                                          //     _currentMemberIndex =
+                                          //         currentIndex + 1;
+                                          //   });
+
+                                          //   WidgetsBinding.instance
+                                          //       .addPostFrameCallback((_) {
+                                          //         _nameFocus.requestFocus();
+                                          //       });
+
+                                          //   return;
+                                          // }
+
+                                          // /// User decreased count
+                                          // _handleMemberCountChange(count);
+
+                                          // if (familyMembers.isNotEmpty) {
+                                          //   currentIndex = currentIndex.clamp(
+                                          //     0,
+                                          //     familyMembers.length - 1,
+                                          //   );
+
+                                          //   loadMember(currentIndex);
+
+                                          //   setState(() {
+                                          //     _currentMemberIndex =
+                                          //         currentIndex + 1;
+                                          //   });
+                                          // }
                                         },
                                       ),
+
+                                      // TextFormField(
+                                      //   // readOnly:
+                                      //   //     familyMembers.isNotEmpty &&
+                                      //   //     !isMemberComplete(
+                                      //   //       familyMembers[currentIndex],
+                                      //   //     ),
+                                      //   controller: controller.familyCount,
+                                      //   keyboardType: TextInputType.number,
+                                      //   textAlign: TextAlign.center,
+                                      //   style: const TextStyle(
+                                      //     fontSize: 22,
+                                      //     fontWeight: FontWeight.w700,
+                                      //   ),
+                                      //   decoration: const InputDecoration(
+                                      //     border: InputBorder.none,
+                                      //     counterText: "",
+                                      //   ),
+                                      //   maxLength: 2,
+                                      //   inputFormatters: [
+                                      //     FilteringTextInputFormatter
+                                      //         .digitsOnly,
+                                      //   ],
+                                      //   onChanged: (val) {
+                                      //     updateCurrentMember();
+
+                                      //     final current =
+                                      //         familyMembers.isNotEmpty
+                                      //         ? familyMembers[currentIndex]
+                                      //         : null;
+
+                                      //     /// Block editing if current member incomplete
+                                      //     if (current != null &&
+                                      //         !isMemberComplete(current)) {
+                                      //       final previousValue = _totalMembers
+                                      //           .toString();
+
+                                      //       controller
+                                      //           .familyCount
+                                      //           .value = TextEditingValue(
+                                      //         text: previousValue,
+                                      //         selection:
+                                      //             TextSelection.collapsed(
+                                      //               offset:
+                                      //                   previousValue.length,
+                                      //             ),
+                                      //       );
+
+                                      //       FocusScope.of(context).unfocus();
+
+                                      //       SnackbarHelper.showError(
+                                      //         context,
+                                      //         "Please fill current member first",
+                                      //       );
+
+                                      //       return;
+                                      //     }
+
+                                      //     final count = int.tryParse(val);
+
+                                      //     if (count == null || count <= 0) {
+                                      //       controller
+                                      //           .familyCount
+                                      //           .value = TextEditingValue(
+                                      //         text: _totalMembers.toString(),
+                                      //         selection:
+                                      //             TextSelection.collapsed(
+                                      //               offset: _totalMembers
+                                      //                   .toString()
+                                      //                   .length,
+                                      //             ),
+                                      //       );
+                                      //       return;
+                                      //     }
+
+                                      //     setState(() {
+                                      //       _showFamilyCountError = false;
+                                      //     });
+
+                                      //     _handleMemberCountChange(count);
+                                      //   },
+                                      //   // onChanged: (val) {
+                                      //   //   updateCurrentMember();
+
+                                      //   //   final count = int.tryParse(val);
+
+                                      //   //   if (count != null &&
+                                      //   //       count > _totalMembers) {
+                                      //   //     final current =
+                                      //   //         familyMembers.isNotEmpty
+                                      //   //         ? familyMembers[currentIndex]
+                                      //   //         : null;
+
+                                      //   //     if (current != null &&
+                                      //   //         !isMemberComplete(current)) {
+                                      //   //       controller.familyCount.text =
+                                      //   //           _totalMembers.toString();
+
+                                      //   //       controller.familyCount.selection =
+                                      //   //           TextSelection.fromPosition(
+                                      //   //             TextPosition(
+                                      //   //               offset: controller
+                                      //   //                   .familyCount
+                                      //   //                   .text
+                                      //   //                   .length,
+                                      //   //             ),
+                                      //   //           );
+
+                                      //   //       FocusScope.of(context).unfocus();
+
+                                      //   //       SnackbarHelper.showError(
+                                      //   //         context,
+                                      //   //         "Please fill current member first",
+                                      //   //       );
+
+                                      //   //       return;
+                                      //   //     }
+                                      //   //   }
+
+                                      //   //   if (count == null || count <= 0) {
+                                      //   //     controller.familyCount.clear();
+
+                                      //   //     setState(() {
+                                      //   //       _totalMembers = 0;
+                                      //   //     });
+
+                                      //   //     return;
+                                      //   //   }
+
+                                      //   //   setState(() {
+                                      //   //     _showFamilyCountError = false;
+                                      //   //   });
+
+                                      //   //   _handleMemberCountChange(count);
+                                      //   // },
+
+                                      //   // validator: (value) => controller
+                                      //   //     .validatefamilycount(value, l10n),
+                                      //   // onChanged: (val) {
+                                      //   //   final count = int.tryParse(val);
+
+                                      //   //   /// Prevent 0
+                                      //   //   if (count == null || count <= 0) {
+                                      //   //     controller.familyCount.clear();
+
+                                      //   //     setState(() {
+                                      //   //       _totalMembers = 0;
+                                      //   //     });
+
+                                      //   //     return;
+                                      //   //   }
+
+                                      //   //   /// VALID
+                                      //   //   setState(() {
+                                      //   //     _showFamilyCountError = false;
+                                      //   //   });
+                                      //   //   _handleMemberCountChange(count);
+                                      //   // },
+                                      // ),
                                     ),
                                   ),
 
@@ -2018,26 +2341,50 @@ class _AddmemberState extends State<Addmember> {
 
                                     /// PLUS
                                     onTap: () {
+                                      final current = familyMembers.isNotEmpty
+                                          ? familyMembers[currentIndex]
+                                          : null;
+
+                                      /// 1. If current form is empty → DO NOT MOVE
+                                      if (current != null &&
+                                          !isMemberComplete(current)) {
+                                        SnackbarHelper.showError(
+                                          context,
+                                          "Please fill current member first",
+                                        );
+                                        return;
+                                      }
+
+                                      /// 2. Save current before moving
                                       updateCurrentMember();
 
-                                      final current =
+                                      /// 3. Increase count
+                                      final currentCount =
                                           int.tryParse(
                                             controller.familyCount.text.trim(),
                                           ) ??
                                           0;
 
-                                      if (current >= 10) return;
-
-                                      final newCount = current + 1;
+                                      final newCount = currentCount + 1;
 
                                       controller.familyCount.text = newCount
                                           .toString();
 
                                       _handleMemberCountChange(newCount);
 
-                                      /// Open newly added member
-                                      currentIndex = newCount - 1;
+                                      /// 4. Move to new form only if needed
+                                      if (familyMembers.length < newCount) {
+                                        familyMembers.add({
+                                          "fullName": "",
+                                          "mobile": "",
+                                          "email": "",
+                                          "relation": null,
+                                          "gender": null,
+                                          "address": {},
+                                        });
+                                      }
 
+                                      currentIndex = newCount - 1;
                                       loadMember(currentIndex);
 
                                       setState(() {
@@ -2083,7 +2430,7 @@ class _AddmemberState extends State<Addmember> {
                                   child: LinearProgressIndicator(
                                     value: _totalMembers == 0
                                         ? 0
-                                        : ((currentIndex + 1) / _totalMembers),
+                                        : (completedMembers / _totalMembers),
                                     minHeight: 8,
                                     backgroundColor: Colors.grey.shade200,
                                     valueColor: AlwaysStoppedAnimation(
@@ -2300,44 +2647,114 @@ class _AddmemberState extends State<Addmember> {
                     : l10n.next,
 
                 isLoading: _isLoading,
+
+                // onPressed: () async {
+                //   final isFamilyCountEmpty = controller.familyCount.text
+                //       .trim()
+                //       .isEmpty;
+
+                //   setState(() {
+                //     _showFamilyCountError = isFamilyCountEmpty;
+                //   });
+
+                //   // Member form validation
+                //   final isMemberValid =
+                //       widget.formKey.currentState?.validate() ?? false;
+
+                //   if (!isMemberValid) {
+                //     return; // field errors will show below fields
+                //   }
+
+                //   // Address must be expanded
+                //   if (!_isAddress) {
+                //     SnackbarHelper.showError(context, l10n.addAddressError);
+                //     return;
+                //   }
+
+                //   // Address validation
+                //   final isAddressValid =
+                //       _addressFormKey.currentState?.validate() ?? false;
+
+                //   if (!isAddressValid) {
+                //     return; // address field errors show below fields
+                //   }
+
+                //   if (isFamilyCountEmpty) {
+                //     return;
+                //   }
+
+                //   /// Save current member + address locally
+                //   updateCurrentMember();
+
+                //   final completed = completedMembers;
+
+                //   if (completed >= _totalMembers) {
+                //     await _submitAllMembers();
+                //     return;
+                //   }
+
+                //   /// Load next member
+                //   final nextIndex = familyMembers.indexWhere(
+                //     (m) => !isMemberComplete(m),
+                //   );
+
+                //   if (nextIndex != -1) {
+                //     loadMember(nextIndex);
+
+                //     setState(() {
+                //       currentIndex = nextIndex;
+                //       _currentMemberIndex = nextIndex + 1;
+                //     });
+
+                //     WidgetsBinding.instance.addPostFrameCallback((_) {
+                //       _nameFocus.requestFocus();
+                //     });
+                //   }
+                // },
                 onPressed: () async {
-                  final isFamilyCountEmpty = controller.familyCount.text
+                  final l10n = AppLocalizations.of(context)!;
+
+                  final isCountEmpty = controller.familyCount.text
                       .trim()
                       .isEmpty;
+                  if (isCountEmpty) {
+                    setState(() => _showFamilyCountError = true);
+                    return;
+                  }
 
-                  setState(() {
-                    _showFamilyCountError = isFamilyCountEmpty;
-                  });
-
-                  // Member form validation
                   final isMemberValid =
                       widget.formKey.currentState?.validate() ?? false;
 
-                  if (!isMemberValid) {
-                    return; // field errors will show below fields
-                  }
+                  if (!isMemberValid) return;
 
-                  // Address must be expanded
                   if (!_isAddress) {
                     SnackbarHelper.showError(context, l10n.addAddressError);
                     return;
                   }
 
-                  // Address validation
                   final isAddressValid =
                       _addressFormKey.currentState?.validate() ?? false;
 
-                  if (!isAddressValid) {
-                    return; // address field errors show below fields
-                  }
+                  if (!isAddressValid) return;
 
-                  if (isFamilyCountEmpty) {
+                  /// 1. SAVE CURRENT FORM LOCALLY
+                  updateCurrentMember();
+
+                  /// 2. CHECK IF CURRENT MEMBER IS COMPLETE
+                  final current = familyMembers[currentIndex];
+
+                  final isComplete = isMemberComplete(current);
+
+                  /// ❌ IF NOT COMPLETE → DO NOT MOVE
+                  if (!isComplete) {
+                    SnackbarHelper.showError(
+                      context,
+                      "Please complete current member before continuing",
+                    );
                     return;
                   }
 
-                  /// Save current member + address locally
-                  updateCurrentMember();
-
+                  /// 3. IF LAST MEMBER → CALL API
                   final completed = completedMembers;
 
                   if (completed >= _totalMembers) {
@@ -2345,7 +2762,7 @@ class _AddmemberState extends State<Addmember> {
                     return;
                   }
 
-                  /// Load next member
+                  /// 4. MOVE TO NEXT EMPTY MEMBER
                   final nextIndex = familyMembers.indexWhere(
                     (m) => !isMemberComplete(m),
                   );
@@ -2363,58 +2780,6 @@ class _AddmemberState extends State<Addmember> {
                     });
                   }
                 },
-
-                // onPressed: () async {
-                //   final isFamilyCountEmpty = controller.familyCount.text
-                //       .trim()
-                //       .isEmpty;
-
-                //   setState(() {
-                //     _showFamilyCountError = isFamilyCountEmpty;
-                //   });
-
-                //   // Run all validators
-                //   final isValid =
-                //       widget.formKey.currentState?.validate() ?? false;
-
-                //   final addressValid =
-                //       !_isAddress ||
-                //       (_addressFormKey.currentState?.validate() ?? false);
-
-                //   // Stop if anything invalid
-                //   if (isFamilyCountEmpty || !isValid || !addressValid) {
-                //     return;
-                //   }
-                //   updateCurrentMember();
-                //   debugPrint("Total Members: $_totalMembers");
-                //   debugPrint("currentIndex : $currentIndex ");
-                //   debugPrint(jsonEncode(familyMembers));
-
-                //   final completed = completedMembers;
-
-                //   if (completed >= _totalMembers) {
-                //     await _submitAllMembers();
-                //     return;
-                //   }
-
-                //   // Find next incomplete member
-                //   final nextIndex = familyMembers.indexWhere(
-                //     (m) => !isMemberComplete(m),
-                //   );
-                //   debugPrint("nextIndex : $nextIndex ");
-                //   if (nextIndex != -1) {
-                //     loadMember(nextIndex);
-
-                //     setState(() {
-                //       currentIndex = nextIndex;
-                //       _currentMemberIndex = nextIndex + 1;
-                //     });
-                //     debugPrint("AFTER currentIndex = $currentIndex");
-                //     WidgetsBinding.instance.addPostFrameCallback((_) {
-                //       _nameFocus.requestFocus();
-                //     });
-                //   }
-                // },
                 color: AppColors.btn_primery,
                 width: double.infinity,
                 //height: 58,

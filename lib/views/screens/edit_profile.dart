@@ -29,6 +29,10 @@ class _EditProfileState extends State<EditProfile> {
   final ImagePicker _pcker = ImagePicker();
   File? profileImage;
   late TextEditingController fullNameController;
+  late TextEditingController firstNameController;
+  late TextEditingController secondNameController;
+  late TextEditingController thirdNameController;
+  late TextEditingController fourthNameController;
   late TextEditingController emailController;
   late TextEditingController mobileController;
   late TextEditingController buildingController;
@@ -56,6 +60,21 @@ class _EditProfileState extends State<EditProfile> {
     //Initialize controllers with existing data
     fullNameController = TextEditingController(
       text: basicData?['basicInfo']['fullName'] ?? '',
+    );
+    firstNameController = TextEditingController(
+      text: basicData?['basicInfo']['fullName'] ?? '',
+    );
+
+    secondNameController = TextEditingController(
+      text: basicData?['basicInfo']['secondName'] ?? '',
+    );
+
+    thirdNameController = TextEditingController(
+      text: basicData?['basicInfo']['thirdName'] ?? '',
+    );
+
+    fourthNameController = TextEditingController(
+      text: basicData?['basicInfo']['fourthName'] ?? '',
     );
     emailController = TextEditingController(
       text: basicData?['basicInfo']['email'] ?? '',
@@ -89,6 +108,10 @@ class _EditProfileState extends State<EditProfile> {
     floorController.dispose();
     apartmentController.dispose();
     additionalInfoController.dispose();
+    firstNameController.dispose();
+    secondNameController.dispose();
+    thirdNameController.dispose();
+    fourthNameController.dispose();
     super.dispose();
   }
 
@@ -127,7 +150,10 @@ class _EditProfileState extends State<EditProfile> {
     final Map<String, dynamic> payload = {
       "userId": userId,
       "basicInfo": {
-        "fullName": fullNameController.text.trim(),
+        "fullName": firstNameController.text.trim(),
+        "secondName": secondNameController.text.trim(),
+        "thirdName": thirdNameController.text.trim(),
+        "fourthName": fourthNameController.text.trim(),
         "email": emailController.text.trim(),
         "mobileNumber": mobileNumber,
       },
@@ -313,28 +339,109 @@ class _EditProfileState extends State<EditProfile> {
                         ),
                         const SizedBox(height: 30),
 
-                        // Full Name
+                        // // Full Name
+                        // Text(
+                        //   loc.fullName,
+                        //   style: TextStyle(
+                        //     fontSize: 14,
+                        //     fontWeight: FontWeight.w600,
+                        //   ),
+                        // ),
+                        // // const SizedBox(height: 5),
+                        // AppTextField(
+                        //   controller: fullNameController,
+                        //   inputFormatters: [
+                        //     FilteringTextInputFormatter.allow(
+                        //       RegExp(r'[a-zA-Z\u0600-\u06FF ]'),
+                        //     ),
+                        //   ],
+                        //   validator: (v) => (v == null || v.trim().isEmpty)
+                        //       ? loc.fullNameRequired
+                        //       : null,
+                        // ),
+                        // const SizedBox(height: 6),
                         Text(
-                          loc.fullName,
+                          loc.firstName,
                           style: TextStyle(
                             fontSize: 14,
                             fontWeight: FontWeight.w600,
                           ),
                         ),
-                        // const SizedBox(height: 5),
+                        const SizedBox(height: 5),
+
                         AppTextField(
-                          controller: fullNameController,
+                          controller: firstNameController,
+                          validator: (v) => v == null || v.trim().isEmpty
+                              ? loc.fullNameRequired
+                              : null,
                           inputFormatters: [
                             FilteringTextInputFormatter.allow(
                               RegExp(r'[a-zA-Z\u0600-\u06FF ]'),
                             ),
                           ],
-                          validator: (v) => (v == null || v.trim().isEmpty)
-                              ? loc.fullNameRequired
-                              : null,
                         ),
+
                         const SizedBox(height: 6),
 
+                        Text(
+                          loc.secondName,
+                          style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                        const SizedBox(height: 5),
+
+                        AppTextField(
+                          controller: secondNameController,
+                          inputFormatters: [
+                            FilteringTextInputFormatter.allow(
+                              RegExp(r'[a-zA-Z\u0600-\u06FF ]'),
+                            ),
+                          ],
+                        ),
+
+                        const SizedBox(height: 6),
+
+                        Text(
+                          loc.thirdName,
+                          style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                        const SizedBox(height: 5),
+
+                        AppTextField(
+                          controller: thirdNameController,
+                          inputFormatters: [
+                            FilteringTextInputFormatter.allow(
+                              RegExp(r'[a-zA-Z\u0600-\u06FF ]'),
+                            ),
+                          ],
+                        ),
+
+                        const SizedBox(height: 6),
+
+                        Text(
+                          loc.fourthName,
+                          style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                        const SizedBox(height: 5),
+
+                        AppTextField(
+                          controller: fourthNameController,
+                          inputFormatters: [
+                            FilteringTextInputFormatter.allow(
+                              RegExp(r'[a-zA-Z\u0600-\u06FF ]'),
+                            ),
+                          ],
+                        ),
+
+                        const SizedBox(height: 6),
                         // Email Address
                         Text(
                           loc.emailAddress,

@@ -117,6 +117,8 @@ class _ForgotpasswordState extends State<Forgotpassword> {
                       ),
                       child: Form(
                         key: _formKey,
+                        autovalidateMode: AutovalidateMode.onUserInteraction,
+
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
@@ -134,6 +136,11 @@ class _ForgotpasswordState extends State<Forgotpassword> {
                               label: loc.enterEmail,
                               keyboardType: TextInputType.emailAddress,
                               controller: _emailCtrl,
+                              onChanged: (_) {
+                                if (_formKey.currentState != null) {
+                                  _formKey.currentState!.validate();
+                                }
+                              },
                               validator: (v) {
                                 if (v == null || v.trim().isEmpty) {
                                   return loc.enterEmail;

@@ -329,6 +329,15 @@ class _MyprofileState extends ConsumerState<Myprofile> {
           final nameCtrl = TextEditingController(
             text: safeString(basicData['basicInfo']?['fullName']),
           );
+          final fullDisplayName = [
+            safeString(basicData['basicInfo']?['fullName'].trim()),
+            safeString(basicData['basicInfo']?['secondName'].trim()),
+            safeString(basicData['basicInfo']?['thirdName'].trim()),
+            safeString(basicData['basicInfo']?['fourthName'].trim()),
+          ].where((e) => e.isNotEmpty).join(' ');
+          final fullNameCtrl = TextEditingController(
+            text: fullDisplayName.trim(),
+          );
           final emailCtrl = TextEditingController(
             text: safeString(basicData['basicInfo']?['email']),
           );
@@ -400,25 +409,38 @@ class _MyprofileState extends ConsumerState<Myprofile> {
                 ),
                 child: Column(
                   children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        AppCircleIconButton(
-                          icon: Icons.arrow_back,
-                          onPressed: () => context.push(RouteNames.bottomnav),
-                          color: const Color.fromARGB(255, 193, 201, 234),
+                    Center(
+                      child: Text(
+                        loc.profileDetails,
+                        textAlign: TextAlign.center,
+                        style: const TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.w600,
+                          color: Colors.white,
                         ),
-                        Text(
-                          loc.profileDetails,
-                          style: TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.w600,
-                            color: Colors.white,
-                          ),
-                        ),
-                        const SizedBox(width: 38), // to balance space
-                      ],
+                      ),
                     ),
+                    // Row(
+                    //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    //   children: [
+                    //     // AppCircleIconButton(
+                    //     //   icon: Icons.arrow_back,
+                    //     //   onPressed: () => context.push(RouteNames.bottomnav),
+                    //     //   color: const Color.fromARGB(255, 193, 201, 234),
+                    //     // ),
+                    //     Center(
+                    //       child: Text(
+                    //         loc.profileDetails,
+                    //         style: const TextStyle(
+                    //           fontSize: 20,
+                    //           fontWeight: FontWeight.w600,
+                    //           color: Colors.white,
+                    //         ),
+                    //       ),
+                    //     ),
+                    //     const SizedBox(width: 38), // to balance space
+                    //   ],
+                    // ),
                     const SizedBox(height: 20),
                     Container(
                       height: 58, // reduced height
@@ -465,8 +487,8 @@ class _MyprofileState extends ConsumerState<Myprofile> {
                                     ),
                                   ),
                                   Text(
-                                    nameCtrl.text.isNotEmpty
-                                        ? nameCtrl.text
+                                    fullDisplayName.isNotEmpty
+                                        ? fullDisplayName
                                         : loc.loading,
                                     style: const TextStyle(
                                       color: Colors.white,
@@ -582,7 +604,7 @@ class _MyprofileState extends ConsumerState<Myprofile> {
                           ),
                           const SizedBox(height: 4), // reduced
                           AppTextField(
-                            controller: nameCtrl,
+                            controller: fullNameCtrl,
                             readonly: true,
                             enabled: false,
                             textStyle: TextStyle(

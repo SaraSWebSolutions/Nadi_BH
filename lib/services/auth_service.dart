@@ -261,7 +261,9 @@ class AuthService {
         "user-account/complete",
         data: {"userId": userId},
       );
-
+      debugPrint("Request Data: ${{"userId": userId}}");
+      debugPrint("Status Code: ${response.statusCode}");
+      debugPrint("Response Data: ${response.data}");
       //  LOG OUTPUT
       AppLogger.success("CompleteuserAccount response: ${response.data}");
 

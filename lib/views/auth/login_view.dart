@@ -751,6 +751,13 @@ class _LoginViewState extends State<LoginView> {
                                 TextFormField(
                                   controller: controller.email,
                                   keyboardType: TextInputType.emailAddress,
+                                  autovalidateMode:
+                                      AutovalidateMode.onUserInteraction,
+                                  onChanged: (value) {
+                                    if (emailError != null) {
+                                      setState(() => emailError = null);
+                                    }
+                                  },
                                   decoration: InputDecoration(
                                     labelText: AppLocalizations.of(
                                       context,
@@ -806,6 +813,13 @@ class _LoginViewState extends State<LoginView> {
                                 TextFormField(
                                   controller: controller.password,
                                   obscureText: _obscure,
+                                  autovalidateMode:
+                                      AutovalidateMode.onUserInteraction,
+                                  onChanged: (value) {
+                                    if (passwordError != null) {
+                                      setState(() => passwordError = null);
+                                    }
+                                  },
                                   decoration: InputDecoration(
                                     labelText: AppLocalizations.of(
                                       context,

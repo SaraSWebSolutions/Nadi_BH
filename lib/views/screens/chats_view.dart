@@ -74,10 +74,10 @@ class _ChatsViewState extends ConsumerState<ChatsView> {
               width: 38,
               height: 38,
               child: FittedBox(
-                child: AppCircleIconButton(
-                  icon: Icons.arrow_back,
-                  onPressed: () => context.pop(),
-                ),
+                // child: AppCircleIconButton(
+                //   icon: Icons.arrow_back,
+                //   onPressed: () => context.pop(),
+                // ),
               ),
             ),
           ),
