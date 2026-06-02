@@ -88,8 +88,8 @@ class ServiceRequestDetails extends StatelessWidget {
                   child: AppCircleIconButton(
                     icon: Icons.arrow_back,
                     onPressed: () => Navigator.pop(context),
-                    color: Colors.white,
-                    iconcolor: AppColors.button_secondary,
+                    // color: Colors.white,
+                    // iconcolor: AppColors.button_secondary,
                   ),
                 ),
               ],

@@ -273,80 +273,85 @@ class _SettingsViewState extends ConsumerState<SettingsView> {
                           ],
                         ),
                 ),
-                actionsAlignment: MainAxisAlignment.center,
-                actionsPadding: const EdgeInsets.only(
-                  left: 20,
-                  right: 20,
-                  bottom: 20,
-                ),
+                actionsPadding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
                 actions: [
-                  SizedBox(
-                    width: 120,
-                    height: 48,
-                    child: OutlinedButton(
-                      onPressed: () => Navigator.pop(context),
-                      style: OutlinedButton.styleFrom(
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(16),
-                        ),
-                        side: BorderSide(color: Colors.grey.shade400),
-                      ),
-                      child: Text(
-                        l10n.cancel,
-                        style: TextStyle(
-                          color: Theme.of(context).colorScheme.onSurface,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    ),
-                  ),
-
-                  const SizedBox(width: 12),
-
-                  SizedBox(
-                    width: 120,
-                    height: 48,
-                    child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.red,
-                        foregroundColor: Colors.white,
-                        textStyle: const TextStyle(
-                          color: Colors.white,
-                          fontWeight: FontWeight.w600,
-                        ),
-                        elevation: 0,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(16),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: SizedBox(
+                          height: 52,
+                          child: OutlinedButton(
+                            onPressed: () => Navigator.pop(context),
+                            style: OutlinedButton.styleFrom(
+                              padding: const EdgeInsets.symmetric(vertical: 14),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(16),
+                              ),
+                              side: BorderSide(color: Colors.grey.shade400),
+                            ),
+                            child: Text(
+                              l10n.cancel,
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                color: Theme.of(context).colorScheme.onSurface,
+                                fontWeight: FontWeight.w600,
+                                fontSize: 16,
+                                height: 1.2,
+                              ),
+                            ),
+                          ),
                         ),
                       ),
-                      onPressed: () async {
-                        if (selectedReasonId == null) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(content: Text(l10n.pleaseSelectReason)),
-                          );
-                          return;
-                        }
 
-                        await accountDelete.fetchdeleteaccount(
-                          reasonId: selectedReasonId!,
-                        );
+                      const SizedBox(width: 12),
 
-                        await AppPreferences.clearAll();
-                        await AppPreferences.setLoggedIn(false);
+                      Expanded(
+                        child: SizedBox(
+                          height: 52,
+                          child: ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.red,
+                              foregroundColor: Colors.white,
+                              elevation: 0,
+                              padding: const EdgeInsets.symmetric(vertical: 14),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(16),
+                              ),
+                            ),
+                            onPressed: () async {
+                              if (selectedReasonId == null) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    content: Text(l10n.pleaseSelectReason),
+                                  ),
+                                );
+                                return;
+                              }
 
-                        if (context.mounted) {
-                          context.go(RouteNames.splash);
-                        }
-                      },
-                      child: Text(
-                        l10n.delete,
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontWeight: FontWeight.w600,
-                          fontSize: 16,
+                              await accountDelete.fetchdeleteaccount(
+                                reasonId: selectedReasonId!,
+                              );
+
+                              await AppPreferences.clearAll();
+                              await AppPreferences.setLoggedIn(false);
+
+                              if (context.mounted) {
+                                context.go(RouteNames.splash);
+                              }
+                            },
+                            child: Text(
+                              l10n.delete,
+                              textAlign: TextAlign.center,
+                              style: const TextStyle(
+                                fontWeight: FontWeight.w600,
+                                fontSize: 16,
+                                height: 1.2,
+                              ),
+                            ),
+                          ),
                         ),
                       ),
-                    ),
+                    ],
                   ),
                 ],
                 // actions: [
