@@ -62,5 +62,10 @@
 		<string>We need access to select ID card photos.</string>
 		<key>NSPhotoLibraryAddUsageDescription</key>
 		<string>We need permission to save photos to your library.</string>
+		<key>NSLocationWhenInUseUsageDescription</key>
+<string>We need your location to auto-fill your address.</string>
+
+<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+<string>We need your location to improve address accuracy.</string>
 	</dict>
 </plist>

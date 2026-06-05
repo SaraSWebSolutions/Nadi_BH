@@ -69,10 +69,11 @@ class _OtpState extends State<Otp> {
   Future<void> sendOtp(BuildContext context) async {
     final userId = await AppPreferences.getUserId();
     if (userId == null || userId.isEmpty) return;
-    if (mounted) setState(() {
-      isOtpError = false;
-      otpController.clear();
-    });
+    if (mounted)
+      setState(() {
+        isOtpError = false;
+        otpController.clear();
+      });
 
     try {
       final response = await _authService.SendOTP(userId: userId);
@@ -82,91 +83,89 @@ class _OtpState extends State<Otp> {
       if (mounted) _showOtpError(message);
     }
   }
-Future<void> verifyOtp(BuildContext context) async {
-  final userId = await AppPreferences.getUserId();
 
-  if (userId == null || userId.isEmpty) {
-    _showOtpError("Session expired. Please log in again.");
-    return;
-  }
+  Future<void> verifyOtp(BuildContext context) async {
+    final userId = await AppPreferences.getUserId();
 
-  final otp = otpController.text.trim();
-
-  if (mounted) setState(() => isLoading = true);
-
-  try {
-    final response = await _authService.OTPverify(
-      otp: otp,
-      userId: userId,
-    );
-
-    if (response["message"] == "OTP verified successfully") {
-      final completeuseraccount =
-          await _authService.CompleteuserAccount(userId: userId);
-
-      AppLogger.warn("prettyString $completeuseraccount");
-
-      if (completeuseraccount != null) {
-        final verificationStatus =
-            completeuseraccount['data']?['accountVerification'];
-
-        /// 🔥 IMPORTANT CHECK
-        if (verificationStatus != null &&
-            verificationStatus.toLowerCase() != "verified") {
-          
-          /// ❌ DO NOT LOGIN
-          /// ✅ SHOW MESSAGE
-          if (!mounted) return;
-
-          final apiMessage = completeuseraccount['message'] ??
-    "Registration Successful. Please wait for verification.";
-
-ScaffoldMessenger.of(context).showSnackBar(
-  SnackBar(
-    content: Text(apiMessage),
-  ),
-);
-
-          /// ⏳ small delay for UX
-          await Future.delayed(const Duration(seconds: 2));
-
-          /// 🔁 GO BACK TO LOGIN
-          if (!mounted) return;
-          context.go(RouteNames.login);
-
-          return;
-        }
-
-        /// ✅ ONLY VERIFIED USERS LOGIN
-        if (completeuseraccount.containsKey('token')) {
-          await AppPreferences.saveToken(completeuseraccount['token']);
-          await AppPreferences.saveAccountType(
-              completeuseraccount['accountType']);
-        }
-
-        await AppPreferences.setLoggedIn(true);
-        await AppPreferences.setAboutSeen(true);
-
-        if (!context.mounted) return;
-        context.push(RouteNames.accountcreated);
-      }
-    } else {
-      setState(() => isLoading = false);
-      _showOtpError(response["message"] ?? "Invalid OTP");
+    if (userId == null || userId.isEmpty) {
+      _showOtpError("Session expired. Please log in again.");
+      return;
     }
-  } on DioException catch (e) {
-    setState(() => isLoading = false);
 
-    final errorResponse = e.response?.data;
-    final message = (errorResponse is Map && errorResponse["message"] != null)
-        ? errorResponse["message"]
-        : "Something went wrong";
+    final otp = otpController.text.trim();
 
-    _showOtpError(message);
-  } finally {
-    if (mounted) setState(() => isLoading = false);
+    if (mounted) setState(() => isLoading = true);
+
+    try {
+      final response = await _authService.OTPverify(otp: otp, userId: userId);
+
+      if (response["message"] == "OTP verified successfully") {
+        final completeuseraccount = await _authService.CompleteuserAccount(
+          userId: userId,
+        );
+
+        AppLogger.warn("prettyString $completeuseraccount");
+
+        if (completeuseraccount != null) {
+          final verificationStatus =
+              completeuseraccount['data']?['accountVerification'];
+
+          /// 🔥 IMPORTANT CHECK
+          if (verificationStatus != null &&
+              verificationStatus.toLowerCase() != "verified") {
+            /// ❌ DO NOT LOGIN
+            /// ✅ SHOW MESSAGE
+            if (!mounted) return;
+
+            final apiMessage =
+                completeuseraccount['message'] ??
+                "Registration Successful. Please wait for verification.";
+
+            ScaffoldMessenger.of(
+              context,
+            ).showSnackBar(SnackBar(content: Text(apiMessage)));
+
+            /// ⏳ small delay for UX
+            await Future.delayed(const Duration(seconds: 2));
+
+            /// 🔁 GO BACK TO LOGIN
+            if (!mounted) return;
+            context.go(RouteNames.login);
+
+            return;
+          }
+
+          /// ✅ ONLY VERIFIED USERS LOGIN
+          if (completeuseraccount.containsKey('token')) {
+            await AppPreferences.saveToken(completeuseraccount['token']);
+            await AppPreferences.saveAccountType(
+              completeuseraccount['accountType'],
+            );
+          }
+
+          await AppPreferences.setLoggedIn(true);
+          await AppPreferences.setAboutSeen(true);
+
+          if (!context.mounted) return;
+          context.push(RouteNames.accountcreated);
+        }
+      } else {
+        setState(() => isLoading = false);
+        _showOtpError(response["message"] ?? "Invalid OTP");
+      }
+    } on DioException catch (e) {
+      setState(() => isLoading = false);
+
+      final errorResponse = e.response?.data;
+      final message = (errorResponse is Map && errorResponse["message"] != null)
+          ? errorResponse["message"]
+          : "Something went wrong";
+
+      _showOtpError(message);
+    } finally {
+      if (mounted) setState(() => isLoading = false);
+    }
   }
-}
   // Future<void> verifyOtp(BuildContext context) async {
   //   final userId = await AppPreferences.getUserId();
   //   if (userId == null || userId.isEmpty) {

@@ -496,8 +496,16 @@
   "otpMustBe4Digits": "OTP must be 4 digits",
    "member": "Member",
   "ofText": "of",
-  "added": "Added"
+  "added": "Added",
 
-
+"pleaseFillCurrentMemberFirst": "You can update the family count after entering all member details and before submitting.",
+  "familyCountMustBeGreaterThanZero": "Family count must be greater than 0",
+  "maximumFamilyCountIs": "Maximum family count is 10",
+  "userIdNotFound": "User ID not found",
+  "somethingWentWrong": "Something went wrong",
+  "completeCurrentMemberBeforeContinue": "Please complete current member before continuing",
+  "addAddressError": "Please add address",
+  "flat": "Flat",
+  "home": "Home"
 
 }

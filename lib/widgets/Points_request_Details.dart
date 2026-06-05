@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:nadi_user_app/core/constants/app_consts.dart';
 import 'package:nadi_user_app/core/utils/Time_Date.dart';
+import 'package:nadi_user_app/core/utils/snackbar_helper.dart';
 import 'package:nadi_user_app/providers/fetchrequestpeopledetails_provider.dart';
 import 'package:nadi_user_app/services/Requests_points_people.dart';
 
@@ -40,12 +41,33 @@ class PointsRequestDetails extends ConsumerStatefulWidget {
 class _PointsRequestDetailsState extends ConsumerState<PointsRequestDetails> {
   final RequestsPointsPeople _requestsPointsPeople = RequestsPointsPeople();
 
+  // Future<void> _sendacceptedPoint(String action) async {
+  //   await _requestsPointsPeople.fetchacceptorrejectpoints(
+  //     requestId: widget.id,
+  //     action: action,
+  //   );
+  //   ref.refresh(fetchrequestpeopledetailsprovider(widget.peopleId));
+  // }
   Future<void> _sendacceptedPoint(String action) async {
-    await _requestsPointsPeople.fetchacceptorrejectpoints(
-      requestId: widget.id,
-      action: action,
-    );
-    ref.refresh(fetchrequestpeopledetailsprovider(widget.peopleId));
+    try {
+      final response = await _requestsPointsPeople.fetchacceptorrejectpoints(
+        requestId: widget.id,
+        action: action,
+      );
+      debugPrint("API Response: $response");
+
+      if (response["success"] == false) {
+        SnackbarHelper.showError(
+          context,
+          response["message"] ?? "Something went wrong",
+        );
+        return;
+      }
+
+      ref.refresh(fetchrequestpeopledetailsprovider(widget.peopleId));
+    } catch (e) {
+      SnackbarHelper.showError(context, e.toString());
+    }
   }
 
   Future<void> _sendPoint(String action) async {
@@ -164,8 +186,7 @@ class _PointsRequestDetailsState extends ConsumerState<PointsRequestDetails> {
 
             const SizedBox(height: 8),
             Text(
-              formatIsoDateForUI(
-                widget.createdAt.toString()              ),
+              formatIsoDateForUI(widget.createdAt.toString()),
               style: const TextStyle(fontSize: 12, color: Colors.grey),
             ),
           ],

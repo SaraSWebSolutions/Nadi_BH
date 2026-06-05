@@ -742,7 +742,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get fullNameRequired => 'الاسم الأول مطلوب';
 
   @override
-  String get addAddressError => 'يرجى إضافة عنوان العضو';
+  String get addAddressError => 'يرجى إضافة العنوان';
 
   @override
   String get mobileMustBe8Digits => 'يجب أن يكون رقم الجوال 8 أرقام';
@@ -1177,4 +1177,25 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get added => 'تمت الإضافة';
+
+  @override
+  String get pleaseFillCurrentMemberFirst =>
+      'يمكنك تحديث عدد أفراد الأسرة بعد إدخال جميع تفاصيل الأعضاء وقبل الإرسال.';
+
+  @override
+  String get familyCountMustBeGreaterThanZero =>
+      'يجب أن يكون عدد أفراد العائلة أكبر من 0';
+
+  @override
+  String get maximumFamilyCountIs => 'الحد الأقصى لعدد أفراد العائلة هو 10';
+
+  @override
+  String get userIdNotFound => 'معرّف المستخدم غير موجود';
+
+  @override
+  String get completeCurrentMemberBeforeContinue =>
+      'يرجى إكمال بيانات العضو الحالي قبل المتابعة';
+
+  @override
+  String get home => 'منزل';
 }

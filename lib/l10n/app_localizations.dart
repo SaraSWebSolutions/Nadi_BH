@@ -1529,7 +1529,7 @@ abstract class AppLocalizations {
   /// No description provided for @addAddressError.
   ///
   /// In en, this message translates to:
-  /// **'Please add the address details of the member.'**
+  /// **'Please add address'**
   String get addAddressError;
 
   /// No description provided for @mobileMustBe8Digits.
@@ -2341,6 +2341,42 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Added'**
   String get added;
+
+  /// No description provided for @pleaseFillCurrentMemberFirst.
+  ///
+  /// In en, this message translates to:
+  /// **'You can update the family count after entering all member details and before submitting.'**
+  String get pleaseFillCurrentMemberFirst;
+
+  /// No description provided for @familyCountMustBeGreaterThanZero.
+  ///
+  /// In en, this message translates to:
+  /// **'Family count must be greater than 0'**
+  String get familyCountMustBeGreaterThanZero;
+
+  /// No description provided for @maximumFamilyCountIs.
+  ///
+  /// In en, this message translates to:
+  /// **'Maximum family count is 10'**
+  String get maximumFamilyCountIs;
+
+  /// No description provided for @userIdNotFound.
+  ///
+  /// In en, this message translates to:
+  /// **'User ID not found'**
+  String get userIdNotFound;
+
+  /// No description provided for @completeCurrentMemberBeforeContinue.
+  ///
+  /// In en, this message translates to:
+  /// **'Please complete current member before continuing'**
+  String get completeCurrentMemberBeforeContinue;
+
+  /// No description provided for @home.
+  ///
+  /// In en, this message translates to:
+  /// **'Home'**
+  String get home;
 }
 
 class _AppLocalizationsDelegate

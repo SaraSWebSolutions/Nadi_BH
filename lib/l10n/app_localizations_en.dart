@@ -749,7 +749,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get fullNameRequired => 'FirstName is required';
 
   @override
-  String get addAddressError => 'Please add the address details of the member.';
+  String get addAddressError => 'Please add address';
 
   @override
   String get mobileMustBe8Digits => 'Mobile must be 8 digits';
@@ -1187,4 +1187,25 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get added => 'Added';
+
+  @override
+  String get pleaseFillCurrentMemberFirst =>
+      'You can update the family count after entering all member details and before submitting.';
+
+  @override
+  String get familyCountMustBeGreaterThanZero =>
+      'Family count must be greater than 0';
+
+  @override
+  String get maximumFamilyCountIs => 'Maximum family count is 10';
+
+  @override
+  String get userIdNotFound => 'User ID not found';
+
+  @override
+  String get completeCurrentMemberBeforeContinue =>
+      'Please complete current member before continuing';
+
+  @override
+  String get home => 'Home';
 }

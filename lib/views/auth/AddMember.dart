@@ -1,1154 +1,3 @@
-// // import 'dart:convert';
-
-// // import 'package:flutter/material.dart';
-// // import 'package:go_router/go_router.dart';
-// // import 'package:mannai_user_app/controllers/address_controller.dart';
-// // import 'package:mannai_user_app/controllers/family_member_controller.dart';
-
-// // import 'package:mannai_user_app/core/constants/app_consts.dart';
-// // import 'package:mannai_user_app/core/utils/logger.dart';
-// // import 'package:mannai_user_app/routing/app_router.dart';
-// // import 'package:mannai_user_app/services/auth_service.dart';
-// // import 'package:mannai_user_app/views/auth/individual/Address.dart';
-
-// // import 'package:mannai_user_app/widgets/buttons/primary_button.dart';
-// // import 'package:mannai_user_app/widgets/inputs/app_dropdown.dart';
-// // import 'package:mannai_user_app/widgets/inputs/app_text_field.dart';
-// // import 'package:shared_preferences/shared_preferences.dart';
-
-// // class Addmember extends StatefulWidget {
-// //   final String accountType;
-// //   final VoidCallback onNext;
-// //   final GlobalKey<FormState> formKey;
-
-// //   const Addmember({
-// //     super.key,
-// //     required this.accountType,
-// //     required this.onNext,
-// //     required this.formKey,
-// //   });
-
-// //   @override
-// //   State<Addmember> createState() => _AddmemberState();
-// // }
-
-// // class _AddmemberState extends State<Addmember> {
-// //   bool _isAddress = false;
-// //   final controller = FamilyMemberController();
-// //   final addressController = AddressController();
-// //   final AuthService _authService = AuthService();
-// //   final GlobalKey<FormState> _addressFormKey = GlobalKey<FormState>();
-// // int _totalMembers = 0;
-// // int _currentMemberIndex = 1;
-// // List<Map<String, dynamic>> _members = [];
-// // bool _isLoading = false;
-
-// //   @override
-// //   Widget build(BuildContext context) {
-// // bool _isLoading = false; // add this in your State class
-
-// // Future<void> AccountCreated(BuildContext context) async {
-// //   final memberValid = widget.formKey.currentState?.validate() ?? false;
-// //   if (!memberValid) {
-// //     debugPrint("MEMBER FORM INVALID");
-// //     return;
-// //   }
-
-// //   if (_isAddress) {
-// //     final addressValid = _addressFormKey.currentState?.validate() ?? false;
-// //     debugPrint("ADDRESS VALID = $addressValid");
-// //     if (!addressValid) {
-// //       debugPrint("ADDRESS FORM INVALID");
-// //       return;
-// //     }
-// //   }
-
-// //   debugPrint("ALL VALID — CONTINUING");
-
-// //   final prefs = await SharedPreferences.getInstance();
-// //   final userId = prefs.getString("userId");
-
-// //   debugPrint("USER ID = $userId");
-
-// //   if (userId == null) {
-// //     debugPrint("USER ID NULL");
-// //     return;
-// //   }
-
-// //   final addressMap = addressController.getOnlyAddressMap(
-// //     addressType: "flat",
-// //   );
-
-// //   final body = controller.getApiFamilyMemberBody(
-// //     userId: userId,
-// //     address: addressMap,
-// //   );
-
-// //   debugPrint("FINAL BODY  ${jsonEncode(body)}");
-
-// //   if (mounted) setState(() => _isLoading = true);
-
-// //   try {
-// //     final response = await _authService.memberdetails(body: body);
-
-// //     // API finished, stop loader
-// //     if (mounted) setState(() => _isLoading = false);
-
-// //     ScaffoldMessenger.of(context)
-// //       ..hideCurrentSnackBar()
-// //       ..showSnackBar(
-// //         SnackBar(
-// //           content: const Text(
-// //             "Account created successfully",
-// //             style: TextStyle(color: Colors.white),
-// //           ),
-// //           backgroundColor: AppColors.button_secondary,
-// //           duration: const Duration(seconds: 2),
-// //         ),
-// //       );
-
-// //     // small delay so user can see snackbar
-// //     Future.delayed(const Duration(seconds: 1), () {
-// //       context.push(RouteNames.accountverfy);
-// //     });
-
-// //     AppLogger.debug("RESPONSE 👉 ${jsonEncode(response)}");
-// //   } catch (e) {
-// //     if (mounted) setState(() => _isLoading = false); // stop loader on error
-// //     debugPrint("Address submit failed  $e");
-// //     ScaffoldMessenger.of(context)
-// //         .showSnackBar(SnackBar(content: Text("Submit failed: $e")));
-// //   }
-// // }
-
-// //     return Form(
-// //       key: widget.formKey,
-// //       child: Column(
-// //         children: [
-// //           Padding(
-// //             padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 1),
-// //             child: Column(
-// //               crossAxisAlignment: CrossAxisAlignment.start,
-
-// //               children: [
-// //                 Text(
-// //                   "Add ${widget.accountType} Member",
-// //                   style: const TextStyle(
-// //                     fontSize: 22,
-// //                     fontWeight: FontWeight.w600,
-// //                   ),
-// //                 ),
-// //                 const SizedBox(height: 15),
-// //                 AppTextField(
-// //                   controller: controller.familyCount,
-// //                   label: "Enter Family Count*",
-// //                   validator: (value) => controller.validatefamilycount(value),
-// //                 ),
-// //                 const SizedBox(height: 15),
-
-// //                 AppTextField(
-// //                   controller: controller.fullName,
-// //                   label: "Member Full Name*",
-// //                   validator: (value) => controller.validatefullname(value),
-// //                 ),
-
-// //                 const SizedBox(height: 15),
-// //                 AppDropdown(
-// //                   label: "Relationship*",
-// //                   items: ["Father", "Mother", "Son", "Daughter", "Spouse"],
-// //                   value: controller.relation,
-// //                   onChanged: (val) {
-// //                     setState(() {
-// //                       controller.relation = val;
-// //                     });
-// //                   },
-// //                   validator: (val) =>
-// //                       val == null ? "Please select relationship" : null,
-// //                 ),
-
-// //                 const SizedBox(height: 15),
-
-// //                 AppTextField(
-// //                   controller: controller.mobile,
-// //                   label: "Mobile Number*",
-// //                   validator: (value) => controller.validatemobilenumber(value),
-// //                 ),
-
-// //                 const SizedBox(height: 15),
-// //                       AppTextField(
-// //                   controller: controller.password,
-// //                   label: "Password*",
-// //                   validator: (value) => controller.validatepassword(value),
-// //                 ),
-
-// //                 const SizedBox(height: 15),
-
-// //                 AppTextField(
-// //                   controller: controller.email,
-// //                   label: "Email Adress*",
-// //                   validator: (value) => controller.validateemail(value),
-// //                 ),
-// //                 const SizedBox(height: 20),
-// //                 AppDropdown(
-// //                   label: "Gender*",
-// //                   items: ["Male", "Female", "Oter"],
-// //                   value: controller.gender,
-// //                   onChanged: (val) {
-// //                     setState(() {
-// //                       controller.gender = val;
-// //                     });
-// //                   },
-// //                   validator: (val) =>
-// //                       val == null ? "Please select relationship" : null,
-// //                 ),
-
-// //                 const SizedBox(height: 20),
-
-// //                 if (_isAddress)
-// //                   Column(
-// //                     children: [
-// //                       const SizedBox(height: 20),
-// //                       Address(
-// //                         accountType: "Family",
-// //                         family: true,
-// //                         formKey: _addressFormKey,
-// //                         controller: addressController, //  pass controller
-// //                       ),
-// //                     ],
-// //                   ),
-// //                 const SizedBox(height: 20),
-// //                 SizedBox(
-// //                   width: double.infinity,
-// //                   height: 47,
-// //                   child: OutlinedButton(
-// //                     style: OutlinedButton.styleFrom(
-// //                       shape: RoundedRectangleBorder(
-// //                         borderRadius: BorderRadius.circular(10),
-// //                       ),
-// //                     ),
-// //                     onPressed: () {
-// //                       setState(() {
-// //                         _isAddress = !_isAddress;
-// //                       });
-// //                     },
-// //                     child: Text(
-// //                       _isAddress ? "Hide Address" : "Add Address",
-// //                       style: TextStyle(color: AppColors.btn_primery),
-// //                     ),
-// //                   ),
-// //                 ),
-
-// //                 const SizedBox(height: 20),
-
-// //               ],
-// //             ),
-// //           ),
-// //           const SizedBox(height: 20),
-// //           AppButton(
-// //             text: "Sign Up",
-// //             isLoading: _isLoading,
-// //             onPressed: () {
-// //               AccountCreated(context);
-// //             },
-
-// //             color: AppColors.btn_primery,
-// //             width: double.infinity,
-// //             height: 47,
-// //           ),
-// //         ],
-// //       ),
-// //     );
-// //   }
-// // }
-
-// import 'dart:convert';
-
-// import 'package:dio/dio.dart';
-// import 'package:flutter/material.dart';
-// import 'package:flutter/services.dart';
-// import 'package:go_router/go_router.dart';
-// import 'package:nadi_user_app/controllers/address_controller.dart';
-// import 'package:nadi_user_app/controllers/family_member_controller.dart';
-// import 'package:nadi_user_app/core/constants/app_consts.dart';
-// import 'package:nadi_user_app/core/utils/logger.dart';
-// import 'package:nadi_user_app/core/utils/snackbar_helper.dart';
-// import 'package:nadi_user_app/l10n/app_localizations.dart';
-// import 'package:nadi_user_app/preferences/preferences.dart';
-// import 'package:nadi_user_app/routing/app_router.dart';
-// import 'package:nadi_user_app/services/auth_service.dart';
-// import 'package:nadi_user_app/views/auth/Address.dart';
-// import 'package:nadi_user_app/widgets/buttons/primary_button.dart';
-// import 'package:nadi_user_app/widgets/inputs/app_dropdown.dart';
-// import 'package:nadi_user_app/widgets/inputs/app_text_field.dart';
-
-// class FamilyMemberData {
-//   final String fullName;
-//   final String mobile;
-//   final String email;
-//   final String relation;
-//   final String gender;
-//   final Map<String, dynamic>? address;
-
-//   FamilyMemberData({
-//     required this.fullName,
-//     required this.mobile,
-//     required this.email,
-//     required this.relation,
-//     required this.gender,
-//     this.address,
-//   });
-
-//   Map<String, dynamic> toJson() {
-//     return {
-//       "full_name": fullName,
-//       "mobile": mobile,
-//       "email": email,
-//       "relation": relation,
-//       "gender": gender,
-//       "address": address,
-//     };
-//   }
-// }
-
-// class Addmember extends StatefulWidget {
-//   final String accountType;
-//   final VoidCallback onNext;
-//   final GlobalKey<FormState> formKey;
-
-//   const Addmember({
-//     super.key,
-//     required this.accountType,
-//     required this.onNext,
-//     required this.formKey,
-//   });
-
-//   @override
-//   State<Addmember> createState() => _AddmemberState();
-// }
-
-// class _AddmemberState extends State<Addmember> {
-//   final controller = FamilyMemberController();
-//   final addressController = AddressController();
-//   final AuthService _authService = AuthService();
-//   bool _isAddress = false;
-//   int? _editingIndex;
-//   // bool _isFamilyCountLocked = false;
-//   // bool _hideBottomButton = false;
-//   final GlobalKey<FormState> _addressFormKey = GlobalKey<FormState>();
-//   final ScrollController _scrollController = ScrollController();
-//   final FocusNode _nameFocus = FocusNode();
-//   bool _isLoading = false;
-//   final Map<String, String> genderMap = {'male': 'Male', 'female': 'Female'};
-//   int _totalMembers = 0;
-//   int _currentMemberIndex = 1;
-//   List<FamilyMemberData> savedMembers = [];
-//   String _localizedAccountType(AppLocalizations l10n) {
-//     switch (widget.accountType) {
-//       case "Family":
-//         return l10n.family;
-//       case "Individual":
-//         return l10n.individual;
-//       default:
-//         return widget.accountType;
-//     }
-//   }
-
-//   void _loadMemberForEdit(int index) {
-//     final member = savedMembers[index];
-
-//     _editingIndex = index;
-
-//     controller.fullName.text = member.fullName;
-//     controller.mobile.text = member.mobile;
-//     controller.email.text = member.email;
-//     controller.relation = member.relation;
-//     controller.gender = member.gender;
-
-//     _isAddress = member.address != null;
-
-//     if (member.address != null) {
-//       addressController.loadAddress(member.address!);
-//     } else {
-//       addressController.clear();
-//     }
-
-//     setState(() {}); // ✅ IMPORTANT FIX
-//   }
-
-//   void _handleMemberCountChange(int count) {
-//     if (count <= 0) return;
-
-//     FocusScope.of(context).unfocus();
-
-//     setState(() {
-//       _totalMembers = count;
-
-//       /// REMOVE EXTRA MEMBERS
-//       if (savedMembers.isNotEmpty && savedMembers.length >= count) {
-//         savedMembers = savedMembers.sublist(0, count);
-//       }
-
-//       /// CASE 1:
-//       /// USER REDUCED COUNT
-//       /// AND SAVED MEMBERS == TOTAL COUNT
-//       /// SHOW LAST SAVED MEMBER
-//       if (savedMembers.length == count) {
-//         final lastMember = savedMembers.last;
-
-//         controller.fullName.text = lastMember.fullName;
-//         controller.mobile.text = lastMember.mobile;
-//         controller.email.text = lastMember.email;
-
-//         controller.relation = lastMember.relation;
-//         controller.gender = lastMember.gender;
-
-//         if (lastMember.address != null) {
-//           addressController.loadAddress(lastMember.address!);
-//           _isAddress = true;
-//         } else {
-//           addressController.clear();
-//           _isAddress = false;
-//         }
-
-//         _currentMemberIndex = count;
-//       } else {
-//         _currentMemberIndex = (savedMembers.length + 1).clamp(1, count);
-
-//         if (_editingIndex == null) {
-//           _clearCurrentEditingForm();
-//         }
-//       }
-
-//       controller.familyCount.text = count.toString();
-//     });
-//   }
-
-//   @override
-//   void dispose() {
-//     controller.familyCount.dispose();
-//     controller.fullName.dispose();
-//     controller.mobile.dispose();
-//     controller.email.dispose();
-//     controller.password.dispose();
-
-//     _scrollController.dispose();
-//     _nameFocus.dispose(); // ✅ important
-//     super.dispose();
-//   }
-
-//   void _resetForm() {
-//     savedMembers.clear();
-//     controller.familyCount.clear();
-//     controller.fullName.clear();
-//     controller.mobile.clear();
-//     controller.email.clear();
-//     controller.password.clear();
-
-//     controller.gender = null;
-//     controller.relation = null;
-
-//     _totalMembers = 0;
-//     _currentMemberIndex = 1;
-
-//     // _isFamilyCountLocked = false;
-//     //_hideBottomButton = false;
-//     _isAddress = false;
-
-//     addressController.clear();
-//   }
-//   // void updateMemberCount(int count) {
-//   //   setState(() {
-//   //     if (count > members.length) {
-//   //       for (int i = members.length; i < count; i++) {
-//   //         members.add(FamilyMemberData());
-//   //       }
-//   //     } else if (count < members.length) {
-//   //       members.removeRange(count, members.length);
-//   //     }
-
-//   //     _totalMembers = count;
-//   //   });
-//   // }
-//   // Future<void> _addMember() async {
-//   //   final l10n = AppLocalizations.of(context)!;
-//   //   final memberValid = widget.formKey.currentState?.validate() ?? false;
-//   //   final isMemberValid = widget.formKey.currentState?.validate() ?? false;
-
-//   //   /// 1️⃣ FIRST: Validate MEMBER fields
-//   //   if (!isMemberValid) {
-//   //     ScaffoldMessenger.of(context).showSnackBar(
-//   //       SnackBar(
-//   //         content: Text(l10n.pleaseFillMemberDetails),
-//   //         backgroundColor: Colors.red,
-//   //       ),
-//   //     );
-//   //     return;
-//   //   }
-//   //   if (!_isAddress) {
-//   //     SnackbarHelper.showError(context, l10n.addAddressError);
-//   //     return;
-//   //   }
-
-//   //   final addressValid = _addressFormKey.currentState?.validate() ?? false;
-
-//   //   if (!memberValid || !addressValid) return;
-
-//   //   // final prefs = await SharedPreferences.getInstance();
-//   //   // final userId = prefs.getString("userId");
-//   //   final userId = await AppPreferences.getUserId();
-//   //   if (userId == null) return;
-
-//   //   final body = controller.getApiFamilyMemberBody(
-//   //     userId: userId,
-//   //     address: _isAddress
-//   //         ? addressController.getOnlyAddressMap(addressType: "flat")
-//   //         : null,
-//   //   );
-
-//   //   AppLogger.success("body : $body");
-//   //   setState(() => _isLoading = true);
-
-//   //   try {
-//   //     final response = await _authService.memberdetails(body: body);
-//   //     setState(() {
-//   //       _isLoading = false;
-//   //       // _isFamilyCountLocked = true;
-//   //     });
-//   //     AppLogger.debug("Member added  ${jsonEncode(response)}");
-//   //     savedMembers.add(
-//   //       FamilyMemberData()
-//   //         ..fullName.text = controller.fullName.text
-//   //         ..mobile.text = controller.mobile.text
-//   //         ..email.text = controller.email.text
-//   //         ..relation = controller.relation
-//   //         ..gender = controller.gender,
-//   //     );
-//   //     // Clear form for next member
-//   //     controller.fullName.clear();
-//   //     controller.mobile.clear();
-//   //     controller.email.clear();
-//   //     controller.password.clear();
-//   //     controller.relation = null;
-//   //     controller.gender = null;
-//   //     if (_isAddress) addressController.clear();
-
-//   //     // If last member
-//   //     if (savedMembers.length >= _totalMembers) {
-//   //       if (!context.mounted) return;
-//   //       // setState(() {
-//   //       //   _hideBottomButton = true;
-//   //       // });
-
-//   //       // ignore: use_build_context_synchronously
-//   //       SnackbarHelper.ShowSuccess(context, l10n.allMembersAdded);
-//   //       _resetForm();
-
-//   //       // Delay slightly so user sees the snackbar
-//   //       Future.delayed(const Duration(seconds: 1), () {
-//   //         if (context.mounted)
-//   //           context.push(
-//   //             RouteNames.accountverfy,
-//   //           ); // ignore: use_build_context_synchronously
-//   //       });
-//   //     } else {
-//   //       // Increment member index for next member
-//   //       setState(() {
-//   //         _currentMemberIndex++;
-//   //       });
-
-//   //       FocusScope.of(context).unfocus();
-
-//   //       WidgetsBinding.instance.addPostFrameCallback((_) {
-//   //         if (_scrollController.hasClients) {
-//   //           _scrollController.jumpTo(0); // faster than animate
-//   //         }
-
-//   //         // ✅ THIS IS THE FIX
-//   //         _nameFocus.requestFocus();
-//   //       });
-//   //     }
-//   //   } on DioException catch (e) {
-//   //     if (!mounted) return;
-//   //     setState(() => _isLoading = false);
-//   //     String errorMsg = l10n.failedToAddMemberTryAgain;
-//   //     if (e.response?.data != null) {
-//   //       final data = e.response!.data;
-//   //       if (data is Map) {
-//   //         errorMsg =
-//   //             data['message'] ?? data['error'] ?? data['msg'] ?? errorMsg;
-//   //         if (data['errors'] != null && data['errors'] is Map) {
-//   //           final errors = data['errors'] as Map;
-//   //           final fieldErrors = errors.values
-//   //               .map((v) => v is List ? v.first : v.toString())
-//   //               .join(', ');
-//   //           if (fieldErrors.isNotEmpty) errorMsg = fieldErrors;
-//   //         }
-//   //       } else if (data is String) {
-//   //         errorMsg = data;
-//   //       }
-//   //     } else if (e.type == DioExceptionType.connectionTimeout ||
-//   //         e.type == DioExceptionType.receiveTimeout) {
-//   //       errorMsg = l10n.connectionTimeoutTryAgain;
-//   //     } else if (e.type == DioExceptionType.connectionError) {
-//   //       errorMsg = l10n.noInternetTryAgain;
-//   //     }
-//   //     SnackbarHelper.showError(context, errorMsg);
-//   //   } catch (e) {
-//   //     if (!mounted) return;
-//   //     setState(() => _isLoading = false);
-//   //     SnackbarHelper.showError(
-//   //       context,
-//   //       '${l10n.somethingWentWrong}: ${e.toString()}',
-//   //     );
-//   //   }
-//   // }
-//   Future<void> _addMember() async {
-//     final l10n = AppLocalizations.of(context)!;
-
-//     /// IMPORTANT FIX
-//     /// If all required members already added,
-//     /// directly submit without validating current empty form
-//     if (savedMembers.length >= _totalMembers) {
-//       await _submitAllMembers();
-//       return;
-//     }
-
-//     final isMemberValid = widget.formKey.currentState?.validate() ?? false;
-
-//     if (!isMemberValid) {
-//       SnackbarHelper.showError(context, l10n.pleaseFillMemberDetails);
-//       return;
-//     }
-
-//     if (!_isAddress) {
-//       SnackbarHelper.showError(context, l10n.addAddressError);
-//       return;
-//     }
-
-//     final addressValid = _addressFormKey.currentState?.validate() ?? false;
-
-//     if (!addressValid) return;
-
-//     /// SAVE MEMBER
-//     final newMember = FamilyMemberData(
-//       fullName: controller.fullName.text.trim(),
-//       mobile: controller.mobile.text.trim(),
-//       email: controller.email.text.trim(),
-//       relation: controller.relation ?? "",
-//       gender: controller.gender ?? "",
-//       address: addressController.getOnlyAddressMap(addressType: "flat"),
-//     );
-
-//     if (_editingIndex != null) {
-//       // ✅ UPDATE EXISTING MEMBER
-//       savedMembers[_editingIndex!] = newMember;
-//       _editingIndex = null;
-//     } else {
-//       // ✅ ADD NEW MEMBER
-//       savedMembers.add(newMember);
-//     }
-
-//     AppLogger.success("Saved Members Count => ${savedMembers.length}");
-
-//     /// IF LAST MEMBER
-//     if (savedMembers.length >= _totalMembers) {
-//       await _submitAllMembers();
-//       return;
-//     }
-
-//     /// NEXT MEMBER
-//     setState(() {
-//       _currentMemberIndex = savedMembers.length + 1;
-//     });
-
-//     _clearCurrentEditingForm();
-//   }
-
-//   void _syncEditingToSaved() {
-//     if (_editingIndex == null) return;
-
-//     savedMembers[_editingIndex!] = FamilyMemberData(
-//       fullName: controller.fullName.text.trim(),
-//       mobile: controller.mobile.text.trim(),
-//       email: controller.email.text.trim(),
-//       relation: controller.relation ?? "",
-//       gender: controller.gender ?? "",
-//       address: addressController.getOnlyAddressMap(addressType: "flat"),
-//     );
-//   }
-
-//   Future<void> _submitAllMembers() async {
-//     if (_editingIndex != null) {
-//       _syncEditingToSaved();
-//       _editingIndex = null;
-//     }
-//     final l10n = AppLocalizations.of(context)!;
-
-//     final userId = await AppPreferences.getUserId();
-
-//     AppLogger.success("USER ID => $userId");
-
-//     if (userId == null || userId.isEmpty) {
-//       SnackbarHelper.showError(
-//         context,
-//         "User ID not found. Please login again.",
-//       );
-//       return;
-//     }
-
-//     setState(() => _isLoading = true);
-
-//     try {
-//       final body = {
-//         "userId": userId,
-//         "members": savedMembers.map((e) => e.toJson()).toList(),
-//       };
-
-//       AppLogger.success("FINAL API BODY => ${jsonEncode(body)}");
-
-//       final response = await _authService.memberdetails(body: body);
-
-//       AppLogger.success("FINAL RESPONSE => ${jsonEncode(response)}");
-
-//       if (!mounted) return;
-
-//       setState(() => _isLoading = false);
-
-//       SnackbarHelper.ShowSuccess(context, l10n.allMembersAdded);
-
-//       _resetForm();
-
-//       Future.delayed(const Duration(seconds: 1), () {
-//         if (context.mounted) {
-//           context.push(RouteNames.accountverfy);
-//         }
-//       });
-//     } on DioException catch (e) {
-//       if (!mounted) return;
-
-//       setState(() => _isLoading = false);
-
-//       String errorMsg = l10n.failedToAddMemberTryAgain;
-
-//       if (e.response?.data != null) {
-//         final data = e.response!.data;
-
-//         if (data is Map) {
-//           errorMsg = data['message'] ?? data['error'] ?? errorMsg;
-//         }
-//       }
-
-//       SnackbarHelper.showError(context, errorMsg);
-//     } catch (e) {
-//       if (!mounted) return;
-
-//       setState(() => _isLoading = false);
-
-//       SnackbarHelper.showError(context, e.toString());
-//     }
-//   }
-
-//   void _clearCurrentEditingForm() {
-//     controller.fullName.clear();
-//     controller.mobile.clear();
-//     controller.email.clear();
-//     controller.password.clear();
-
-//     controller.gender = null;
-//     controller.relation = null;
-
-//     addressController.clear();
-//     _editingIndex = null; // ✅ VERY IMPORTANT
-
-//     setState(() {});
-
-//     FocusScope.of(context).unfocus();
-
-//     WidgetsBinding.instance.addPostFrameCallback((_) {
-//       if (_scrollController.hasClients) {
-//         _scrollController.jumpTo(0);
-//       }
-
-//       _nameFocus.requestFocus();
-//     });
-//   }
-
-//   // remove keyboard focus
-
-//   @override
-//   Widget build(BuildContext context) {
-//     final l10n = AppLocalizations.of(context)!;
-//     return Form(
-//       key: widget.formKey,
-//       child: SingleChildScrollView(
-//         controller: _scrollController,
-//         child: Column(
-//           children: [
-//             Padding(
-//               padding: const EdgeInsets.symmetric(horizontal: 10),
-//               child: Column(
-//                 crossAxisAlignment: CrossAxisAlignment.start,
-//                 children: [
-//                   // Text(
-//                   //   "Add ${widget.accountType} Member",
-//                   //   style: const TextStyle(
-//                   //     fontSize: 22,
-//                   //     fontWeight: FontWeight.w600,
-//                   //   ),
-//                   // ),
-//                   const SizedBox(height: 15),
-//                   Row(
-//                     children: [
-//                       Expanded(
-//                         child: Container(
-//                           padding: const EdgeInsets.all(16),
-//                           decoration: BoxDecoration(
-//                             color: Colors.white,
-//                             borderRadius: BorderRadius.circular(18),
-//                             border: Border.all(
-//                               color: AppColors.btn_primery.withOpacity(.12),
-//                             ),
-//                             boxShadow: [
-//                               BoxShadow(
-//                                 color: Colors.black.withOpacity(.04),
-//                                 blurRadius: 10,
-//                                 offset: const Offset(0, 4),
-//                               ),
-//                             ],
-//                           ),
-//                           child: Column(
-//                             crossAxisAlignment: CrossAxisAlignment.start,
-//                             children: [
-//                               Row(
-//                                 children: [
-//                                   Icon(
-//                                     Icons.groups_rounded,
-//                                     color: AppColors.btn_primery,
-//                                     size: 22,
-//                                   ),
-//                                   const SizedBox(width: 8),
-//                                   Text(
-//                                     l10n.enterFamilyCount,
-//                                     style: const TextStyle(
-//                                       fontSize: 15,
-//                                       fontWeight: FontWeight.w600,
-//                                     ),
-//                                   ),
-//                                 ],
-//                               ),
-
-//                               const SizedBox(height: 16),
-
-//                               Row(
-//                                 children: [
-//                                   /// MINUS BUTTON
-//                                   InkWell(
-//                                     borderRadius: BorderRadius.circular(14),
-//                                     onTap: () {
-//                                       int current =
-//                                           int.tryParse(
-//                                             controller.familyCount.text,
-//                                           ) ??
-//                                           0;
-
-//                                       if (current > 1) {
-//                                         _handleMemberCountChange(current - 1);
-//                                       }
-//                                     },
-//                                     child: Container(
-//                                       width: 48,
-//                                       height: 48,
-//                                       decoration: BoxDecoration(
-//                                         borderRadius: BorderRadius.circular(14),
-//                                         color: Colors.grey.shade100,
-//                                       ),
-//                                       child: const Icon(Icons.remove),
-//                                     ),
-//                                   ),
-
-//                                   const SizedBox(width: 14),
-
-//                                   /// COUNT VIEW
-//                                   Expanded(
-//                                     child: Container(
-//                                       height: 52,
-//                                       alignment: Alignment.center,
-//                                       decoration: BoxDecoration(
-//                                         borderRadius: BorderRadius.circular(14),
-//                                         border: Border.all(
-//                                           color: AppColors.btn_primery
-//                                               .withOpacity(.15),
-//                                         ),
-//                                       ),
-//                                       child: TextFormField(
-//                                         controller: controller.familyCount,
-//                                         keyboardType: TextInputType.number,
-//                                         textAlign: TextAlign.center,
-//                                         style: const TextStyle(
-//                                           fontSize: 22,
-//                                           fontWeight: FontWeight.w700,
-//                                         ),
-//                                         decoration: const InputDecoration(
-//                                           border: InputBorder.none,
-//                                           counterText: "",
-//                                         ),
-//                                         maxLength: 2,
-//                                         inputFormatters: [
-//                                           FilteringTextInputFormatter
-//                                               .digitsOnly,
-//                                         ],
-//                                         validator: (value) => controller
-//                                             .validatefamilycount(value, l10n),
-//                                         onChanged: (val) {
-//                                           final count = int.tryParse(val);
-
-//                                           if (count != null && count > 0) {
-//                                             _handleMemberCountChange(count);
-//                                           }
-//                                         },
-//                                       ),
-//                                     ),
-//                                   ),
-
-//                                   const SizedBox(width: 14),
-
-//                                   /// PLUS BUTTON
-//                                   InkWell(
-//                                     borderRadius: BorderRadius.circular(14),
-//                                     onTap: () {
-//                                       int current =
-//                                           int.tryParse(
-//                                             controller.familyCount.text,
-//                                           ) ??
-//                                           0;
-
-//                                       _handleMemberCountChange(current + 1);
-//                                     },
-//                                     child: Container(
-//                                       width: 48,
-//                                       height: 48,
-//                                       decoration: BoxDecoration(
-//                                         borderRadius: BorderRadius.circular(14),
-//                                         color: AppColors.btn_primery,
-//                                       ),
-//                                       child: const Icon(
-//                                         Icons.add,
-//                                         color: Colors.white,
-//                                       ),
-//                                     ),
-//                                   ),
-//                                 ],
-//                               ),
-
-//                               if (_totalMembers > 0) ...[
-//                                 const SizedBox(height: 14),
-
-//                                 /// PROGRESS
-//                                 ClipRRect(
-//                                   borderRadius: BorderRadius.circular(20),
-//                                   child: LinearProgressIndicator(
-//                                     value: _currentMemberIndex / _totalMembers,
-//                                     minHeight: 8,
-//                                     backgroundColor: Colors.grey.shade200,
-//                                     valueColor: AlwaysStoppedAnimation(
-//                                       AppColors.btn_primery,
-//                                     ),
-//                                   ),
-//                                 ),
-
-//                                 const SizedBox(height: 10),
-
-//                                 Row(
-//                                   mainAxisAlignment:
-//                                       MainAxisAlignment.spaceBetween,
-//                                   children: [
-//                                     Text(
-//                                       "Member $_currentMemberIndex of $_totalMembers",
-//                                       style: TextStyle(
-//                                         fontSize: 13,
-//                                         color: Colors.grey.shade700,
-//                                         fontWeight: FontWeight.w500,
-//                                       ),
-//                                     ),
-
-//                                     Container(
-//                                       padding: const EdgeInsets.symmetric(
-//                                         horizontal: 10,
-//                                         vertical: 5,
-//                                       ),
-//                                       decoration: BoxDecoration(
-//                                         color: AppColors.btn_primery
-//                                             .withOpacity(.08),
-//                                         borderRadius: BorderRadius.circular(30),
-//                                       ),
-//                                       child: Text(
-//                                         "${savedMembers.length} Added",
-//                                         style: TextStyle(
-//                                           color: AppColors.btn_primery,
-//                                           fontWeight: FontWeight.w600,
-//                                           fontSize: 12,
-//                                         ),
-//                                       ),
-//                                     ),
-//                                   ],
-//                                 ),
-//                               ],
-//                             ],
-//                           ),
-//                         ),
-//                       ),
-//                     ],
-//                   ),
-
-//                   // const SizedBox(height: 10),
-//                   // if (_totalMembers > 0)
-//                   //   Text(
-//                   //     l10n.addMemberTitle(
-//                   //       _localizedAccountType(l10n),
-//                   //       _currentMemberIndex.toString(),
-//                   //       _totalMembers.toString(),
-//                   //     ),
-//                   //     style: const TextStyle(
-//                   //       fontSize: 12,
-//                   //       // fontWeight: FontWeight.w400,
-//                   //     ),
-//                   //   ),
-//                   const SizedBox(height: 15),
-
-//                   AppTextField(
-//                     controller: controller.fullName,
-//                     onChanged: (_) => _syncEditingToSaved(),
-//                     label: l10n.memberFullName,
-//                     focusNode: _nameFocus, // ✅ add this
-//                     keyboardType: TextInputType.name,
-//                     textInputAction: TextInputAction.next,
-//                     validator: (value) =>
-//                         controller.validatefullname(value, l10n),
-//                   ),
-//                   const SizedBox(height: 15),
-
-//                   AppDropdown(
-//                     label: l10n.relationship,
-//                     items: [
-//                       l10n.father,
-//                       l10n.mother,
-//                       l10n.son,
-//                       l10n.daughter,
-//                       l10n.husband,
-//                       l10n.wife,
-//                       l10n.addOther,
-//                     ],
-//                     value: controller.relation,
-//                     onChanged: (val) => {
-//                       setState(() => controller.relation = val),
-//                       _syncEditingToSaved(),
-//                     },
-//                     validator: (val) =>
-//                         val == null ? l10n.selectRelationship : null,
-//                   ),
-
-//                   const SizedBox(height: 15),
-
-//                   // Mobile
-//                   AppTextField(
-//                     controller: controller.mobile,
-//                     keyboardType: TextInputType.phone,
-//                     textInputAction: TextInputAction.next,
-//                     onChanged: (_) => _syncEditingToSaved(),
-//                     label: l10n.mobileNumber,
-//                     prefixText: "+973 ",
-//                     maxLength: 8,
-//                     inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-//                     validator: (value) =>
-//                         controller.validatemobilenumber(value, l10n),
-//                   ),
-
-//                   const SizedBox(height: 15),
-
-//                   // AppTextField(
-//                   //   controller: controller.password,
-
-//                   //   label: "Password*",
-//                   //   validator: (value) => controller.validatepassword(value),
-//                   // ),
-//                   // const SizedBox(height: 15),
-//                   AppTextField(
-//                     controller: controller.email,
-//                     onChanged: (_) => _syncEditingToSaved(),
-//                     keyboardType: TextInputType.emailAddress,
-//                     textInputAction: TextInputAction.done,
-//                     label: '${l10n.emailAddress}*',
-//                     validator: (value) => controller.validateemail(value, l10n),
-//                   ),
-//                   const SizedBox(height: 15),
-//                   AppDropdown(
-//                     label: l10n.gender,
-//                     items: [l10n.male, l10n.female],
-//                     value: controller.gender,
-//                     onChanged: (val) => setState(() => controller.gender = val),
-//                     validator: (val) => val == null ? l10n.selectGender : null,
-//                   ),
-
-//                   const SizedBox(height: 20),
-//                   SizedBox(
-//                     width: double.infinity,
-//                     height: 47,
-//                     child: OutlinedButton(
-//                       style: OutlinedButton.styleFrom(
-//                         shape: RoundedRectangleBorder(
-//                           borderRadius: BorderRadius.circular(10),
-//                         ),
-//                       ),
-//                       onPressed: () {
-//                         setState(() {
-//                           _isAddress = !_isAddress;
-//                         });
-//                       },
-//                       child: Text(
-//                         _isAddress ? l10n.hideAddress : l10n.addAddress,
-//                         style: TextStyle(color: AppColors.btn_primery),
-//                       ),
-//                     ),
-//                   ),
-
-//                   if (_isAddress)
-//                     Column(
-//                       children: [
-//                         const SizedBox(height: 20),
-//                         Address(
-//                           accountType: "Family",
-//                           family: true,
-//                           formKey: _addressFormKey,
-//                           controller: addressController, //  pass controller
-//                           onChanged: _syncEditingToSaved, // ✅ IMPORTANT
-//                         ),
-//                       ],
-//                     ),
-
-//                   const SizedBox(height: 10),
-//                 ],
-//               ),
-//             ),
-
-//             // if (!_hideBottomButton)
-//             AppButton(
-//               text: savedMembers.length + 1 >= _totalMembers
-//                   ? l10n.finish
-//                   : l10n.addMember,
-//               isLoading: _isLoading,
-//               onPressed: _addMember,
-//               color: AppColors.btn_primery,
-//               width: double.infinity,
-//               height: 47,
-//             ),
-//             const SizedBox(height: 10),
-//           ],
-//         ),
-//       ),
-//     );
-//   }
-// }
-
 import 'dart:convert';
 
 import 'package:dio/dio.dart';
@@ -1233,7 +82,8 @@ class _AddmemberState extends State<Addmember> {
   int? editingIndex;
   int currentIndex = 0;
   bool _showFamilyCountError = false;
-
+  final GlobalKey _addressSectionKey = GlobalKey();
+  bool _highlightAddress = false;
   bool _isFamilyCountEditable = true;
   final TextEditingController nameController = TextEditingController();
   final TextEditingController mobileController = TextEditingController();
@@ -1774,7 +624,7 @@ class _AddmemberState extends State<Addmember> {
     final userId = await AppPreferences.getUserId();
 
     if (userId == null || userId.isEmpty) {
-      SnackbarHelper.showError(context, "User ID not found");
+      SnackbarHelper.showError(context, l10n.userIdNotFound);
       return;
     }
 
@@ -1833,6 +683,33 @@ class _AddmemberState extends State<Addmember> {
 
       SnackbarHelper.showError(context, e.toString());
     }
+  }
+
+  Future<void> _showAddressSection() async {
+    setState(() {
+      _isAddress = true;
+      _highlightAddress = true;
+    });
+
+    await Future.delayed(const Duration(milliseconds: 100));
+
+    final context = _addressSectionKey.currentContext;
+
+    if (context != null) {
+      Scrollable.ensureVisible(
+        context,
+        duration: const Duration(milliseconds: 500),
+        curve: Curves.easeInOut,
+      );
+    }
+
+    Future.delayed(const Duration(seconds: 2), () {
+      if (mounted) {
+        setState(() {
+          _highlightAddress = false;
+        });
+      }
+    });
   }
 
   void _clearCurrentEditingForm() {
@@ -2028,7 +905,7 @@ class _AddmemberState extends State<Addmember> {
 
                                             SnackbarHelper.showError(
                                               context,
-                                              "Please fill current member first",
+                                              l10n.pleaseFillCurrentMemberFirst,
                                             );
 
                                             return;
@@ -2056,9 +933,8 @@ class _AddmemberState extends State<Addmember> {
 
                                             SnackbarHelper.showError(
                                               context,
-                                              "Family count must be greater than 0",
+                                              l10n.familyCountMustBeGreaterThanZero,
                                             );
-
                                             return;
                                           }
 
@@ -2075,7 +951,7 @@ class _AddmemberState extends State<Addmember> {
 
                                             SnackbarHelper.showError(
                                               context,
-                                              "Maximum family count is 10",
+                                              l10n.maximumFamilyCountIs,
                                             );
 
                                             _handleMemberCountChange(10);
@@ -2341,6 +1217,8 @@ class _AddmemberState extends State<Addmember> {
 
                                     /// PLUS
                                     onTap: () {
+                                      updateCurrentMember();
+
                                       final current = familyMembers.isNotEmpty
                                           ? familyMembers[currentIndex]
                                           : null;
@@ -2350,13 +1228,12 @@ class _AddmemberState extends State<Addmember> {
                                           !isMemberComplete(current)) {
                                         SnackbarHelper.showError(
                                           context,
-                                          "Please fill current member first",
+                                          l10n.pleaseFillCurrentMemberFirst,
                                         );
                                         return;
                                       }
 
                                       /// 2. Save current before moving
-                                      updateCurrentMember();
 
                                       /// 3. Increase count
                                       final currentCount =
@@ -2608,9 +1485,13 @@ class _AddmemberState extends State<Addmember> {
                         ),
                       ),
                       onPressed: () {
-                        setState(() {
-                          _isAddress = !_isAddress;
-                        });
+                        if (!_isAddress) {
+                          _showAddressSection();
+                        } else {
+                          setState(() {
+                            _isAddress = false;
+                          });
+                        }
                       },
                       child: Text(
                         _isAddress ? l10n.hideAddress : l10n.addAddress,
@@ -2620,17 +1501,33 @@ class _AddmemberState extends State<Addmember> {
                   ),
 
                   if (_isAddress)
-                    Column(
-                      children: [
-                        const SizedBox(height: 20),
-                        Address(
-                          accountType: "Family",
-                          family: true,
-                          formKey: _addressFormKey,
-                          controller: addressController, //  pass controller
-                          // onChanged: _syncEditingToSaved, // ✅ IMPORTANT
+                    AnimatedContainer(
+                      key: _addressSectionKey,
+                      duration: const Duration(milliseconds: 400),
+                      padding: const EdgeInsets.all(8),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(
+                          color: _highlightAddress
+                              ? AppColors.button_secondary
+                              : Colors.transparent,
+                          width: 2,
                         ),
-                      ],
+                        color: _highlightAddress
+                            ? AppColors.button_secondary.withOpacity(.08)
+                            : Colors.transparent,
+                      ),
+                      child: Column(
+                        children: [
+                          const SizedBox(height: 20),
+                          Address(
+                            accountType: "Family",
+                            family: true,
+                            formKey: _addressFormKey,
+                            controller: addressController,
+                          ),
+                        ],
+                      ),
                     ),
 
                   const SizedBox(height: 10),
@@ -2749,7 +1646,7 @@ class _AddmemberState extends State<Addmember> {
                   if (!isComplete) {
                     SnackbarHelper.showError(
                       context,
-                      "Please complete current member before continuing",
+                      l10n.completeCurrentMemberBeforeContinue,
                     );
                     return;
                   }

@@ -193,13 +193,13 @@ class _SettingsViewState extends ConsumerState<SettingsView> {
         ref.invalidate(serviceListProvider);
         ref.invalidate(fetchpointsnodification);
 
-        if (context.mounted) context.go(RouteNames.splash);
+        if (context.mounted) context.go(RouteNames.login);
       } catch (e) {
         /// still force logout
         await AppPreferences.clearAll();
         await AppPreferences.setLoggedIn(false);
 
-        if (context.mounted) context.go(RouteNames.splash);
+        if (context.mounted) context.go(RouteNames.login);
       }
     }
 
@@ -336,7 +336,7 @@ class _SettingsViewState extends ConsumerState<SettingsView> {
                               await AppPreferences.setLoggedIn(false);
 
                               if (context.mounted) {
-                                context.go(RouteNames.splash);
+                                context.go(RouteNames.login);
                               }
                             },
                             child: Text(

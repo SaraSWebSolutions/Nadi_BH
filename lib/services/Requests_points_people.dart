@@ -32,21 +32,20 @@ class RequestsPointsPeople {
       throw err;
     }
   }
-   Future<void> fetchacceptorrejectpoints({
+
+  Future<Map<String, dynamic>> fetchacceptorrejectpoints({
     required String requestId,
-    required String action
-   }) async{
-     try{
+    required String action,
+  }) async {
+    try {
       final response = await _dio.post(
         'points/transfer-points',
-        data: {
-        "requestId":requestId,
-        "action":action
-        }
-        );
-     } on DioException {
-        rethrow;
-     }
-   }
+        data: {"requestId": requestId, "action": action},
+      );
 
+      return response.data;
+    } on DioException catch (e) {
+      throw e.response?.data['message'] ?? "Something went wrong";
+    }
+  }
 }

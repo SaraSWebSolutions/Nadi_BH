@@ -329,12 +329,17 @@ class _MyprofileState extends ConsumerState<Myprofile> {
           final nameCtrl = TextEditingController(
             text: safeString(basicData['basicInfo']?['fullName']),
           );
-          final fullDisplayName = [
-            safeString(basicData['basicInfo']?['fullName'].trim()),
-            safeString(basicData['basicInfo']?['secondName'].trim()),
-            safeString(basicData['basicInfo']?['thirdName'].trim()),
-            safeString(basicData['basicInfo']?['fourthName'].trim()),
-          ].where((e) => e.isNotEmpty).join(' ');
+          final fullDisplayName =
+              [
+                    safeString(basicData['basicInfo']?['fullName']).trim(),
+                    safeString(basicData['basicInfo']?['secondName']).trim(),
+                    safeString(basicData['basicInfo']?['thirdName']).trim(),
+                    safeString(basicData['basicInfo']?['fourthName']).trim(),
+                  ]
+                  .where((e) => e != null)
+                  .map((e) => e.toString().trim())
+                  .where((e) => e.isNotEmpty)
+                  .join(' ');
           final fullNameCtrl = TextEditingController(
             text: fullDisplayName.trim(),
           );

@@ -462,7 +462,16 @@
   "otpMustBe4Digits": "يجب أن يتكون رمز التحقق من 4 أرقام",
   "member": "العضو",
   "ofText": "من",
-  "added": "تمت الإضافة"
+  "added": "تمت الإضافة",
+   "pleaseFillCurrentMemberFirst": "يمكنك تحديث عدد أفراد الأسرة بعد إدخال جميع تفاصيل الأعضاء وقبل الإرسال.",
+  "familyCountMustBeGreaterThanZero": "يجب أن يكون عدد أفراد العائلة أكبر من 0",
+  "maximumFamilyCountIs": "الحد الأقصى لعدد أفراد العائلة هو 10",
+  "userIdNotFound": "معرّف المستخدم غير موجود",
+  "somethingWentWrong": "حدث خطأ ما",
+  "completeCurrentMemberBeforeContinue": "يرجى إكمال بيانات العضو الحالي قبل المتابعة",
+  "addAddressError": "يرجى إضافة العنوان",
+  "flat": "شقة",
+  "home": "منزل"
 
 
 }

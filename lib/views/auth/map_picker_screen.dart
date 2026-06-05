@@ -1,0 +1,197 @@
+import 'package:flutter/material.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:geolocator/geolocator.dart';
+import 'package:geocoding/geocoding.dart';
+import 'package:nadi_user_app/models/location_result.dart';
+import 'package:google_places_flutter/google_places_flutter.dart';
+
+class MapPickerScreen extends StatefulWidget {
+  const MapPickerScreen({super.key});
+
+  @override
+  State<MapPickerScreen> createState() => _MapPickerScreenState();
+}
+
+class _MapPickerScreenState extends State<MapPickerScreen> {
+  GoogleMapController? mapController;
+
+  LatLng? selectedLatLng;
+
+  String address = "";
+  String selectedPlaceName = "";
+  final TextEditingController _searchController = TextEditingController();
+  @override
+  void initState() {
+    super.initState();
+    _loadCurrentLocation();
+  }
+
+  Future<void> _loadCurrentLocation() async {
+    final position = await Geolocator.getCurrentPosition();
+
+    selectedLatLng = LatLng(position.latitude, position.longitude);
+
+    await _reverseGeocode();
+
+    setState(() {});
+  }
+
+  Future<void> _reverseGeocode() async {
+    final placemarks = await placemarkFromCoordinates(
+      selectedLatLng!.latitude,
+      selectedLatLng!.longitude,
+    );
+
+    final place = placemarks.first;
+
+    address = [
+      place.street,
+      place.subLocality,
+      place.locality,
+    ].where((e) => e != null && e.isNotEmpty).join(", ");
+  }
+
+  Future<void> _confirmLocation() async {
+    final placemarks = await placemarkFromCoordinates(
+      selectedLatLng!.latitude,
+      selectedLatLng!.longitude,
+    );
+
+    final place = placemarks.first;
+
+    Navigator.pop(
+      context,
+      LocationResult(
+        latitude: selectedLatLng!.latitude,
+        longitude: selectedLatLng!.longitude,
+        fullAddress: selectedPlaceName.isNotEmpty ? selectedPlaceName : address,
+        city: place.locality ?? "",
+        block: place.subLocality ?? "",
+        road: place.street ?? "",
+        building: place.name ?? "",
+      ),
+    );
+  }
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (selectedLatLng == null) {
+      return const Scaffold(body: Center(child: CircularProgressIndicator()));
+    }
+
+    return Scaffold(
+      appBar: AppBar(title: const Text("Select Location")),
+      body: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(16),
+            child: GooglePlaceAutoCompleteTextField(
+              textEditingController: _searchController,
+              googleAPIKey: "AIzaSyAX0FMPV_cS4VOBRoJTKgw3SttVjKBeu6I",
+
+              inputDecoration: const InputDecoration(
+                hintText: "Search Address",
+                prefixIcon: Icon(Icons.search),
+              ),
+
+              debounceTime: 600,
+
+              countries: const ["bh"], // Bahrain only
+
+              isLatLngRequired: true,
+              getPlaceDetailWithLatLng: (prediction) async {
+                final lat = double.parse(prediction.lat!);
+                final lng = double.parse(prediction.lng!);
+
+                selectedLatLng = LatLng(lat, lng);
+
+                selectedPlaceName = prediction.description ?? "";
+
+                mapController?.animateCamera(
+                  CameraUpdate.newLatLngZoom(selectedLatLng!, 17),
+                );
+
+                setState(() {});
+              },
+
+              itemClick: (prediction) {},
+            ),
+          ),
+
+          Expanded(
+            child: GoogleMap(
+              initialCameraPosition: CameraPosition(
+                target: selectedLatLng!,
+                zoom: 16,
+              ),
+              myLocationEnabled: true,
+              onMapCreated: (controller) {
+                mapController = controller;
+              },
+              onTap: (latLng) async {
+                selectedLatLng = latLng;
+
+                // Clear searched location name
+                selectedPlaceName = "";
+
+                await _reverseGeocode();
+
+                setState(() {});
+              },
+              markers: {
+                Marker(
+                  markerId: const MarkerId("selected"),
+                  position: selectedLatLng!,
+                ),
+              },
+            ),
+          ),
+
+          Container(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // if (selectedPlaceName.isNotEmpty) ...[
+                Text(
+                  selectedPlaceName.isNotEmpty ? selectedPlaceName : address,
+                  style: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 16,
+                  ),
+                ),
+                const SizedBox(height: 4),
+
+                // ] else ...[
+                //   Text(
+                //     address,
+                //     style: const TextStyle(
+                //       fontWeight: FontWeight.bold,
+                //       fontSize: 16,
+                //     ),
+                //   ),
+                // ],
+                const SizedBox(height: 16),
+
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    onPressed: _confirmLocation,
+                    child: const Text("Confirm Location"),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
