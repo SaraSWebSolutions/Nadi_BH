@@ -9,6 +9,7 @@ import 'package:nadi_user_app/routing/app_router.dart';
 import 'package:nadi_user_app/services/auth_service.dart';
 import 'package:nadi_user_app/widgets/app_back.dart';
 import 'package:nadi_user_app/widgets/buttons/primary_button.dart';
+import 'package:nadi_user_app/widgets/confirm_dialog.dart';
 
 class TermsAndConditions extends ConsumerStatefulWidget {
   const TermsAndConditions({super.key});
@@ -87,165 +88,199 @@ class _TermsAndConditionsState extends ConsumerState<TermsAndConditions> {
     }
   }
 
+  Future<bool> _confirmExit() async {
+    final loc = AppLocalizations.of(context)!;
+    return await showConfirmDialog(
+      context,
+      title: loc.discardSignUpTitle,
+      message: loc.discardSignUpMessage,
+      confirmText: loc.discard,
+      icon: Icons.warning_amber_rounded,
+      destructive: true,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    return Scaffold(
-      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+    return PopScope(
+      canPop: false, // we control back manually
+      onPopInvokedWithResult: (didPop, _) async {
+        if (didPop) return;
 
-      appBar: AppBar(
-        backgroundColor: AppColors.app_background_clr,
-        elevation: 0,
-        centerTitle: true,
+        final ok = await _confirmExit();
+        if (ok && context.mounted) {
+          context.push(RouteNames.Account);
+        }
+      },
+      child: Scaffold(
+        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
 
-        title: Text(
-          l10n.termsTitle,
-          style: const TextStyle(
-            color: Colors.white,
-            fontSize: 20,
-            fontWeight: FontWeight.w600,
-            fontFamily: 'Poppins',
-          ),
-        ),
+        appBar: AppBar(
+          backgroundColor: AppColors.app_background_clr,
+          elevation: 0,
+          centerTitle: true,
 
-        leadingWidth: 60,
-
-        leading: Padding(
-          padding: const EdgeInsets.only(left: 10),
-          child: Align(
-            alignment: Alignment.centerLeft,
-            child: SizedBox(
-              width: 38,
-              height: 38,
-              child: FittedBox(
-                child: AppCircleIconButton(
-                  icon: Icons.arrow_back,
-                  onPressed: () => context.pop(),
-                ),
-              ),
+          title: Text(
+            l10n.termsTitle,
+            style: const TextStyle(
+              color: Colors.white,
+              fontSize: 20,
+              fontWeight: FontWeight.w600,
+              fontFamily: 'Poppins',
             ),
           ),
-        ),
-      ),
 
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.symmetric(horizontal: 20),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            const SizedBox(height: 20),
+          leadingWidth: 60,
 
-            Container(
-              width: double.infinity,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(16),
-                border: Border.all(color: AppColors.borderGrey),
-                color: Theme.of(context).cardColor,
-              ),
-              padding: const EdgeInsets.symmetric(horizontal: 17, vertical: 20),
-
-              child: _isFetchingTerms
-                  ? const Padding(
-                      padding: EdgeInsets.symmetric(vertical: 30),
-                      child: Center(child: CircularProgressIndicator()),
-                    )
-                  : errorMessage != null
-                  ? Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 20),
-                      child: Center(
-                        child: Text(
-                          errorMessage!,
-                          style: TextStyle(
-                            fontSize: AppFontSizes.medium,
-                            color: Colors.red,
-                            fontWeight: FontWeight.w500,
-                          ),
-                          textAlign: TextAlign.center,
-                        ),
-                      ),
-                    )
-                  : Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          l10n.ourCommitments,
-                          style: TextStyle(
-                            color: AppColors.app_background_clr,
-                            fontSize: 15,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-
-                        const SizedBox(height: 12),
-
-                        Text(
-                          termsContent,
-                          style: TextStyle(
-                            fontSize: AppFontSizes.small,
-                            height: 1.6,
-                          ),
-                        ),
-                      ],
-                    ),
-            ),
-
-            const SizedBox(height: 24),
-
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(
-                  color: AppColors.borderGrey.withOpacity(0.5),
-                ),
-              ),
-
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Checkbox(
-                    value: isChecked,
-                    activeColor: AppColors.app_background_clr,
-                    checkColor: Colors.white,
-                    onChanged: (bool? newValue) {
-                      setState(() {
-                        isChecked = newValue!;
-                      });
+          leading: Padding(
+            padding: const EdgeInsets.only(left: 10),
+            child: Align(
+              alignment: Alignment.centerLeft,
+              child: SizedBox(
+                width: 38,
+                height: 38,
+                child: FittedBox(
+                  child: AppCircleIconButton(
+                    icon: Icons.arrow_back,
+                    onPressed: () async {
+                      final ok = await _confirmExit();
+                      if (ok && context.mounted) {
+                        context.push(RouteNames.Account);
+                      }
                     },
                   ),
+                ),
+              ),
+            ),
+          ),
+        ),
 
-                  Expanded(
-                    child: Padding(
-                      padding: const EdgeInsets.only(top: 14),
-                      child: Text(
-                        l10n.agreeTerms,
-                        style: TextStyle(
-                          fontSize: AppFontSizes.small,
-                          height: 1.5,
+        body: SingleChildScrollView(
+          padding: const EdgeInsets.symmetric(horizontal: 20),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              const SizedBox(height: 20),
+
+              Container(
+                width: double.infinity,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(color: AppColors.borderGrey),
+                  color: Theme.of(context).cardColor,
+                ),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 17,
+                  vertical: 20,
+                ),
+
+                child: _isFetchingTerms
+                    ? const Padding(
+                        padding: EdgeInsets.symmetric(vertical: 30),
+                        child: Center(child: CircularProgressIndicator()),
+                      )
+                    : errorMessage != null
+                    ? Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 20),
+                        child: Center(
+                          child: Text(
+                            errorMessage!,
+                            style: TextStyle(
+                              fontSize: AppFontSizes.medium,
+                              color: Colors.red,
+                              fontWeight: FontWeight.w500,
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                        ),
+                      )
+                    : Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            l10n.ourCommitments,
+                            style: TextStyle(
+                              color: AppColors.app_background_clr,
+                              fontSize: 15,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+
+                          const SizedBox(height: 12),
+
+                          Text(
+                            termsContent,
+                            style: TextStyle(
+                              fontSize: AppFontSizes.small,
+                              height: 1.6,
+                            ),
+                          ),
+                        ],
+                      ),
+              ),
+
+              const SizedBox(height: 24),
+
+              Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 10,
+                  vertical: 4,
+                ),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(
+                    color: AppColors.borderGrey.withOpacity(0.5),
+                  ),
+                ),
+
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Checkbox(
+                      value: isChecked,
+                      activeColor: AppColors.app_background_clr,
+                      checkColor: Colors.white,
+                      onChanged: (bool? newValue) {
+                        setState(() {
+                          isChecked = newValue!;
+                        });
+                      },
+                    ),
+
+                    Expanded(
+                      child: Padding(
+                        padding: const EdgeInsets.only(top: 14),
+                        child: Text(
+                          l10n.agreeTerms,
+                          style: TextStyle(
+                            fontSize: AppFontSizes.small,
+                            height: 1.5,
+                          ),
                         ),
                       ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
-            ),
 
-            const SizedBox(height: 28),
+              const SizedBox(height: 28),
 
-            AppButton(
-              text: l10n.completeRegistration,
-              isLoading: _isLoading,
-              onPressed: () => completeRegistration(context),
+              AppButton(
+                text: l10n.completeRegistration,
+                isLoading: _isLoading,
+                onPressed: () => completeRegistration(context),
 
-              color: isChecked
-                  ? AppColors.btn_primery
-                  : AppColors.button_secondary.withOpacity(0.5),
+                color: isChecked
+                    ? AppColors.btn_primery
+                    : AppColors.button_secondary.withOpacity(0.5),
 
-              width: double.infinity,
-            ),
+                width: double.infinity,
+              ),
 
-            const SizedBox(height: 30),
-          ],
+              const SizedBox(height: 30),
+            ],
+          ),
         ),
       ),
     );

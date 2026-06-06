@@ -372,7 +372,7 @@ class _SignInOtpState extends State<SignInOtp> {
       await AppPreferences.saveToken(response['token']);
       await AppPreferences.saveAccountType(response['accountType']);
       await AppPreferences.saveUserId(response['userId']);
-
+      await AppPreferences.setLoggedIn(true);
       // Connect MQTT for chat notifications
       final savedUserId = response['userId'];
       if (savedUserId != null) {

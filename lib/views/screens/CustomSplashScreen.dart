@@ -178,6 +178,7 @@
 
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:video_player/video_player.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:nadi_user_app/core/network/dio_client.dart';
@@ -218,10 +219,10 @@ class _CustomSplashScreenState extends State<CustomSplashScreen>
     _setupAnimation();
 
     WidgetsBinding.instance.addPostFrameCallback((_) async {
-      Future.wait([_initNotifications(), _loadSplashMedia()]).then((_) {
-        _decideNavigation();
+      Future.wait([_initNotifications(), _loadSplashMedia()]).then((_) async {
+        await Future.delayed(const Duration(milliseconds: 500));
+        await _decideNavigation();
       });
-      ;
 
       if (mounted) {
         setState(() {
@@ -244,9 +245,9 @@ class _CustomSplashScreenState extends State<CustomSplashScreen>
 
     _animationController.repeat();
 
-    Future.delayed(const Duration(milliseconds: 2500), () {
-      if (mounted && !_hasNavigated) _decideNavigation();
-    });
+    // Future.delayed(const Duration(milliseconds: 2500), () {
+    //   if (mounted && !_hasNavigated) _decideNavigation();
+    // });
   }
 
   // ================= LOAD MEDIA =================
@@ -320,34 +321,60 @@ class _CustomSplashScreenState extends State<CustomSplashScreen>
   }
 
   // ================= NAVIGATION =================
+  // Future<void> _decideNavigation() async {
+  //   if (_hasNavigated) return;
+  //   _hasNavigated = true;
+  //   final isFirstLaunch = !(await AppPreferences.hasSeenAbout());
+  //   final isLoggedIn = await AppPreferences.isLoggedIn();
+  //   final token = await AppPreferences.getToken();
+
+  //   if (isFirstLaunch) {
+  //     context.go(RouteNames.language);
+  //   } else if (isLoggedIn && token.isNotEmpty) {
+  //     context.go(RouteNames.bottomnav);
+  //   } else {
+  //     context.go(RouteNames.login);
+  //   }
+
+  //   // final isLoggedIn = await AppPreferences.isLoggedIn();
+  //   // final hasSeenAbout = await AppPreferences.hasSeenAbout();
+  //   // final token = await AppPreferences.getToken();
+
+  //   // if (!mounted) return;
+
+  //   // if (!hasSeenAbout) {
+  //   //   context.go(RouteNames.language);
+  //   // } else if (token != null && token.isNotEmpty) {
+  //   //   context.go(RouteNames.bottomnav);
+  //   // } else {
+  //   //   context.go(RouteNames.login);
+  //   // }
+  // }
   Future<void> _decideNavigation() async {
     if (_hasNavigated) return;
     _hasNavigated = true;
-    final isFirstLaunch = !(await AppPreferences.hasSeenAbout());
-    final isLoggedIn = await AppPreferences.isLoggedIn();
-    final token = await AppPreferences.getToken();
+
+    if (!mounted) return;
+
+    final prefs = await SharedPreferences.getInstance();
+
+    final isFirstLaunch = !(prefs.getBool("about_seen") ?? false);
+    final isLoggedIn = prefs.getBool("is_logged_in") ?? false;
+    final token = prefs.getString("auth_token") ?? "";
+
+    if (!mounted) return;
 
     if (isFirstLaunch) {
       context.go(RouteNames.language);
-    } else if (isLoggedIn && token.isNotEmpty) {
-      context.go(RouteNames.bottomnav);
-    } else {
-      context.go(RouteNames.login);
+      return;
     }
 
-    // final isLoggedIn = await AppPreferences.isLoggedIn();
-    // final hasSeenAbout = await AppPreferences.hasSeenAbout();
-    // final token = await AppPreferences.getToken();
+    if (isLoggedIn && token.isNotEmpty) {
+      context.go(RouteNames.bottomnav);
+      return;
+    }
 
-    // if (!mounted) return;
-
-    // if (!hasSeenAbout) {
-    //   context.go(RouteNames.language);
-    // } else if (token != null && token.isNotEmpty) {
-    //   context.go(RouteNames.bottomnav);
-    // } else {
-    //   context.go(RouteNames.login);
-    // }
+    context.go(RouteNames.login);
   }
 
   // ================= UI =================

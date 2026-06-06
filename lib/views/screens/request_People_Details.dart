@@ -10,6 +10,7 @@ import 'package:nadi_user_app/providers/pointshistory_provider.dart';
 import 'package:nadi_user_app/providers/userDashboard_provider.dart';
 import 'package:nadi_user_app/services/point_request_with_id.dart';
 import 'package:nadi_user_app/widgets/Points_request_Details.dart';
+import 'package:nadi_user_app/widgets/app_back.dart';
 
 class RequestPeopleDetails extends ConsumerStatefulWidget {
   final String peopleId;
@@ -81,11 +82,13 @@ class _RequestPeopleDetailsState extends ConsumerState<RequestPeopleDetails> {
       appBar: AppBar(
         backgroundColor: AppColors.gold_coin,
         iconTheme: IconThemeData(color: Colors.white),
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: () {
-            Navigator.pop(context, true);
-          },
+        leading: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: AppCircleIconButton(
+            icon: Icons.arrow_back,
+            color: const Color(0xFFF6C956),
+            onPressed: () => Navigator.pop(context, true),
+          ),
         ),
         title: Center(
           child: Text(widget.fullName, style: TextStyle(color: Colors.white)),
@@ -200,7 +203,9 @@ class _RequestPeopleDetailsState extends ConsumerState<RequestPeopleDetails> {
                       keyboardType: TextInputType.number,
                       controller: _pointsController,
                       decoration: InputDecoration(
-                        hintText: AppLocalizations.of(context)!.enterPointsValue,
+                        hintText: AppLocalizations.of(
+                          context,
+                        )!.enterPointsValue,
                         border: InputBorder.none,
                       ),
                     ),
