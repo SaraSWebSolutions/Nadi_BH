@@ -506,6 +506,8 @@
   "completeCurrentMemberBeforeContinue": "Please complete current member before continuing",
   "addAddressError": "Please add address",
   "flat": "Flat",
-  "home": "Home"
+  "home": "Home",
+   "pleaseEnterBlock": "Please enter block",
+  "pleaseEnterRoad": "Please enter road"
 
 }

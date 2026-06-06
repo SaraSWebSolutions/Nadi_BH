@@ -378,7 +378,7 @@ class _MyprofileState extends ConsumerState<Myprofile> {
 
           final accountTypeIdMap =
               basicData['accountTypeId'] as Map<String, dynamic>?;
-
+          final accountTypeId = accountTypeIdMap?['_id']?.toString() ?? "";
           final accountType = accountTypeIdMap?['type']?.toString() ?? "";
 
           final showAddMember = accountType == "FA";
@@ -567,6 +567,7 @@ class _MyprofileState extends ConsumerState<Myprofile> {
                                 onPressed: () async {
                                   final result = await context.push(
                                     RouteNames.addMember,
+                                    extra: accountTypeId,
                                   );
 
                                   // refresh family members + profile

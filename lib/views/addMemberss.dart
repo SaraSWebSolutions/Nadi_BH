@@ -18,7 +18,10 @@ import 'package:nadi_user_app/providers/profile_provider.dart';
 import 'package:nadi_user_app/l10n/app_localizations.dart';
 
 class Addmemberss extends ConsumerStatefulWidget {
-  const Addmemberss({super.key});
+  final String accountTypeId;
+
+  const Addmemberss({super.key, required this.accountTypeId});
+
   @override
   ConsumerState<Addmemberss> createState() => _AddmemberssState();
 }
@@ -31,6 +34,9 @@ class _AddmemberssState extends ConsumerState<Addmemberss> {
   final nameCtrl = TextEditingController();
   final mobileCtrl = TextEditingController();
   final emailCtrl = TextEditingController();
+  bool _highlightAddress = false;
+  final GlobalKey _addressSectionKey = GlobalKey();
+
   String? relation;
   String? gender;
   bool _isLoading = false;
@@ -73,7 +79,7 @@ class _AddmemberssState extends ConsumerState<Addmemberss> {
     // BUILD BODY (CORRECT FORMAT)
     final body = {
       "userId": userId,
-      "accountTypeId": "693175af976ca992c877f99d",
+      "accountTypeId": widget.accountTypeId,
       "fullName": nameCtrl.text,
       "relation": relation?.toLowerCase(),
       "mobile": mobileCtrl.text,
@@ -164,6 +170,33 @@ class _AddmemberssState extends ConsumerState<Addmemberss> {
         ),
       );
     }
+  }
+
+  Future<void> _showAddressSection() async {
+    setState(() {
+      _showAddress = true;
+      _highlightAddress = true;
+    });
+
+    await Future.delayed(const Duration(milliseconds: 100));
+
+    final context = _addressSectionKey.currentContext;
+
+    if (context != null) {
+      Scrollable.ensureVisible(
+        context,
+        duration: const Duration(milliseconds: 500),
+        curve: Curves.easeInOut,
+      );
+    }
+
+    Future.delayed(const Duration(seconds: 2), () {
+      if (mounted) {
+        setState(() {
+          _highlightAddress = false;
+        });
+      }
+    });
   }
 
   @override
@@ -329,9 +362,13 @@ class _AddmemberssState extends ConsumerState<Addmemberss> {
                     ),
                   ),
                   onPressed: () {
-                    setState(() {
-                      _showAddress = !_showAddress;
-                    });
+                    if (!_showAddress) {
+                      _showAddressSection();
+                    } else {
+                      setState(() {
+                        _showAddress = false;
+                      });
+                    }
                   },
                   child: Text(
                     _showAddress ? loc.hideAddress : loc.addAddress,
@@ -342,13 +379,32 @@ class _AddmemberssState extends ConsumerState<Addmemberss> {
 
               /// ✅ ADDRESS (WITH BLOCK + ROAD INSIDE)
               if (_showAddress)
-                Padding(
-                  padding: const EdgeInsets.only(top: 15),
-                  child: Address(
-                    accountType: "Family",
-                    family: true,
-                    formKey: _addressFormKey,
-                    controller: addressController,
+                AnimatedContainer(
+                  key: _addressSectionKey,
+                  duration: const Duration(milliseconds: 400),
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(
+                      color: _highlightAddress
+                          ? AppColors.button_secondary
+                          : Colors.transparent,
+                      width: 2,
+                    ),
+                    color: _highlightAddress
+                        ? AppColors.button_secondary.withOpacity(.08)
+                        : Colors.transparent,
+                  ),
+                  child: Column(
+                    children: [
+                      const SizedBox(height: 20),
+                      Address(
+                        accountType: "Family",
+                        family: true,
+                        formKey: _addressFormKey,
+                        controller: addressController,
+                      ),
+                    ],
                   ),
                 ),
 

@@ -426,6 +426,7 @@ class _AddressState extends State<Address> {
 //   final bool family;
 //   final GlobalKey<FormState> formKey;
 //   final AddressController controller;
+
 //   const Address({
 //     super.key,
 //     required this.accountType,
@@ -441,6 +442,9 @@ class _AddressState extends State<Address> {
 // }
 
 // class _AddressState extends State<Address> {
+//   final TextEditingController otherBlockController = TextEditingController();
+
+//   final TextEditingController otherRoadController = TextEditingController();
 //   String selected = "Flat";
 //   bool _isLoading = false;
 //   bool _hideBottomButton = false;
@@ -455,7 +459,12 @@ class _AddressState extends State<Address> {
 //   bool _isLocationLoading = false;
 //   bool _showManualForm = false;
 //   bool _locationDetected = false;
+//   bool _locationModeSelected = false; // NEW
+//   bool isOtherBlockSelected = false;
+//   bool isOtherRoadSelected = false;
 //   String _detectedAddress = "";
+//   String? otherBlockError;
+//   String? otherRoadError;
 //   // GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 //   final AuthService _adressservice = AuthService();
 //   AddressController get controller => widget.controller;
@@ -472,9 +481,35 @@ class _AddressState extends State<Address> {
 //     });
 //   }
 
+//   @override
+//   void dispose() {
+//     otherBlockController.dispose();
+//     otherRoadController.dispose();
+//     super.dispose();
+//   }
+
 //   Future<void> familyAccount(BuildContext context) async {
 //     final userId = await AppPreferences.getUserId();
+//     final l10n = AppLocalizations.of(context)!;
 
+//     setState(() {
+//       otherBlockError = null;
+//       otherRoadError = null;
+//     });
+
+//     if (isOtherBlockSelected && otherBlockController.text.trim().isEmpty) {
+//       setState(() {
+//         otherBlockError = l10n.pleaseEnterBlock;
+//       });
+//       return;
+//     }
+
+//     if (isOtherRoadSelected && otherRoadController.text.trim().isEmpty) {
+//       setState(() {
+//         otherRoadError = l10n.pleaseEnterRoad;
+//       });
+//       return;
+//     }
 //     if (userId == null) {
 //       AppLogger.info(" USER ID IS NULL");
 //       return;
@@ -485,7 +520,20 @@ class _AddressState extends State<Address> {
 //       addressType: selected.toLowerCase(),
 //     );
 
-//     // debugPrint(" API BODY  $body");
+//     body['address']['blockName'] =
+//         (isOtherBlockSelected
+//             ? otherBlockController.text.trim()
+//             : controller.block) ??
+//         '';
+
+//     body['address']['roadName'] =
+//         (isOtherRoadSelected
+//             ? otherRoadController.text.trim()
+//             : controller.road) ??
+//         '';
+//     body['address']['latitude'] = controller.latitude; // double
+//     body['address']['longitude'] = controller.longitude; //
+//     debugPrint(" API BODY  $body");
 //     Future.delayed(const Duration(milliseconds: 300), () {
 //       if (mounted) setState(() => _isLoading = true);
 //     });
@@ -514,6 +562,16 @@ class _AddressState extends State<Address> {
 //           controller.roadId = null;
 
 //           controller.roadsForSelectedBlock = [];
+//           otherBlockController.clear();
+//           otherRoadController.clear();
+
+//           setState(() {
+//             isOtherBlockSelected = false;
+//             isOtherRoadSelected = false;
+
+//             otherBlockError = null;
+//             otherRoadError = null;
+//           });
 
 //           setState(() {
 //             _hideBottomButton = true;
@@ -553,15 +611,33 @@ class _AddressState extends State<Address> {
 //   }
 
 //   Future<void> _openMapPicker() async {
+//     setState(() {
+//       _isLocationLoading = true;
+//       _locationModeSelected = true;
+//       _showManualForm = false; // hide manual instantly
+//     });
+
 //     final result = await Navigator.push(
 //       context,
 //       MaterialPageRoute(builder: (_) => const MapPickerScreen()),
 //     );
 
-//     if (result == null) return;
+//     if (!mounted) return;
+
+//     setState(() {
+//       _isLocationLoading = false;
+//     });
+
+//     if (result == null) {
+//       // user cancelled → allow manual again
+//       setState(() {
+//         _locationModeSelected = false;
+//       });
+//       return;
+//     }
 
 //     if (result is LocationResult) {
-//       _applyLocation(result);
+//       await _applyLocation(result);
 //     }
 //   }
 
@@ -575,6 +651,10 @@ class _AddressState extends State<Address> {
 //       _detectedAddress = result.fullAddress;
 
 //       controller.city.text = result.city;
+
+//       // Save coordinates
+//       controller.latitude = result.latitude;
+//       controller.longitude = result.longitude;
 
 //       if (controller.building.text.isEmpty && result.building.isNotEmpty) {
 //         controller.building.text = result.building;
@@ -798,11 +878,13 @@ class _AddressState extends State<Address> {
 //         const SizedBox(height: 12),
 
 //         OutlinedButton.icon(
-//           onPressed: () {
-//             setState(() {
-//               _showManualForm = true;
-//             });
-//           },
+//           onPressed: _locationModeSelected
+//               ? null
+//               : () {
+//                   setState(() {
+//                     _showManualForm = true;
+//                   });
+//                 },
 //           icon: const Icon(Icons.edit_location_alt),
 //           label: const Text("Enter Address Manually"),
 //         ),
@@ -892,14 +974,53 @@ class _AddressState extends State<Address> {
 //                   children: [
 //                     AppDropdown(
 //                       label: l10n.selectBlock,
-//                       items: blocks.map((b) => b['name'] as String).toList(),
+//                       items: [
+//                         ...blocks.map((b) => b['name'] as String),
+//                         "Others",
+//                       ],
 //                       value: blocks.any((b) => b['name'] == controller.block)
 //                           ? controller.block
 //                           : null,
+//                       // onChanged: (val) {
+//                       //   _onAddressChanged();
+
+//                       //   setState(() {
+//                       //     final block = blocks.firstWhere(
+//                       //       (b) => b['name'] == val,
+//                       //     );
+
+//                       //     controller.block = block['name'];
+//                       //     controller.blockId = block['_id'];
+
+//                       //     controller.road = null;
+//                       //     controller.roadId = null;
+
+//                       //     controller.roadsForSelectedBlock =
+//                       //         List<Map<String, dynamic>>.from(block['roads']);
+//                       //   });
+//                       // },
 //                       onChanged: (val) {
 //                         _onAddressChanged();
 
+//                         if (val == "Others") {
+//                           setState(() {
+//                             isOtherBlockSelected = true;
+
+//                             controller.block = null;
+//                             controller.blockId = null;
+
+//                             controller.road = null;
+//                             controller.roadId = null;
+
+//                             controller.roadsForSelectedBlock.clear();
+//                           });
+
+//                           return;
+//                         }
+
 //                         setState(() {
+//                           isOtherBlockSelected = false;
+
 //                           final block = blocks.firstWhere(
 //                             (b) => b['name'] == val,
 //                           );
@@ -919,22 +1040,83 @@ class _AddressState extends State<Address> {
 //                     ),
 
 //                     const SizedBox(height: 15),
+//                     if (isOtherBlockSelected) ...[
+//                       AppTextField(
+//                         controller: otherBlockController,
+//                         label: "Enter Block Name",
+//                         keyboardType: TextInputType.number,
+//                         validator: (value) {
+//                           if (isOtherBlockSelected &&
+//                               (value == null || value.trim().isEmpty)) {
+//                             return "Please enter block name";
+//                           }
+//                           return null;
+//                         },
+//                         onChanged: (_) {
+//                           if (otherBlockError != null) {
+//                             setState(() => otherBlockError = null);
+//                           }
+//                         },
+//                       ),
 
+//                       if (otherBlockError != null)
+//                         Padding(
+//                           padding: const EdgeInsets.only(left: 12, top: 4),
+//                           child: Align(
+//                             alignment: Alignment.centerLeft,
+//                             child: Text(
+//                               otherBlockError!,
+//                               style: const TextStyle(
+//                                 color: Colors.red,
+//                                 fontSize: 12,
+//                               ),
+//                             ),
+//                           ),
+//                         ),
+//                     ],
+//                     const SizedBox(height: 15),
+//                     // if (!isOtherBlockSelected)
 //                     AppDropdown(
 //                       label: l10n.selectRoad,
-//                       items: controller.roadsForSelectedBlock
-//                           .map((r) => r['name'] as String)
-//                           .toList(),
+//                       items: [
+//                         ...controller.roadsForSelectedBlock.map(
+//                           (r) => r['name'] as String,
+//                         ),
+//                         "Others",
+//                       ],
 //                       value:
 //                           controller.roadsForSelectedBlock.any(
 //                             (r) => r['name'] == controller.road,
 //                           )
 //                           ? controller.road
 //                           : null,
+//                       // onChanged: (val) {
+//                       //   _onAddressChanged();
+
+//                       //   setState(() {
+//                       //     final road = controller.roadsForSelectedBlock
+//                       //         .firstWhere((r) => r['name'] == val);
+
+//                       //     controller.road = road['name'];
+//                       //     controller.roadId = road['_id'];
+//                       //   });
+//                       // },
 //                       onChanged: (val) {
 //                         _onAddressChanged();
 
+//                         if (val == "Others") {
+//                           setState(() {
+//                             isOtherRoadSelected = true;
+
+//                             controller.road = null;
+//                             controller.roadId = null;
+//                           });
+//                           return;
+//                         }
+
 //                         setState(() {
+//                           isOtherRoadSelected = false;
+
 //                           final road = controller.roadsForSelectedBlock
 //                               .firstWhere((r) => r['name'] == val);
 
@@ -945,6 +1127,42 @@ class _AddressState extends State<Address> {
 //                       validator: (val) =>
 //                           val == null ? l10n.pleaseSelectRoad : null,
 //                     ),
+//                     const SizedBox(height: 15),
+
+//                     if (isOtherRoadSelected) ...[
+//                       AppTextField(
+//                         controller: otherRoadController,
+//                         label: "Enter Road Name",
+//                         keyboardType: TextInputType.number,
+//                         validator: (value) {
+//                           if (isOtherRoadSelected &&
+//                               (value == null || value.trim().isEmpty)) {
+//                             return "Please enter road name";
+//                           }
+//                           return null;
+//                         },
+//                         onChanged: (_) {
+//                           if (otherRoadError != null) {
+//                             setState(() => otherRoadError = null);
+//                           }
+//                         },
+//                       ),
+
+//                       if (otherRoadError != null)
+//                         Padding(
+//                           padding: const EdgeInsets.only(left: 12, top: 4),
+//                           child: Align(
+//                             alignment: Alignment.centerLeft,
+//                             child: Text(
+//                               otherRoadError!,
+//                               style: const TextStyle(
+//                                 color: Colors.red,
+//                                 fontSize: 12,
+//                               ),
+//                             ),
+//                           ),
+//                         ),
+//                     ],
 //                   ],
 //                 );
 //               },
@@ -986,14 +1204,14 @@ class _AddressState extends State<Address> {
 
 //           const SizedBox(height: 10),
 
-//           TextButton(
-//             onPressed: () {
-//               setState(() {
-//                 _showManualForm = true;
-//               });
-//             },
-//             child: const Text("Adjust Address"),
-//           ),
+//           // TextButton(
+//           //   onPressed: () {
+//           //     setState(() {
+//           //       _showManualForm = true;
+//           //     });
+//           //   },
+//           //   child: const Text("Adjust Address"),
+//           // ),
 //         ],
 //       ),
 //     );

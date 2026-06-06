@@ -10,6 +10,7 @@ import 'package:nadi_user_app/models/Questioner_Model.dart';
 import 'package:nadi_user_app/preferences/preferences.dart';
 import 'package:nadi_user_app/providers/Advertisement_Provider.dart';
 import 'package:nadi_user_app/providers/Questioner_Provider.dart';
+import 'package:nadi_user_app/providers/approveTechProvider.dart';
 import 'package:nadi_user_app/providers/connectivity_provider.dart';
 import 'package:nadi_user_app/providers/fetchpointsnodification.dart';
 import 'package:nadi_user_app/providers/gift_provider.dart';
@@ -49,14 +50,15 @@ class _DashboardState extends ConsumerState<Dashboard> {
   String accountType = "";
   String _rawAccountType = "";
   final HomeViewService _homeViewService = HomeViewService();
-  final OngoingService _ongoingService = OngoingService();
+  // final OngoingService _ongoingService = OngoingService();
   DateTime? lastBackPressed;
   Map<String, dynamic>? _ongoing;
-  Map<String, dynamic>? _aprovetech;
+  // Map<String, dynamic>? _aprovetech;
   Timer? _notificationTimer;
   String? _lastShownQuestionId;
   bool _isQuestionPopupShowing = false;
   final Set<String> _shownQuestionIds = {};
+
   final GlobalKey<RecentActivityState> recentActivityKey =
       GlobalKey<RecentActivityState>();
   Future<void> updateAppBadge(int count) async {
@@ -127,6 +129,9 @@ class _DashboardState extends ConsumerState<Dashboard> {
         await showQuestionPopup(context, question);
 
         _isQuestionPopupShowing = false;
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          ref.invalidate(approveTechProvider);
+        });
       });
     });
   }
@@ -152,7 +157,10 @@ class _DashboardState extends ConsumerState<Dashboard> {
 
   Future<void> fetchongoinproces() async {
     try {
-      final result = await _ongoingService.fetchongoingprocess();
+      final service = OngoingService();
+      await service.fetchongoingprocess();
+      final result = await service.fetchongoingprocess();
+
       setState(() {
         _ongoing = result;
       });
@@ -170,8 +178,9 @@ class _DashboardState extends ConsumerState<Dashboard> {
     ref.invalidate(userdashboardprovider);
     ref.invalidate(fetchquestionsdataprovider);
 
-    await Future.wait([fetchongoinproces(), fetchapprovetechnician()]);
-
+    // await Future.wait([fetchongoinproces(), fetchapprovetechnician()]);
+    await fetchongoinproces();
+    // await fetchapprovetechnician();
     // ✅ Refresh RecentActivity
     await recentActivityKey.currentState?.LogsData();
 
@@ -179,39 +188,59 @@ class _DashboardState extends ConsumerState<Dashboard> {
 
     AppLogger.success("✅ Dashboard refreshed");
   }
+  // Future<void> fetchapprovetechnician() async {
+  //   try {
+  //     final aprovedata = await _ongoingService.fetchaprovetech();
 
-  Future<void> fetchapprovetechnician() async {
-    try {
-      final aprovedata = await _ongoingService.fetchaprovetech();
+  //     if (!mounted) return;
 
-      // 🔹 Log raw response
-      AppLogger.warn("fetchapprovetechnician raw response: $aprovedata");
+  //     setState(() {
+  //       _aprovetech = aprovedata;
+  //     });
+  //   } catch (e) {
+  //     AppLogger.error("fetchapprovetechnician error: $e");
 
-      // ✅ Check mounted before setState
-      if (!mounted) return;
+  //     if (!mounted) return;
 
-      setState(() {
-        // ✅ allow null safely
-        _aprovetech = aprovedata;
-      });
-    } catch (e, stack) {
-      AppLogger.error("fetchapprovetechnician error: $e");
+  //     setState(() {
+  //       _aprovetech = null;
+  //     });
+  //   }
+  // }
+  // Future<void> fetchapprovetechnician() async {
+  //   try {
+  //     final aprovedata = await _ongoingService.fetchaprovetech();
 
-      AppLogger.error(stack.toString());
+  //     // 🔹 Log raw response
+  //     AppLogger.warn("fetchapprovetechnician raw response: $aprovedata");
 
-      // ✅ Prevent refresh crash
-      if (!mounted) return;
+  //     // ✅ Check mounted before setState
+  //     if (!mounted) return;
 
-      setState(() {
-        _aprovetech = null;
-      });
-    }
-  }
+  //     setState(() {
+  //       // ✅ allow null safely
+  //       _aprovetech = aprovedata;
+  //     });
+  //   } catch (e, stack) {
+  //     AppLogger.error("fetchapprovetechnician error: $e");
+
+  //     AppLogger.error(stack.toString());
+
+  //     // ✅ Prevent refresh crash
+  //     if (!mounted) return;
+
+  //     setState(() {
+  //       _aprovetech = null;
+  //     });
+  //   }
+  // }
 
   Future<void> approvework(bool isApproved) async {
-    if (_aprovetech == null || _aprovetech!['data'] == null) return;
+    final data = ref.read(approveTechProvider).value;
 
-    final aprovetech = _aprovetech!['data'];
+    if (data == null || data['data'] == null) return;
+
+    final aprovetech = data['data'];
 
     final payload = {
       "userServiceId": aprovetech['userServiceId'],
@@ -219,31 +248,19 @@ class _DashboardState extends ConsumerState<Dashboard> {
       "status": isApproved,
     };
 
-    debugPrint("📤 ApproveWork Payload: $payload");
-
     try {
-      final result = await _ongoingService.fetchabrovework(payload: payload);
+      final service = OngoingService();
+      await service.fetchabrovework(payload: payload);
 
-      if (!context.mounted) return;
+      /// 🔥 force refresh provider (this fixes return-to-page issue)
+      ref.invalidate(approveTechProvider);
 
-      /// ✅ REMOVE POPUP IMMEDIATELY
-      setState(() {
-        _aprovetech = null;
-      });
-
-      /// ✅ SHOW CORRECT MESSAGE
-      if (isApproved) {
-        SnackbarHelper.ShowSuccess(context, "Work approved successfully");
-      } else {
-        SnackbarHelper.ShowSuccess(context, "Work rejected successfully");
-      }
-
-      /// ⚠️ IMPORTANT: Delay refresh to avoid flicker / re-show
-      // Future.delayed(const Duration(seconds: 1), () {
-      //   fetchapprovetechnician();
-      // });
-
-      AppLogger.info("Approve result: $result");
+      SnackbarHelper.ShowSuccess(
+        context,
+        isApproved
+            ? "Work approved successfully"
+            : "Work rejected successfully",
+      );
     } catch (e) {
       AppLogger.error("Approve error: $e");
     }
@@ -383,7 +400,9 @@ class _DashboardState extends ConsumerState<Dashboard> {
     final data = _ongoing?['data'];
     final t = AppLocalizations.of(context)!;
     final bool isOngoing = data != null && data['status'] == 'inProgress';
-    final aprovetech = _aprovetech?['data'];
+    final approveTechAsync = ref.watch(approveTechProvider);
+    debugPrint("APPROVE STATE: $approveTechAsync");
+    final _aprovetech = approveTechAsync.value?['data'];
     ref.listen(unreadNotificationCountProvider, (previous, next) {
       next.whenData((count) {
         updateAppBadge(count);
@@ -770,171 +789,176 @@ class _DashboardState extends ConsumerState<Dashboard> {
                           ),
                         ),
 
-                        aprovetech != null
-                            ? Container(
-                                margin: const EdgeInsets.symmetric(
-                                  horizontal: 16,
-                                  vertical: 10,
-                                ),
-                                padding: const EdgeInsets.all(16),
-                                decoration: BoxDecoration(
-                                  color: Colors.white,
-                                  borderRadius: BorderRadius.circular(18),
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color: Colors.black.withOpacity(0.08),
-                                      blurRadius: 12,
-                                      offset: const Offset(0, 4),
-                                    ),
-                                  ],
-                                ),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    /// 🔹 TOP ROW (ICON + TEXT)
-                                    Row(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        /// ICON
-                                        Container(
-                                          padding: const EdgeInsets.all(10),
-                                          decoration: BoxDecoration(
-                                            color: Colors.green.withOpacity(
-                                              0.1,
-                                            ),
-                                            shape: BoxShape.circle,
-                                          ),
-                                          child: const Icon(
-                                            Icons.engineering,
-                                            color: Colors.green,
-                                          ),
+                        approveTechAsync.when(
+                          loading: () => const SizedBox(),
+                          error: (_, __) => const SizedBox(),
+                          data: (data) {
+                            final aprovetech = data['data'];
+
+                            if (aprovetech == null) return const SizedBox();
+
+                            return Container(
+                              margin: const EdgeInsets.symmetric(
+                                horizontal: 16,
+                                vertical: 10,
+                              ),
+                              padding: const EdgeInsets.all(16),
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(18),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.black.withOpacity(0.08),
+                                    blurRadius: 12,
+                                    offset: const Offset(0, 4),
+                                  ),
+                                ],
+                              ),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  /// 🔹 TOP ROW (ICON + TEXT)
+                                  Row(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      /// ICON
+                                      Container(
+                                        padding: const EdgeInsets.all(10),
+                                        decoration: BoxDecoration(
+                                          color: Colors.green.withOpacity(0.1),
+                                          shape: BoxShape.circle,
                                         ),
+                                        child: const Icon(
+                                          Icons.engineering,
+                                          color: Colors.green,
+                                        ),
+                                      ),
 
-                                        const SizedBox(width: 12),
+                                      const SizedBox(width: 12),
 
-                                        /// TEXT
-                                        Expanded(
-                                          child: Column(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            children: [
-                                              Text(
-                                                AppLocalizations.of(
-                                                  context,
-                                                )!.approvalNeeded,
-                                                style: const TextStyle(
-                                                  fontWeight: FontWeight.bold,
-                                                  fontSize:
-                                                      16, // 🔥 slightly bigger
-                                                ),
+                                      /// TEXT
+                                      Expanded(
+                                        child: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            Text(
+                                              AppLocalizations.of(
+                                                context,
+                                              )!.approvalNeeded,
+                                              style: const TextStyle(
+                                                fontWeight: FontWeight.bold,
+                                                fontSize:
+                                                    16, // 🔥 slightly bigger
                                               ),
-                                              const SizedBox(height: 4),
+                                            ),
+                                            const SizedBox(height: 4),
+                                            Text(
+                                              AppLocalizations.of(
+                                                context,
+                                              )!.technicianApprovalMessage,
+                                              style: const TextStyle(
+                                                color: Colors.black54,
+                                                fontSize: 13,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+
+                                  const SizedBox(height: 15),
+
+                                  /// 🔹 BUTTON ROW
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.end,
+                                    children: [
+                                      /// ❌ REJECT
+                                      InkWell(
+                                        onTap: () {
+                                          approvework(false);
+                                        },
+                                        borderRadius: BorderRadius.circular(30),
+                                        child: Container(
+                                          padding: const EdgeInsets.symmetric(
+                                            horizontal: 16,
+                                            vertical: 10,
+                                          ),
+                                          decoration: BoxDecoration(
+                                            color: Colors.red,
+                                            borderRadius: BorderRadius.circular(
+                                              30,
+                                            ),
+                                          ),
+                                          child: Row(
+                                            children: [
+                                              const Icon(
+                                                Icons.close,
+                                                color: Colors.white,
+                                                size: 18,
+                                              ),
+                                              const SizedBox(width: 6),
                                               Text(
-                                                AppLocalizations.of(
-                                                  context,
-                                                )!.technicianApprovalMessage,
+                                                t.reject,
                                                 style: const TextStyle(
-                                                  color: Colors.black54,
-                                                  fontSize: 13,
+                                                  color: Colors.white,
+                                                  fontWeight: FontWeight.w600,
                                                 ),
                                               ),
                                             ],
                                           ),
                                         ),
-                                      ],
-                                    ),
+                                      ),
 
-                                    const SizedBox(height: 15),
+                                      const SizedBox(width: 10),
 
-                                    /// 🔹 BUTTON ROW
-                                    Row(
-                                      mainAxisAlignment: MainAxisAlignment.end,
-                                      children: [
-                                        /// ❌ REJECT
-                                        InkWell(
-                                          onTap: () {
-                                            approvework(false);
-                                          },
-                                          borderRadius: BorderRadius.circular(
-                                            30,
+                                      /// ✅ APPROVE
+                                      InkWell(
+                                        onTap: () {
+                                          approvework(true);
+                                        },
+                                        borderRadius: BorderRadius.circular(30),
+                                        child: Container(
+                                          padding: const EdgeInsets.symmetric(
+                                            horizontal: 18,
+                                            vertical: 10,
                                           ),
-                                          child: Container(
-                                            padding: const EdgeInsets.symmetric(
-                                              horizontal: 16,
-                                              vertical: 10,
+                                          decoration: BoxDecoration(
+                                            color: Colors.green,
+                                            borderRadius: BorderRadius.circular(
+                                              30,
                                             ),
-                                            decoration: BoxDecoration(
-                                              color: Colors.red,
-                                              borderRadius:
-                                                  BorderRadius.circular(30),
-                                            ),
-                                            child: Row(
-                                              children: [
-                                                const Icon(
-                                                  Icons.close,
+                                          ),
+                                          child: Row(
+                                            children: [
+                                              const Icon(
+                                                Icons.check,
+                                                color: Colors.white,
+                                                size: 18,
+                                              ),
+                                              const SizedBox(width: 6),
+                                              Text(
+                                                t.approve,
+                                                style: const TextStyle(
                                                   color: Colors.white,
-                                                  size: 18,
+                                                  fontWeight: FontWeight.w600,
                                                 ),
-                                                const SizedBox(width: 6),
-                                                Text(
-                                                  t.reject,
-                                                  style: const TextStyle(
-                                                    color: Colors.white,
-                                                    fontWeight: FontWeight.w600,
-                                                  ),
-                                                ),
-                                              ],
-                                            ),
+                                              ),
+                                            ],
                                           ),
                                         ),
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                            );
+                          },
+                        ),
 
-                                        const SizedBox(width: 10),
-
-                                        /// ✅ APPROVE
-                                        InkWell(
-                                          onTap: () {
-                                            approvework(true);
-                                          },
-                                          borderRadius: BorderRadius.circular(
-                                            30,
-                                          ),
-                                          child: Container(
-                                            padding: const EdgeInsets.symmetric(
-                                              horizontal: 18,
-                                              vertical: 10,
-                                            ),
-                                            decoration: BoxDecoration(
-                                              color: Colors.green,
-                                              borderRadius:
-                                                  BorderRadius.circular(30),
-                                            ),
-                                            child: Row(
-                                              children: [
-                                                const Icon(
-                                                  Icons.check,
-                                                  color: Colors.white,
-                                                  size: 18,
-                                                ),
-                                                const SizedBox(width: 6),
-                                                Text(
-                                                  t.approve,
-                                                  style: const TextStyle(
-                                                    color: Colors.white,
-                                                    fontWeight: FontWeight.w600,
-                                                  ),
-                                                ),
-                                              ],
-                                            ),
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ],
-                                ),
-                              )
-                            : const SizedBox(),
-
+                        // : const SizedBox(),
                         data != null
                             ? Container(
                                 margin: const EdgeInsets.symmetric(

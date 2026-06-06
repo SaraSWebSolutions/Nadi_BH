@@ -169,8 +169,16 @@ final appRouter = GoRouter(
     ),
     GoRoute(
       path: RouteNames.addMember,
-      builder: (context, state) => const Addmemberss(),
+      builder: (context, state) {
+        final accountTypeId = state.extra as String;
+
+        return Addmemberss(accountTypeId: accountTypeId);
+      },
     ),
+    // GoRoute(
+    //   path: RouteNames.addMember,
+    //   builder: (context, state) => const Addmemberss(),
+    // ),
     GoRoute(
       path: RouteNames.viewalllogs,
       builder: (context, state) => const ViewAllLogs(),

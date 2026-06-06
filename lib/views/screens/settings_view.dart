@@ -177,29 +177,38 @@ class _SettingsViewState extends ConsumerState<SettingsView> {
     final l10n = AppLocalizations.of(context)!; // ✅ ADD THIS
     Future<void> logout(BuildContext context) async {
       try {
-        ///  get FCM token
-        final token = await FirebaseMessaging.instance.getToken();
+        /// 1. Get stored FCM token (NOT fresh one)
+        final fcmToken = await AppPreferences.getfcmToken();
 
-        ///  send token to backend
-        await _lockoutService.fetchLockout(token);
+        /// 2. Call backend logout / lockout API first
+        await _lockoutService.fetchLockout(fcmToken);
+
+        /// 3. Disconnect services safely
         MqttNotificationService.disconnect();
 
-        /// clear local storage
+        /// 4. Clear local storage
         await AppPreferences.clearAll();
-        await AppPreferences.setLoggedIn(false);
 
-        /// invalidate providers
+        /// 5. Invalidate providers
         ref.invalidate(profileprovider);
         ref.invalidate(serviceListProvider);
         ref.invalidate(fetchpointsnodification);
 
-        if (context.mounted) context.go(RouteNames.login);
+        /// 6. Navigate safely
+        if (context.mounted) {
+          context.go(RouteNames.login);
+        }
       } catch (e) {
-        /// still force logout
+        /// FORCE LOGOUT (fallback)
         await AppPreferences.clearAll();
-        await AppPreferences.setLoggedIn(false);
 
-        if (context.mounted) context.go(RouteNames.login);
+        ref.invalidate(profileprovider);
+        ref.invalidate(serviceListProvider);
+        ref.invalidate(fetchpointsnodification);
+
+        if (context.mounted) {
+          context.go(RouteNames.login);
+        }
       }
     }
 

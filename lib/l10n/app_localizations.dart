@@ -2377,6 +2377,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Home'**
   String get home;
+
+  /// No description provided for @pleaseEnterBlock.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter block'**
+  String get pleaseEnterBlock;
+
+  /// No description provided for @pleaseEnterRoad.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter road'**
+  String get pleaseEnterRoad;
 }
 
 class _AppLocalizationsDelegate

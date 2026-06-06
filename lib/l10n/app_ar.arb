@@ -471,7 +471,9 @@
   "completeCurrentMemberBeforeContinue": "يرجى إكمال بيانات العضو الحالي قبل المتابعة",
   "addAddressError": "يرجى إضافة العنوان",
   "flat": "شقة",
-  "home": "منزل"
+  "home": "منزل",
+  "pleaseEnterBlock": "يرجى إدخال اسم المجمع",
+  "pleaseEnterRoad": "يرجى إدخال اسم الشارع"
 
 
 }

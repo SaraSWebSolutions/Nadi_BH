@@ -1198,4 +1198,10 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get home => 'منزل';
+
+  @override
+  String get pleaseEnterBlock => 'يرجى إدخال اسم المجمع';
+
+  @override
+  String get pleaseEnterRoad => 'يرجى إدخال اسم الشارع';
 }

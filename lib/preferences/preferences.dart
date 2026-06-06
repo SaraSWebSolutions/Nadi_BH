@@ -31,7 +31,8 @@ class AppPreferences {
     return prefs.getBool(_notificationToggleKey) ?? true; // default ON
   }
 
-  static const String _lastSeenNotificationTimeKey = "last_seen_notification_time";
+  static const String _lastSeenNotificationTimeKey =
+      "last_seen_notification_time";
 
   // --- Notification Time ---
   static Future<void> saveLastSeenNotificationTime(DateTime time) async {
@@ -78,38 +79,40 @@ class AppPreferences {
     await prefs.setBool(_rememberMeKey, false);
   }
 
-//--- Service Request ---
+  //--- Service Request ---
 
   // -- save profile data ---
 
   // Save
-static Future<void> saveProfileData(Map<String, dynamic> data) async {
-  final prefs = await SharedPreferences.getInstance();
-  prefs.setString('profileData', jsonEncode(data));
-}
+  static Future<void> saveProfileData(Map<String, dynamic> data) async {
+    final prefs = await SharedPreferences.getInstance();
+    prefs.setString('profileData', jsonEncode(data));
+  }
 
-// Get
-static Future<Map<String, dynamic>?> getProfileData() async {
-  final prefs = await SharedPreferences.getInstance();
-  final data = prefs.getString('profileData');
-  if (data == null) return null;
-  return jsonDecode(data);
-}
-
+  // Get
+  static Future<Map<String, dynamic>?> getProfileData() async {
+    final prefs = await SharedPreferences.getInstance();
+    final data = prefs.getString('profileData');
+    if (data == null) return null;
+    return jsonDecode(data);
+  }
 
   // ================== TOKEN ==================
   static Future<void> saveToken(String token) async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString(_tokenKey, token);
   }
-static Future<void> savefcmToken(String fcmtoken)async{
-  final prefs = await SharedPreferences.getInstance();
-  await prefs.setString(_fcmtokenkey, fcmtoken);
-}
-static Future<String> getfcmToken()async{
- final prefs = await SharedPreferences.getInstance();
- return prefs.getString(_fcmtokenkey) ?? '';
-}
+
+  static Future<void> savefcmToken(String fcmtoken) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(_fcmtokenkey, fcmtoken);
+  }
+
+  static Future<String> getfcmToken() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString(_fcmtokenkey) ?? '';
+  }
+
   static Future<String> getToken() async {
     final prefs = await SharedPreferences.getInstance();
     return prefs.getString(_tokenKey) ?? '';
@@ -120,7 +123,7 @@ static Future<String> getfcmToken()async{
     await prefs.remove(_tokenKey);
   }
 
-  // ================== LOGIN FLAG ==================   
+  // ================== LOGIN FLAG ==================
   static Future<void> setLoggedIn(bool value) async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setBool(_loginKey, value);
@@ -141,16 +144,16 @@ static Future<String> getfcmToken()async{
     final prefs = await SharedPreferences.getInstance();
     return prefs.getBool(_aboutSeenKey) ?? false;
   }
-static Future<void> savePoints(int value) async {
-  final prefs = await SharedPreferences.getInstance();
-  await prefs.setInt(_pointsKey, value);
-}
 
-static Future<int> getPoints() async {
-  final prefs = await SharedPreferences.getInstance();
-  return prefs.getInt(_pointsKey) ?? 0;
-}
+  static Future<void> savePoints(int value) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setInt(_pointsKey, value);
+  }
 
+  static Future<int> getPoints() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getInt(_pointsKey) ?? 0;
+  }
 
   // ================== USER ID ==================
   static Future<void> saveUserId(String userId) async {
@@ -165,13 +168,14 @@ static Future<int> getPoints() async {
 
   // === UserImage ====
   static Future<void> saveUserImage(String image) async {
-  final prefs = await SharedPreferences.getInstance();
-  await prefs.setString(_userImageKey, image);
-}
-static Future<String?> getUserImage() async {
-  final prefs = await SharedPreferences.getInstance();
-  return prefs.getString(_userImageKey);
-}
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(_userImageKey, image);
+  }
+
+  static Future<String?> getUserImage() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString(_userImageKey);
+  }
   // --- Phone Number ----
 
   static Future<void> savephonenumber(String value) async {
@@ -208,23 +212,28 @@ static Future<String?> getUserImage() async {
     return prefs.getString(_namekey);
   }
 
+  static Future<void> clearAll() async {
+    final prefs = await SharedPreferences.getInstance();
 
+    // preserve only UX preferences
+    final bool rememberMe = prefs.getBool(_rememberMeKey) ?? false;
+    final String? rememberEmail = prefs.getString(_rememberEmailkey);
 
-static Future<void> clearAll() async {
-  final prefs = await SharedPreferences.getInstance();
+    // ⚠️ correct key used
+    final String? fcmToken = prefs.getString(_fcmtokenkey);
 
-  // Save remember-me values temporarily
-  final bool rememberMe = prefs.getBool(_rememberMeKey) ?? false;
-  final String? rememberEmail = prefs.getString(_rememberEmailkey);
+    await prefs.clear();
 
-  // Clear everything
-  await prefs.clear();
+    // restore ONLY UI preferences
+    await prefs.setBool(_rememberMeKey, rememberMe);
 
-  // Restore remember-me values
-  await prefs.setBool(_rememberMeKey, rememberMe);
-  if (rememberEmail != null) {
-    await prefs.setString(_rememberEmailkey, rememberEmail);
+    if (rememberEmail != null) {
+      await prefs.setString(_rememberEmailkey, rememberEmail);
+    }
+
+    // 🚀 DO NOT TOUCH FCM (kept intentionally)
+    if (fcmToken != null) {
+      await prefs.setString(_fcmtokenkey, fcmToken);
+    }
   }
-}
-
 }

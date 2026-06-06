@@ -1208,4 +1208,10 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get home => 'Home';
+
+  @override
+  String get pleaseEnterBlock => 'Please enter block';
+
+  @override
+  String get pleaseEnterRoad => 'Please enter road';
 }
