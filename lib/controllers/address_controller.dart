@@ -125,31 +125,12 @@ class AddressController {
 
   String? fullAddress;
 
-  // Roads of selected block
+  // Roads
   List<Map<String, dynamic>> roadsForSelectedBlock = [];
 
-  /// Debug Data
-  Map<String, dynamic> getAddressData() {
-    return {
-      "city": city.text,
-      "building": building.text,
-      "aptNo": aptNo.text,
-      "floor": floor.text,
-
-      "block": block,
-      "blockId": blockId,
-
-      "road": road,
-      "roadId": roadId,
-
-      "latitude": latitude,
-      "longitude": longitude,
-
-      "fullAddress": fullAddress,
-    };
-  }
-
-  /// Clear everything
+  /// =========================
+  /// CLEAR (ONLY ONE VERSION)
+  /// =========================
   void clear() {
     city.clear();
     building.clear();
@@ -170,7 +151,19 @@ class AddressController {
     roadsForSelectedBlock.clear();
   }
 
-  /// Load Existing Address
+  /// =========================
+  /// DISPOSE
+  /// =========================
+  void dispose() {
+    city.dispose();
+    building.dispose();
+    aptNo.dispose();
+    floor.dispose();
+  }
+
+  /// =========================
+  /// LOAD ADDRESS
+  /// =========================
   void loadAddress(Map<String, dynamic> address) {
     city.text = address["city"] ?? "";
     building.text = address["building"] ?? "";
@@ -189,15 +182,14 @@ class AddressController {
     fullAddress = address["fullAddress"];
   }
 
-  /// Local Address Map
   Map<String, dynamic> getOnlyAddressMap({required String addressType}) {
     return {
       "addressType": addressType,
 
-      "city": city.text,
-      "building": building.text,
-      "aptNo": aptNo.text,
-      "floor": floor.text,
+      "city": city.text.trim(),
+      "building": building.text.trim(),
+      "aptNo": aptNo.text.trim().isEmpty ? null : aptNo.text.trim(),
+      "floor": floor.text.trim().isEmpty ? null : floor.text.trim(),
 
       "block": block,
       "blockId": blockId,
@@ -212,7 +204,9 @@ class AddressController {
     };
   }
 
-  /// API Request Body
+  /// =========================
+  /// API BODY
+  /// =========================
   Map<String, dynamic> getApiAddressBody({
     required String userId,
     required String addressType,
@@ -221,29 +215,24 @@ class AddressController {
       "userId": userId,
       "address": {
         "addressType": addressType,
-
         "city": city.text.trim(),
         "building": building.text.trim(),
         "aptNo": aptNo.text.trim(),
         "floor": floor.text.trim(),
-
         "blockId": blockId,
         "roadId": roadId,
-
-        // Optional
         "block": block,
         "road": road,
-
         "latitude": latitude,
         "longitude": longitude,
-
         "fullAddress": fullAddress,
       },
     };
   }
 
-  // Validators
-
+  /// =========================
+  /// VALIDATORS
+  /// =========================
   String? validateBuilding(String? value, AppLocalizations l10n) {
     if (value == null || value.trim().isEmpty) {
       return l10n.enteryour_build;
@@ -263,12 +252,5 @@ class AddressController {
       return l10n.enterFloorno;
     }
     return null;
-  }
-
-  void dispose() {
-    city.dispose();
-    building.dispose();
-    aptNo.dispose();
-    floor.dispose();
   }
 }

@@ -8,26 +8,32 @@ import 'package:nadi_user_app/core/constants/app_consts.dart';
 import 'package:nadi_user_app/core/utils/logger.dart';
 import 'package:nadi_user_app/l10n/app_localizations.dart';
 import 'package:nadi_user_app/preferences/preferences.dart';
+import 'package:nadi_user_app/providers/auth_provider.dart';
 import 'package:nadi_user_app/services/profile_service.dart';
 import 'package:nadi_user_app/widgets/app_back.dart';
 import 'package:nadi_user_app/widgets/buttons/primary_button.dart';
 import 'package:nadi_user_app/widgets/confirm_dialog.dart';
 import 'package:nadi_user_app/widgets/inputs/app_text_field.dart';
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:nadi_user_app/core/network/dio_client.dart';
+import 'package:nadi_user_app/widgets/inputs/app_dropdown.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class EditProfile extends StatefulWidget {
+class EditProfile extends ConsumerStatefulWidget {
   const EditProfile({super.key});
 
   @override
-  State<EditProfile> createState() => _EditProfileState();
+  ConsumerState<EditProfile> createState() => _EditProfileState();
 }
 
-class _EditProfileState extends State<EditProfile> {
+class _EditProfileState extends ConsumerState<EditProfile> {
   final _formKey = GlobalKey<FormState>();
   Map<String, dynamic>? basicData;
   List addresses = [];
   List familyMembers = [];
   final ImagePicker _pcker = ImagePicker();
   File? profileImage;
+  String? profileImageUrl;
   late TextEditingController fullNameController;
   late TextEditingController firstNameController;
   late TextEditingController secondNameController;
@@ -40,24 +46,60 @@ class _EditProfileState extends State<EditProfile> {
   late TextEditingController floorController;
   late TextEditingController apartmentController;
   late TextEditingController additionalInfoController;
+  String? selectedBlock;
+  String? selectedBlockId;
+
+  String? selectedRoad;
+  String? selectedRoadId;
+
+  List<Map<String, dynamic>> roadsForSelectedBlock = [];
   final ProfileService _profileService = ProfileService();
   bool _controllersInitialized = false;
   bool _isLoading = false;
+
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
+    print("EDIT PROFILE OPENED");
     if (_controllersInitialized) return;
     _controllersInitialized = true;
 
     // Read the passed data from GoRouter
     final profileResponse =
         GoRouterState.of(context).extra as Map<String, dynamic>;
-
+    print("PROFILE RESPONSE => $profileResponse");
+    print(profileResponse.keys);
     basicData = profileResponse['data'] as Map<String, dynamic>;
+    print("BASIC DATA => $basicData");
     addresses = profileResponse['addresses'] as List;
     familyMembers = profileResponse['familyMembers'] as List;
+    profileImageUrl = basicData?['basicInfo']?['image'];
+    print("RAW IMAGE => $profileImageUrl");
+    // print("FULL URL => ${AppConsts.imageBaseUrl}$profileImageUrl");
+    // final imageValue = basicData?['basicInfo']?['image'];
 
+    // print("IMAGE VALUE => $imageValue");
+
+    // profileImageUrl = imageValue?.toString();
     //Initialize controllers with existing data
+    if (addresses.isNotEmpty) {
+      final blockData = addresses[0]['blockId'];
+      final roadData = addresses[0]['roadId'];
+
+      if (blockData is Map) {
+        selectedBlock = blockData['name']?.toString();
+        selectedBlockId = blockData['_id']?.toString();
+      }
+
+      if (roadData is Map) {
+        selectedRoad = roadData['name']?.toString();
+        selectedRoadId = roadData['_id']?.toString();
+      }
+
+      debugPrint("Selected Block => $selectedBlock ($selectedBlockId)");
+
+      debugPrint("Selected Road => $selectedRoad ($selectedRoadId)");
+    }
     fullNameController = TextEditingController(
       text: basicData?['basicInfo']['fullName'] ?? '',
     );
@@ -160,7 +202,14 @@ class _EditProfileState extends State<EditProfile> {
       "address": {
         "building": buildingController.text.trim(),
         "city": blockController.text.trim(),
+        "block": selectedBlock,
+        "blockId": selectedBlockId,
+
+        "road": selectedRoad,
+        "roadId": selectedRoadId,
+
         "floor": floorController.text.trim(),
+
         if (propertyType != "villa") "aptNo": apartmentController.text.trim(),
       },
     };
@@ -201,6 +250,10 @@ class _EditProfileState extends State<EditProfile> {
             "city": blockController.text.trim(),
             "floor": floorController.text.trim(),
             "aptNo": apartmentController.text.trim(),
+
+            "blockId": {"_id": selectedBlockId, "name": selectedBlock},
+
+            "roadId": {"_id": selectedRoadId, "name": selectedRoad},
           },
         ],
         "familyMembers": familyMembers,
@@ -290,8 +343,16 @@ class _EditProfileState extends State<EditProfile> {
                                 backgroundColor: Colors.grey.shade200,
                                 backgroundImage: profileImage != null
                                     ? FileImage(profileImage!)
+                                    : (profileImageUrl != null &&
+                                          profileImageUrl!.isNotEmpty)
+                                    ? CachedNetworkImageProvider(
+                                        "${ImageBaseUrl.baseUrl}/$profileImageUrl",
+                                      )
                                     : null,
-                                child: profileImage == null
+                                child:
+                                    profileImage == null &&
+                                        (profileImageUrl == null ||
+                                            profileImageUrl!.isEmpty)
                                     ? Container(
                                         height: 120,
                                         width: 120,
@@ -503,16 +564,29 @@ class _EditProfileState extends State<EditProfile> {
                           },
                         ),
                         const SizedBox(height: 6),
-
-                        // Building (Single field)
+                        // CITY
                         Text(
-                          loc.building,
-                          style: TextStyle(
+                          loc.city,
+                          style: const TextStyle(
                             fontSize: 14,
                             fontWeight: FontWeight.w600,
                           ),
                         ),
                         const SizedBox(height: 5),
+
+                        AppTextField(controller: blockController),
+                        const SizedBox(height: 6),
+
+                        // BUILDING
+                        Text(
+                          loc.building,
+                          style: const TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                        const SizedBox(height: 5),
+
                         AppTextField(
                           controller: buildingController,
                           validator: (v) {
@@ -525,38 +599,56 @@ class _EditProfileState extends State<EditProfile> {
 
                         const SizedBox(height: 6),
 
-                        Row(
-                          children: [
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    loc.city,
-                                    style: TextStyle(
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.w600,
+                        // APARTMENT + FLOOR
+                        if (propertyType != "villa")
+                          Row(
+                            children: [
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      loc.apartment,
+                                      style: const TextStyle(
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.w600,
+                                      ),
                                     ),
-                                  ),
-                                  const SizedBox(height: 5),
-                                  AppTextField(controller: blockController),
-                                ],
+                                    const SizedBox(height: 5),
+
+                                    AppTextField(
+                                      controller: apartmentController,
+                                      keyboardType: TextInputType.number,
+                                      inputFormatters: [
+                                        FilteringTextInputFormatter.digitsOnly,
+                                        LengthLimitingTextInputFormatter(6),
+                                      ],
+                                      validator: (v) {
+                                        if (v == null || v.trim().isEmpty) {
+                                          return loc.apartmentRequired;
+                                        }
+                                        return null;
+                                      },
+                                    ),
+                                  ],
+                                ),
                               ),
-                            ),
-                            const SizedBox(width: 16),
-                            if (propertyType != "villa") ...[
+
+                              const SizedBox(width: 12),
+
                               Expanded(
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Text(
                                       loc.floor,
-                                      style: TextStyle(
+                                      style: const TextStyle(
                                         fontSize: 14,
                                         fontWeight: FontWeight.w600,
                                       ),
                                     ),
                                     const SizedBox(height: 5),
+
                                     AppTextField(
                                       controller: floorController,
                                       keyboardType: TextInputType.number,
@@ -574,51 +666,103 @@ class _EditProfileState extends State<EditProfile> {
                                 ),
                               ),
                             ],
-                          ],
-                        ),
+                          ),
 
                         const SizedBox(height: 6),
 
-                        // More fields
-                        if (propertyType != "villa") ...[
-                          Text(
-                            loc.apartment,
-                            style: TextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                          const SizedBox(height: 5),
-                          AppTextField(
-                            controller: apartmentController,
-                            keyboardType: TextInputType.number,
-                            inputFormatters: [
-                              FilteringTextInputFormatter.digitsOnly,
-                              LengthLimitingTextInputFormatter(6),
-                            ],
-                            validator: (v) {
-                              if (v == null || v.trim().isEmpty) {
-                                return loc.apartmentRequired;
-                              }
-                              return null;
-                            },
-                          ),
-                          const SizedBox(height: 15),
-                        ],
+                        // BLOCK
+                        Consumer(
+                          builder: (context, ref, child) {
+                            final blockAsync = ref.watch(getBlockProvider);
 
-                        //  Text(
-                        //     loc.additionalInfo,
-                        //   style: TextStyle(
-                        //     fontSize: 14,
-                        //     fontWeight: FontWeight.w600,
-                        //   ),
-                        // ),
-                        // const SizedBox(height: 5),
-                        // AppTextField(
-                        //   controller: additionalInfoController,
-                        // ),
-                        // const SizedBox(height: 30),
+                            return blockAsync.when(
+                              data: (blocks) {
+                                if (selectedBlock != null &&
+                                    roadsForSelectedBlock.isEmpty) {
+                                  final block = blocks.firstWhere(
+                                    (b) => b['name'] == selectedBlock,
+                                    orElse: () => <String, dynamic>{},
+                                  );
 
+                                  if (block.isNotEmpty) {
+                                    roadsForSelectedBlock =
+                                        List<Map<String, dynamic>>.from(
+                                          block['roads'] ?? [],
+                                        );
+                                  }
+                                }
+
+                                return Column(
+                                  children: [
+                                    AppDropdown(
+                                      label: loc.selectBlock,
+                                      items: blocks
+                                          .map<String>(
+                                            (b) => b['name'].toString(),
+                                          )
+                                          .toList(),
+                                      value: selectedBlock,
+                                      onChanged: (val) {
+                                        setState(() {
+                                          final block = blocks.firstWhere(
+                                            (b) => b['name'].toString() == val,
+                                          );
+
+                                          selectedBlock = block['name']
+                                              .toString();
+
+                                          selectedBlockId = block['_id']
+                                              .toString();
+
+                                          selectedRoad = null;
+                                          selectedRoadId = null;
+
+                                          roadsForSelectedBlock =
+                                              List<Map<String, dynamic>>.from(
+                                                block['roads'] ?? [],
+                                              );
+                                        });
+                                      },
+                                    ),
+
+                                    const SizedBox(height: 6),
+
+                                    AppDropdown(
+                                      label: loc.selectRoad,
+                                      items: roadsForSelectedBlock
+                                          .map<String>(
+                                            (r) => r['name'].toString(),
+                                          )
+                                          .toList(),
+                                      value: selectedRoad,
+                                      onChanged: (val) {
+                                        setState(() {
+                                          final road = roadsForSelectedBlock
+                                              .firstWhere(
+                                                (r) =>
+                                                    r['name'].toString() == val,
+                                              );
+
+                                          selectedRoad = road['name']
+                                              .toString();
+
+                                          selectedRoadId = road['_id']
+                                              .toString();
+                                        });
+                                      },
+                                    ),
+                                  ],
+                                );
+                              },
+                              loading: () => const Center(
+                                child: CircularProgressIndicator(),
+                              ),
+                              error: (e, _) => Text("Error: $e"),
+                            );
+                          },
+                        ),
+
+                        const SizedBox(height: 20),
                         // Buttons
                         Row(
                           children: [

@@ -185,9 +185,12 @@ class _PointsRequestDetailsState extends ConsumerState<PointsRequestDetails> {
               ),
 
             const SizedBox(height: 8),
-            Text(
-              formatIsoDateForUI(widget.createdAt.toString()),
-              style: const TextStyle(fontSize: 12, color: Colors.grey),
+            Directionality(
+              textDirection: TextDirection.ltr,
+              child: Text(
+                formatIsoDateForUI(widget.createdAt.toString()),
+                style: const TextStyle(fontSize: 12, color: Colors.grey),
+              ),
             ),
           ],
         ),

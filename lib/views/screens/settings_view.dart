@@ -336,7 +336,16 @@ class _SettingsViewState extends ConsumerState<SettingsView> {
                                 );
                                 return;
                               }
+                              // final selectedReason = deleteReasons.firstWhere(
+                              //   (e) => e["_id"] == selectedReasonId,
+                              // );
 
+                              // debugPrint(
+                              //   "Selected ID: ${selectedReason["_id"]}",
+                              // );
+                              // debugPrint(
+                              //   "Selected Reason: ${selectedReason["reason"]}",
+                              // );
                               await accountDelete.fetchdeleteaccount(
                                 reasonId: selectedReasonId!,
                               );

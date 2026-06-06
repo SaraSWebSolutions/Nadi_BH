@@ -155,6 +155,11 @@ class _HelpSupportViewState extends ConsumerState<HelpSupportView> {
                         textInputAction: TextInputAction.next,
                         validator: (value) =>
                             value!.isEmpty ? loc.nameValidation : null,
+                        inputFormatters: [
+                          FilteringTextInputFormatter.allow(
+                            RegExp(r'[a-zA-Z\u0600-\u06FF ]'),
+                          ),
+                        ],
                       ),
                       const SizedBox(height: 12),
                       AppTextField(

@@ -235,8 +235,9 @@ class _PointsNodificationState extends ConsumerState<PointsNodification> {
                                 ),
                               ),
                               const SizedBox(height: 8),
+
                               Text(
-                                formatIsoDateForUI(n.time),
+                                '\u200E${formatIsoDateForUI(n.time)}',
                                 style: const TextStyle(
                                   fontSize: 11,
                                   color: Colors.grey,
