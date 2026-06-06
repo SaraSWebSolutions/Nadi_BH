@@ -177,6 +177,7 @@ class _DashboardState extends ConsumerState<Dashboard> {
     ref.invalidate(fetchadvertisementprovider);
     ref.invalidate(userdashboardprovider);
     ref.invalidate(fetchquestionsdataprovider);
+ref.invalidate(approveTechProvider);
 
     // await Future.wait([fetchongoinproces(), fetchapprovetechnician()]);
     await fetchongoinproces();
