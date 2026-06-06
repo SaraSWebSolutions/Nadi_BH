@@ -43,6 +43,7 @@ class ServiceRequestCard extends StatelessWidget {
           return status;
       }
     }
+
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: Column(
@@ -103,9 +104,18 @@ class ServiceRequestCard extends StatelessWidget {
                                 overflow: TextOverflow.ellipsis,
                               ),
                               const SizedBox(height: 4),
+                              //  Directionality(
+                              //     textDirection: TextDirection.ltr,
+                              //     child: Text(
+                              //       formatIsoDateForUI(date),
+                              //       style: TextStyle(
+                              //         fontSize: AppFontSizes.small,
+                              //         color: AppColors.borderGrey,
+                              //       ),
+                              //     ),
+                              //   )
                               Text(
-                                formatIsoDateForUI(date
-                                ),
+                                '\u200E${formatIsoDateForUI(date)}',
                                 style: TextStyle(
                                   fontSize: AppFontSizes.small,
                                   color: AppColors.borderGrey,

@@ -324,6 +324,7 @@ class _MyprofileState extends ConsumerState<Myprofile> {
           final basicData =
               profileResponse['data'] as Map<String, dynamic>? ?? {};
           final addresses = profileResponse['addresses'] as List? ?? [];
+          print("ADDRESS => ${addresses[0]}");
           final familyMembers = profileResponse['familyMembers'] as List? ?? [];
           String safeString(dynamic value) => value?.toString() ?? "";
           final nameCtrl = TextEditingController(
@@ -351,20 +352,47 @@ class _MyprofileState extends ConsumerState<Myprofile> {
           );
           String buildFullAddress(Map addr) {
             final parts = <String>[];
-            void add(String? label, dynamic value) {
-              final v = safeString(value).trim();
-              if (v.isEmpty) return;
-              parts.add(label == null ? v : "$label $v");
+
+            void add(String text) {
+              if (text.trim().isNotEmpty) {
+                parts.add(text);
+              }
             }
 
-            add(null, addr['building']);
-            add(loc.block, addr['block']);
-            add(null, addr['city']);
-            add(loc.floor, addr['floor']);
-            if (addr['propertyType'] != 'villa') {
-              add(loc.apartment, addr['aptNo']);
+            // City
+            if ((addr['city'] ?? "").toString().isNotEmpty) {
+              add("City ${addr['city']}");
             }
-            add(null, addr['additionalInfo']);
+
+            // Building
+            add("Building ${addr['building'] ?? ''}");
+
+            // Apartment
+            if ((addr['aptNo'] ?? '').toString().isNotEmpty) {
+              add("Apartment ${addr['aptNo']}");
+            }
+
+            // Floor
+            if ((addr['floor'] ?? '').toString().isNotEmpty) {
+              add("Floor ${addr['floor']}");
+            }
+
+            // Block
+            if (addr['blockId'] is Map) {
+              add("Block ${addr['blockId']['name'] ?? ''}");
+            } else {
+              add("Block ${addr['blockName'] ?? ''}");
+            }
+
+            // Road
+            if (addr['roadId'] is Map) {
+              add("Road ${addr['roadId']['name'] ?? ''}");
+            } else {
+              add("Road ${addr['roadName'] ?? ''}");
+            }
+
+            add("${addr['additionalInfo'] ?? ''}");
+
             return parts.join(", ");
           }
 

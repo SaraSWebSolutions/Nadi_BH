@@ -64,71 +64,61 @@ class _AddressState extends State<Address> {
 
   Future<void> familyAccount(BuildContext context) async {
     final userId = await AppPreferences.getUserId();
+    final l10n = AppLocalizations.of(context)!;
 
-    if (userId == null) {
-      AppLogger.info(" USER ID IS NULL");
-      return;
-    }
+    if (userId == null || !mounted) return;
 
     final body = controller.getApiAddressBody(
       userId: userId,
       addressType: selected.toLowerCase(),
     );
 
-    // debugPrint(" API BODY  $body");
-    Future.delayed(const Duration(milliseconds: 300), () {
-      if (mounted) setState(() => _isLoading = true);
-    });
+    setState(() => _isLoading = true);
 
     try {
       final response = await _adressservice.adressdetails(body: body);
-      // API finished
-      if (mounted) setState(() => _isLoading = false);
 
-      if (response != null) {
-        if (widget.accountType == "Family") {
-          widget.onNext?.call();
-        } else {
-          if (!context.mounted) return;
-
-          /// ✅ CLEAR ALL FIELDS HERE
-          controller.city.clear();
-          controller.building.clear();
-          controller.aptNo.clear();
-          controller.floor.clear();
-
-          controller.block = null;
-          controller.blockId = null;
-
-          controller.road = null;
-          controller.roadId = null;
-
-          controller.roadsForSelectedBlock = [];
-
-          setState(() {
-            _hideBottomButton = true;
-            // _formKey = GlobalKey<FormState>(); // 🔥 clears validation errors
-          });
-
-          _resetAll();
-
-          SnackbarHelper.ShowSuccess(
-            context,
-            AppLocalizations.of(context)!.accountCreatedSuccessfully,
-          );
-          //_resetAll();
-          Future.delayed(const Duration(seconds: 1), () {
-            if (context.mounted) context.push(RouteNames.accountverfy);
-          });
-        }
-      }
-    } catch (e) {
-      if (!context.mounted) return;
+      if (!mounted) return;
       setState(() => _isLoading = false);
-      SnackbarHelper.showError(
-        context,
-        "${AppLocalizations.of(context)!.submitFailed}: $e",
-      );
+
+      if (response == null) return;
+
+      // FAMILY FLOW
+      if (widget.accountType == "Family") {
+        widget.onNext?.call();
+        return;
+      }
+
+      if (!context.mounted) return;
+
+      // SUCCESS MESSAGE
+      SnackbarHelper.ShowSuccess(context, l10n.accountCreatedSuccessfully);
+
+      await Future.delayed(const Duration(milliseconds: 800));
+
+      if (!mounted) return;
+
+      // CLEAN NAVIGATION FLOW
+      await context.push(RouteNames.accountverfy);
+
+      // CLEANUP AFTER NAVIGATION FRAME
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (!mounted) return;
+
+        controller.clear();
+
+        setState(() {
+          selected = "Flat";
+          // _hideBottomButton = true;
+          _isLoading = false;
+        });
+      });
+    } catch (e) {
+      if (!mounted) return;
+
+      setState(() => _isLoading = false);
+
+      SnackbarHelper.showError(context, "${l10n.submitFailed}: $e");
     }
   }
 

@@ -8,14 +8,12 @@ class AccountDelete {
   // Reson for Account Delete
   Future<Map<String, dynamic>> fetchdeletereson(String lang) async {
     try {
-          // ✅ PRINT URL
-    debugPrint("API CALL => delete-Reasons?lang=$lang");
+      // ✅ PRINT URL
+      debugPrint("API CALL => delete-Reasons?lang=$lang");
       final response = await _dio.get(
         "delete-Reasons",
-          queryParameters: {
-          "lang": lang,
-        },
-        );
+        queryParameters: {"lang": lang},
+      );
       return response.data;
     } on DioException catch (e) {
       final err = e.response?.data['message'];
@@ -29,12 +27,20 @@ class AccountDelete {
     required String reasonId,
   }) async {
     try {
+      debugPrint("========== DELETE ACCOUNT ==========");
+      debugPrint("Sending reasonId: $reasonId");
+
       final response = await _dio.post(
         "user-account/delete",
         data: {"reasonId": reasonId},
       );
+
+      debugPrint("Delete Response: ${response.data}");
+
       return response.data;
     } on DioException catch (e) {
+      debugPrint("Delete Error: ${e.response?.data}");
+
       final err = e.response?.data['message'];
       throw err;
     }

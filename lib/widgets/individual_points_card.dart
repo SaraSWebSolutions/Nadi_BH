@@ -16,9 +16,8 @@ class IndividualPointsCard extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) {  
+  Widget build(BuildContext context) {
     return Container(
-      
       width: double.infinity,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(12),
@@ -35,11 +34,15 @@ class IndividualPointsCard extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    date,
-                    style: TextStyle(
-                      color: const Color.fromARGB(255, 145, 144, 146),
-                      fontSize: AppFontSizes.small,
+                  Directionality(
+                    textDirection: TextDirection.ltr,
+                    child: Text(
+                      date,
+                      textAlign: TextAlign.left,
+                      style: TextStyle(
+                        color: const Color.fromARGB(255, 145, 144, 146),
+                        fontSize: AppFontSizes.small,
+                      ),
                     ),
                   ),
                   Text(
@@ -47,7 +50,7 @@ class IndividualPointsCard extends StatelessWidget {
                     softWrap: true,
                     // maxLines: 1,
                     // overflow: TextOverflow.ellipsis,
-                    style:  TextStyle(
+                    style: TextStyle(
                       color: Theme.of(context).textTheme.bodyMedium?.color,
                       fontWeight: FontWeight.w500,
                     ),
@@ -82,10 +85,10 @@ class IndividualPointsCard extends StatelessWidget {
                     : Text(
                         " +$points",
                         style: TextStyle(
-color: Theme.of(context).brightness == Brightness.dark
-    ? Colors.greenAccent
-    : AppColors.app_background_clr,
-                              fontWeight: FontWeight.w600,
+                          color: Theme.of(context).brightness == Brightness.dark
+                              ? Colors.greenAccent
+                              : AppColors.app_background_clr,
+                          fontWeight: FontWeight.w600,
                         ),
                       ),
               ],

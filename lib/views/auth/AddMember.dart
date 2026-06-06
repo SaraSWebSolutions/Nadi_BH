@@ -1375,313 +1375,321 @@ class _AddmemberState extends State<Addmember> {
                   //       // fontWeight: FontWeight.w400,
                   //     ),
                   //   ),
-                  const SizedBox(height: 15),
+                  const SizedBox(height: 8),
 
-                  AppTextField(
-                    controller: controller.fullName,
-                    onChanged: (_) {
-                      updateCurrentMember();
-                    },
-                    inputFormatters: [
-                      FilteringTextInputFormatter.allow(
-                        RegExp(r'[a-zA-Z\u0600-\u06FF ]'),
-                      ),
-                    ],
-                    // onChanged: (_) => _syncEditingToSaved(),
-                    label: l10n.memberFullName,
-                    focusNode: _nameFocus, // ✅ add this
-                    keyboardType: TextInputType.name,
-                    textInputAction: TextInputAction.next,
-                    validator: (value) =>
-                        controller.validatefullname(value, l10n),
-                  ),
-                  const SizedBox(height: 15),
-
-                  AppDropdown(
-                    label: l10n.relationship,
-                    items: [
-                      l10n.father,
-                      l10n.mother,
-                      l10n.son,
-                      l10n.daughter,
-                      l10n.husband,
-                      l10n.wife,
-                      l10n.addOther,
-                    ],
-                    value: controller.relation,
-                    onChanged: (val) {
-                      controller.relation = val;
-
-                      updateCurrentMember();
-
-                      setState(() {});
-                    },
-                    validator: (val) =>
-                        val == null ? l10n.selectRelationship : null,
-                  ),
-
-                  const SizedBox(height: 15),
-
-                  // Mobile
-                  AppTextField(
-                    controller: controller.mobile,
-                    keyboardType: TextInputType.phone,
-                    textInputAction: TextInputAction.next,
-                    onChanged: (_) {
-                      updateCurrentMember();
-                    },
-                    // onChanged: (_) => _syncEditingToSaved(),
-                    label: l10n.mobileNumber,
-                    prefixText: "+973 ",
-                    maxLength: 8,
-                    inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                    validator: (value) =>
-                        controller.validatemobilenumber(value, l10n),
-                  ),
-
-                  const SizedBox(height: 15),
-
-                  // AppTextField(
-                  //   controller: controller.password,
-
-                  //   label: "Password*",
-                  //   validator: (value) => controller.validatepassword(value),
-                  // ),
-                  // const SizedBox(height: 15),
-                  AppTextField(
-                    controller: controller.email,
-                    onChanged: (_) {
-                      updateCurrentMember();
-                    },
-                    // onChanged: (_) => _syncEditingToSaved(),
-                    keyboardType: TextInputType.emailAddress,
-                    textInputAction: TextInputAction.done,
-                    label: '${l10n.emailAddress}*',
-                    validator: (value) => controller.validateemail(value, l10n),
-                  ),
-                  const SizedBox(height: 15),
-                  AppDropdown(
-                    label: l10n.gender,
-                    items: [l10n.male, l10n.female],
-                    value: controller.gender,
-                    onChanged: (val) {
-                      controller.gender = val;
-
-                      updateCurrentMember();
-
-                      setState(() {});
-                    },
-                    validator: (val) => val == null ? l10n.selectGender : null,
-                  ),
-
-                  const SizedBox(height: 20),
-                  SizedBox(
-                    width: double.infinity,
-                    height: 47,
-                    child: OutlinedButton(
-                      style: OutlinedButton.styleFrom(
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                      ),
-                      onPressed: () {
-                        if (!_isAddress) {
-                          _showAddressSection();
-                        } else {
-                          setState(() {
-                            _isAddress = false;
-                          });
-                        }
+                  if (_totalMembers == 0)
+                    Center(child: Text("Enter family count first"))
+                  else ...[
+                    const SizedBox(height: 15),
+                    AppTextField(
+                      controller: controller.fullName,
+                      onChanged: (_) {
+                        updateCurrentMember();
                       },
-                      child: Text(
-                        _isAddress ? l10n.hideAddress : l10n.addAddress,
-                        style: TextStyle(color: AppColors.btn_primery),
-                      ),
-                    ),
-                  ),
-
-                  if (_isAddress)
-                    AnimatedContainer(
-                      key: _addressSectionKey,
-                      duration: const Duration(milliseconds: 400),
-                      padding: const EdgeInsets.all(8),
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(12),
-                        border: Border.all(
-                          color: _highlightAddress
-                              ? AppColors.button_secondary
-                              : Colors.transparent,
-                          width: 2,
+                      inputFormatters: [
+                        FilteringTextInputFormatter.allow(
+                          RegExp(r'[a-zA-Z\u0600-\u06FF ]'),
                         ),
-                        color: _highlightAddress
-                            ? AppColors.button_secondary.withOpacity(.08)
-                            : Colors.transparent,
-                      ),
-                      child: Column(
-                        children: [
-                          const SizedBox(height: 20),
-                          Address(
-                            accountType: "Family",
-                            family: true,
-                            formKey: _addressFormKey,
-                            controller: addressController,
+                      ],
+                      // onChanged: (_) => _syncEditingToSaved(),
+                      label: l10n.memberFullName,
+                      focusNode: _nameFocus, // ✅ add this
+                      keyboardType: TextInputType.name,
+                      textInputAction: TextInputAction.next,
+                      validator: (value) =>
+                          controller.validatefullname(value, l10n),
+                    ),
+                    const SizedBox(height: 15),
+
+                    AppDropdown(
+                      label: l10n.relationship,
+                      items: [
+                        l10n.father,
+                        l10n.mother,
+                        l10n.son,
+                        l10n.daughter,
+                        l10n.husband,
+                        l10n.wife,
+                        l10n.addOther,
+                      ],
+                      value: controller.relation,
+                      onChanged: (val) {
+                        controller.relation = val;
+
+                        updateCurrentMember();
+
+                        setState(() {});
+                      },
+                      validator: (val) =>
+                          val == null ? l10n.selectRelationship : null,
+                    ),
+
+                    const SizedBox(height: 15),
+
+                    // Mobile
+                    AppTextField(
+                      controller: controller.mobile,
+                      keyboardType: TextInputType.phone,
+                      textInputAction: TextInputAction.next,
+                      onChanged: (_) {
+                        updateCurrentMember();
+                      },
+                      // onChanged: (_) => _syncEditingToSaved(),
+                      label: l10n.mobileNumber,
+                      prefixText: "+973 ",
+                      maxLength: 8,
+                      inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                      validator: (value) =>
+                          controller.validatemobilenumber(value, l10n),
+                    ),
+
+                    const SizedBox(height: 15),
+
+                    // AppTextField(
+                    //   controller: controller.password,
+
+                    //   label: "Password*",
+                    //   validator: (value) => controller.validatepassword(value),
+                    // ),
+                    // const SizedBox(height: 15),
+                    AppTextField(
+                      controller: controller.email,
+                      onChanged: (_) {
+                        updateCurrentMember();
+                      },
+                      // onChanged: (_) => _syncEditingToSaved(),
+                      keyboardType: TextInputType.emailAddress,
+                      textInputAction: TextInputAction.done,
+                      label: '${l10n.emailAddress}*',
+                      validator: (value) =>
+                          controller.validateemail(value, l10n),
+                    ),
+                    const SizedBox(height: 15),
+                    AppDropdown(
+                      label: l10n.gender,
+                      items: [l10n.male, l10n.female],
+                      value: controller.gender,
+                      onChanged: (val) {
+                        controller.gender = val;
+
+                        updateCurrentMember();
+
+                        setState(() {});
+                      },
+                      validator: (val) =>
+                          val == null ? l10n.selectGender : null,
+                    ),
+
+                    const SizedBox(height: 20),
+                    SizedBox(
+                      width: double.infinity,
+                      height: 47,
+                      child: OutlinedButton(
+                        style: OutlinedButton.styleFrom(
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
                           ),
-                        ],
+                        ),
+                        onPressed: () {
+                          if (!_isAddress) {
+                            _showAddressSection();
+                          } else {
+                            setState(() {
+                              _isAddress = false;
+                            });
+                          }
+                        },
+                        child: Text(
+                          _isAddress ? l10n.hideAddress : l10n.addAddress,
+                          style: TextStyle(color: AppColors.btn_primery),
+                        ),
                       ),
                     ),
 
-                  const SizedBox(height: 10),
+                    if (_isAddress)
+                      AnimatedContainer(
+                        key: _addressSectionKey,
+                        duration: const Duration(milliseconds: 400),
+                        padding: const EdgeInsets.all(8),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(
+                            color: _highlightAddress
+                                ? AppColors.button_secondary
+                                : Colors.transparent,
+                            width: 2,
+                          ),
+                          color: _highlightAddress
+                              ? AppColors.button_secondary.withOpacity(.08)
+                              : Colors.transparent,
+                        ),
+                        child: Column(
+                          children: [
+                            const SizedBox(height: 20),
+                            Address(
+                              accountType: "Family",
+                              family: true,
+                              formKey: _addressFormKey,
+                              controller: addressController,
+                            ),
+                          ],
+                        ),
+                      ),
+
+                    const SizedBox(height: 10),
+                  ],
                 ],
               ),
             ),
 
             // if (!_hideBottomButton)
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 5),
-              child: AppButton(
-                text: currentIndex + 1 == _totalMembers
-                    ? l10n.finish
-                    : l10n.next,
+            if (_totalMembers > 0)
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 5),
+                child: AppButton(
+                  text: currentIndex + 1 == _totalMembers
+                      ? l10n.finish
+                      : l10n.next,
 
-                isLoading: _isLoading,
+                  isLoading: _isLoading,
 
-                // onPressed: () async {
-                //   final isFamilyCountEmpty = controller.familyCount.text
-                //       .trim()
-                //       .isEmpty;
+                  // onPressed: () async {
+                  //   final isFamilyCountEmpty = controller.familyCount.text
+                  //       .trim()
+                  //       .isEmpty;
 
-                //   setState(() {
-                //     _showFamilyCountError = isFamilyCountEmpty;
-                //   });
+                  //   setState(() {
+                  //     _showFamilyCountError = isFamilyCountEmpty;
+                  //   });
 
-                //   // Member form validation
-                //   final isMemberValid =
-                //       widget.formKey.currentState?.validate() ?? false;
+                  //   // Member form validation
+                  //   final isMemberValid =
+                  //       widget.formKey.currentState?.validate() ?? false;
 
-                //   if (!isMemberValid) {
-                //     return; // field errors will show below fields
-                //   }
+                  //   if (!isMemberValid) {
+                  //     return; // field errors will show below fields
+                  //   }
 
-                //   // Address must be expanded
-                //   if (!_isAddress) {
-                //     SnackbarHelper.showError(context, l10n.addAddressError);
-                //     return;
-                //   }
+                  //   // Address must be expanded
+                  //   if (!_isAddress) {
+                  //     SnackbarHelper.showError(context, l10n.addAddressError);
+                  //     return;
+                  //   }
 
-                //   // Address validation
-                //   final isAddressValid =
-                //       _addressFormKey.currentState?.validate() ?? false;
+                  //   // Address validation
+                  //   final isAddressValid =
+                  //       _addressFormKey.currentState?.validate() ?? false;
 
-                //   if (!isAddressValid) {
-                //     return; // address field errors show below fields
-                //   }
+                  //   if (!isAddressValid) {
+                  //     return; // address field errors show below fields
+                  //   }
 
-                //   if (isFamilyCountEmpty) {
-                //     return;
-                //   }
+                  //   if (isFamilyCountEmpty) {
+                  //     return;
+                  //   }
 
-                //   /// Save current member + address locally
-                //   updateCurrentMember();
+                  //   /// Save current member + address locally
+                  //   updateCurrentMember();
 
-                //   final completed = completedMembers;
+                  //   final completed = completedMembers;
 
-                //   if (completed >= _totalMembers) {
-                //     await _submitAllMembers();
-                //     return;
-                //   }
+                  //   if (completed >= _totalMembers) {
+                  //     await _submitAllMembers();
+                  //     return;
+                  //   }
 
-                //   /// Load next member
-                //   final nextIndex = familyMembers.indexWhere(
-                //     (m) => !isMemberComplete(m),
-                //   );
+                  //   /// Load next member
+                  //   final nextIndex = familyMembers.indexWhere(
+                  //     (m) => !isMemberComplete(m),
+                  //   );
 
-                //   if (nextIndex != -1) {
-                //     loadMember(nextIndex);
+                  //   if (nextIndex != -1) {
+                  //     loadMember(nextIndex);
 
-                //     setState(() {
-                //       currentIndex = nextIndex;
-                //       _currentMemberIndex = nextIndex + 1;
-                //     });
+                  //     setState(() {
+                  //       currentIndex = nextIndex;
+                  //       _currentMemberIndex = nextIndex + 1;
+                  //     });
 
-                //     WidgetsBinding.instance.addPostFrameCallback((_) {
-                //       _nameFocus.requestFocus();
-                //     });
-                //   }
-                // },
-                onPressed: () async {
-                  final l10n = AppLocalizations.of(context)!;
+                  //     WidgetsBinding.instance.addPostFrameCallback((_) {
+                  //       _nameFocus.requestFocus();
+                  //     });
+                  //   }
+                  // },
+                  onPressed: () async {
+                    final l10n = AppLocalizations.of(context)!;
 
-                  final isCountEmpty = controller.familyCount.text
-                      .trim()
-                      .isEmpty;
-                  if (isCountEmpty) {
-                    setState(() => _showFamilyCountError = true);
-                    return;
-                  }
+                    final isCountEmpty = controller.familyCount.text
+                        .trim()
+                        .isEmpty;
+                    if (isCountEmpty) {
+                      setState(() => _showFamilyCountError = true);
+                      return;
+                    }
 
-                  final isMemberValid =
-                      widget.formKey.currentState?.validate() ?? false;
+                    final isMemberValid =
+                        widget.formKey.currentState?.validate() ?? false;
 
-                  if (!isMemberValid) return;
+                    if (!isMemberValid) return;
 
-                  if (!_isAddress) {
-                    SnackbarHelper.showError(context, l10n.addAddressError);
-                    return;
-                  }
+                    if (!_isAddress) {
+                      SnackbarHelper.showError(context, l10n.addAddressError);
+                      return;
+                    }
 
-                  final isAddressValid =
-                      _addressFormKey.currentState?.validate() ?? false;
+                    final isAddressValid =
+                        _addressFormKey.currentState?.validate() ?? false;
 
-                  if (!isAddressValid) return;
+                    if (!isAddressValid) return;
 
-                  /// 1. SAVE CURRENT FORM LOCALLY
-                  updateCurrentMember();
+                    /// 1. SAVE CURRENT FORM LOCALLY
+                    updateCurrentMember();
 
-                  /// 2. CHECK IF CURRENT MEMBER IS COMPLETE
-                  final current = familyMembers[currentIndex];
+                    /// 2. CHECK IF CURRENT MEMBER IS COMPLETE
+                    final current = familyMembers[currentIndex];
 
-                  final isComplete = isMemberComplete(current);
+                    final isComplete = isMemberComplete(current);
 
-                  /// ❌ IF NOT COMPLETE → DO NOT MOVE
-                  if (!isComplete) {
-                    SnackbarHelper.showError(
-                      context,
-                      l10n.completeCurrentMemberBeforeContinue,
+                    /// ❌ IF NOT COMPLETE → DO NOT MOVE
+                    if (!isComplete) {
+                      SnackbarHelper.showError(
+                        context,
+                        l10n.completeCurrentMemberBeforeContinue,
+                      );
+                      return;
+                    }
+
+                    /// 3. IF LAST MEMBER → CALL API
+                    final completed = completedMembers;
+
+                    if (completed >= _totalMembers) {
+                      await _submitAllMembers();
+                      return;
+                    }
+
+                    /// 4. MOVE TO NEXT EMPTY MEMBER
+                    final nextIndex = familyMembers.indexWhere(
+                      (m) => !isMemberComplete(m),
                     );
-                    return;
-                  }
 
-                  /// 3. IF LAST MEMBER → CALL API
-                  final completed = completedMembers;
+                    if (nextIndex != -1) {
+                      loadMember(nextIndex);
 
-                  if (completed >= _totalMembers) {
-                    await _submitAllMembers();
-                    return;
-                  }
+                      setState(() {
+                        currentIndex = nextIndex;
+                        _currentMemberIndex = nextIndex + 1;
+                      });
 
-                  /// 4. MOVE TO NEXT EMPTY MEMBER
-                  final nextIndex = familyMembers.indexWhere(
-                    (m) => !isMemberComplete(m),
-                  );
-
-                  if (nextIndex != -1) {
-                    loadMember(nextIndex);
-
-                    setState(() {
-                      currentIndex = nextIndex;
-                      _currentMemberIndex = nextIndex + 1;
-                    });
-
-                    WidgetsBinding.instance.addPostFrameCallback((_) {
-                      _nameFocus.requestFocus();
-                    });
-                  }
-                },
-                color: AppColors.btn_primery,
-                width: double.infinity,
-                //height: 58,
+                      WidgetsBinding.instance.addPostFrameCallback((_) {
+                        _nameFocus.requestFocus();
+                      });
+                    }
+                  },
+                  color: AppColors.btn_primery,
+                  width: double.infinity,
+                  //height: 58,
+                ),
               ),
-            ),
             const SizedBox(height: 10),
           ],
         ),

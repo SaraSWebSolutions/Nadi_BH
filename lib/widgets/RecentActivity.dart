@@ -163,15 +163,14 @@ class RecentActivityState extends State<RecentActivity> {
                           overflow: TextOverflow.ellipsis,
                         ),
                         const SizedBox(height: 4),
-                        Text(
-                          // formatIsoDateForUI(
-                          //   log.time.toString(),
-                          //   locale: Localizations.localeOf(context).toString(),
-                          // ),
-                          formatIsoDateForUI(log.time.toString()),
-                          style: const TextStyle(
-                            color: Colors.grey,
-                            fontSize: 12,
+                        Directionality(
+                          textDirection: TextDirection.ltr,
+                          child: Text(
+                            formatIsoDateForUI(log.time.toString()),
+                            style: const TextStyle(
+                              color: Colors.grey,
+                              fontSize: 12,
+                            ),
                           ),
                         ),
                       ],

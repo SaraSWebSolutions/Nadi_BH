@@ -502,9 +502,12 @@ class _TimelineTile extends StatelessWidget {
 
               if (data["time"] != null) ...[
                 const SizedBox(height: 6),
-                Text(
-                  formatIsoDateForUI(data["time"]),
-                  style: TextStyle(fontSize: 11, color: Colors.grey.shade500),
+                Directionality(
+                  textDirection: TextDirection.ltr,
+                  child: Text(
+                    formatIsoDateForUI(data["time"]),
+                    style: TextStyle(fontSize: 11, color: Colors.grey.shade500),
+                  ),
                 ),
               ],
 
