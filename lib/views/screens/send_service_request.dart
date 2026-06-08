@@ -276,6 +276,13 @@ class _SendServiceRequestState extends ConsumerState<SendServiceRequest> {
                                 height: 200,
                                 fit: BoxFit.cover,
                                 placeholder: (context, url) => imageShimmer(),
+                                errorWidget: (context, url, error) => CachedNetworkImage(
+    imageUrl:
+        "https://srv1252888.hstgr.cloud/uploads/1768196138312-431646658-Benefits-of-Commercial-Electrical-Services-for-Businesses--scaled.webp",
+    width: double.infinity,
+    height: 200,
+    fit: BoxFit.cover,
+  ),
                               )
                             : imageShimmer(),
                       ),

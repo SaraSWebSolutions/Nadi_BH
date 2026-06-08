@@ -1592,6 +1592,12 @@ abstract class AppLocalizations {
   /// **'Are you sure you want to delete this notification?'**
   String get message;
 
+  /// No description provided for @messageAll.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to delete all notifications?'**
+  String get messageAll;
+
   /// No description provided for @family.
   ///
   /// In en, this message translates to:

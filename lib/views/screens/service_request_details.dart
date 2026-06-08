@@ -179,8 +179,11 @@ class ServiceRequestDetails extends StatelessWidget {
     required List<String> images,
     required double height,
   }) {
-    if (images.isEmpty) return const SizedBox.shrink();
-
+if (images.isEmpty) {
+  images = [
+    "https://srv1252888.hstgr.cloud/uploads/1768196138312-431646658-Benefits-of-Commercial-Electrical-Services-for-Businesses--scaled.webp"
+  ];
+}
     final PageController controller = PageController();
     final ValueNotifier<int> currentPage = ValueNotifier(0);
 
@@ -203,8 +206,12 @@ class ServiceRequestDetails extends StatelessWidget {
                   highlightColor: Colors.grey.shade100,
                   child: Container(color: Colors.grey),
                 ),
-                errorWidget: (_, __, ___) =>
-                    const Center(child: Icon(Icons.broken_image)),
+                 errorWidget: (_, __, ___) => Image.network(
+    "https://srv1252888.hstgr.cloud/uploads/1768196138312-431646658-Benefits-of-Commercial-Electrical-Services-for-Businesses--scaled.webp",
+    fit: BoxFit.cover,
+  ),
+                // errorWidget: (_, __, ___) =>
+                //     const Center(child: Icon(Icons.broken_image)),
               );
             },
           ),

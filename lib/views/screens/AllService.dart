@@ -32,7 +32,7 @@ class _AllserviceState extends ConsumerState<Allservice> {
   Widget build(BuildContext context) {
     final services = ref.watch(serviceListProvider);
     final locale = Localizations.localeOf(context).languageCode;
-
+debugPrint('Services: $services');
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
 

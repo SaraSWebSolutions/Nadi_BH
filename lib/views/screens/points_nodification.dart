@@ -100,7 +100,7 @@ class _PointsNodificationState extends ConsumerState<PointsNodification> {
                 final confirmed = await showConfirmDialog(
                   context,
                   title: AppLocalizations.of(context)!.title,
-                  message: AppLocalizations.of(context)!.message,
+                  message: AppLocalizations.of(context)!.messageAll,
                   confirmText: AppLocalizations.of(context)!.delete,
                   icon: Icons.delete_sweep_rounded,
                   destructive: true,

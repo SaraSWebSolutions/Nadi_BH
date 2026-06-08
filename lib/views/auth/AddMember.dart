@@ -668,15 +668,27 @@ class _AddmemberState extends State<Addmember> {
       _resetForm();
       context.push(RouteNames.accountverfy);
     } on DioException catch (e) {
-      if (!mounted) return;
+  debugPrint("========== DIO ERROR ==========");
+  debugPrint("Type: ${e.type}");
+  debugPrint("Message: ${e.message}");
+  debugPrint("Status Code: ${e.response?.statusCode}");
+  debugPrint("Response Data: ${e.response?.data}");
+  debugPrint("Response Headers: ${e.response?.headers}");
+  debugPrint("Request Path: ${e.requestOptions.path}");
+  debugPrint("Request Data: ${e.requestOptions.data}");
+  debugPrint("================================");
 
-      setState(() => _isLoading = false);
+  if (!mounted) return;
 
-      SnackbarHelper.showError(
-        context,
-        e.response?.data["message"] ?? "Something went wrong",
-      );
-    } catch (e) {
+  setState(() => _isLoading = false);
+
+  SnackbarHelper.showError(
+    context,
+    e.response?.data?["message"]?.toString() ??
+        e.message ??
+        "Something went wrong",
+  );
+} catch (e) {
       if (!mounted) return;
 
       setState(() => _isLoading = false);

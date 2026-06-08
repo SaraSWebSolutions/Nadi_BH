@@ -784,6 +784,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get message => 'Are you sure you want to delete this notification?';
 
   @override
+  String get messageAll => 'Are you sure you want to delete all notifications?';
+
+  @override
   String get family => 'Family';
 
   @override

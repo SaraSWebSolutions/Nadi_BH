@@ -6,6 +6,7 @@ import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:nadi_user_app/core/constants/app_consts.dart';
 import 'package:nadi_user_app/core/utils/logger.dart';
+import 'package:nadi_user_app/core/utils/snackbar_helper.dart';
 import 'package:nadi_user_app/l10n/app_localizations.dart';
 import 'package:nadi_user_app/preferences/preferences.dart';
 import 'package:nadi_user_app/providers/auth_provider.dart';
@@ -263,10 +264,13 @@ class _EditProfileState extends ConsumerState<EditProfile> {
       await AppPreferences.saveProfileData(updatedProfile);
 
       if (mounted) context.pop(true);
-    } on DioException catch (e) {
-      AppLogger.error(" STATUS: ${e.response?.statusCode}");
-      AppLogger.error(" DATA: ${e.response?.data}");
-    } catch (e, stack) {
+    }on DioException catch (e) {
+  final message =
+      e.response?.data?["message"]?.toString() ??
+      "Something went wrong";
+  SnackbarHelper.showError(context, message);
+
+} catch (e, stack) {
       AppLogger.error(stack.toString());
     } finally {
       if (mounted) setState(() => _isLoading = false);

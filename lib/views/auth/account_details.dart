@@ -386,7 +386,7 @@ class _AccountDetailsState extends ConsumerState<AccountDetails>
               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
               child: AppCircleIconButton(
                 icon: Icons.arrow_back,
-                onPressed: () => context.pop(),
+onPressed: () => context.go(RouteNames.login),
               ),
             ),
           ),

@@ -212,28 +212,54 @@ class AppPreferences {
     return prefs.getString(_namekey);
   }
 
-  static Future<void> clearAll() async {
-    final prefs = await SharedPreferences.getInstance();
+//   static Future<void> clearAll() async {
+//     final prefs = await SharedPreferences.getInstance();
 
-    // preserve only UX preferences
-    final bool rememberMe = prefs.getBool(_rememberMeKey) ?? false;
-    final String? rememberEmail = prefs.getString(_rememberEmailkey);
+//     // preserve only UX preferences
+//     final bool rememberMe = prefs.getBool(_rememberMeKey) ?? false;
+//     final String? rememberEmail = prefs.getString(_rememberEmailkey);
 
-    // ⚠️ correct key used
-    final String? fcmToken = prefs.getString(_fcmtokenkey);
+//     // ⚠️ correct key used
+//     final String? fcmToken = prefs.getString(_fcmtokenkey);
 
-    await prefs.clear();
+//     await prefs.clear();
 
-    // restore ONLY UI preferences
-    await prefs.setBool(_rememberMeKey, rememberMe);
+//     // restore ONLY UI preferences
+//     await prefs.setBool(_rememberMeKey, rememberMe);
 
-    if (rememberEmail != null) {
-      await prefs.setString(_rememberEmailkey, rememberEmail);
-    }
+//     if (rememberEmail != null) {
+//       await prefs.setString(_rememberEmailkey, rememberEmail);
+//     }
 
-    // 🚀 DO NOT TOUCH FCM (kept intentionally)
-    if (fcmToken != null) {
-      await prefs.setString(_fcmtokenkey, fcmToken);
-    }
+//     // 🚀 DO NOT TOUCH FCM (kept intentionally)
+//     if (fcmToken != null) {
+//       await prefs.setString(_fcmtokenkey, fcmToken);
+//     }
+//   }
+// }
+static Future<void> clearAll() async {
+  final prefs = await SharedPreferences.getInstance();
+
+  final bool rememberMe = prefs.getBool(_rememberMeKey) ?? false;
+  final String? rememberEmail = prefs.getString(_rememberEmailkey);
+  final String? fcmToken = prefs.getString(_fcmtokenkey);
+
+  // Preserve onboarding flag
+  final bool aboutSeen = prefs.getBool("about_seen") ?? false;
+
+  await prefs.clear();
+
+  await prefs.setBool(_rememberMeKey, rememberMe);
+
+  if (rememberEmail != null) {
+    await prefs.setString(_rememberEmailkey, rememberEmail);
   }
+
+  if (fcmToken != null) {
+    await prefs.setString(_fcmtokenkey, fcmToken);
+  }
+
+  // Restore onboarding flag
+  await prefs.setBool("about_seen", aboutSeen);
+}
 }

@@ -332,6 +332,7 @@
   "notificationUpdateFailed": "Failed to update notification setting",
   "title": "Delete Notification",
 "message": "Are you sure you want to delete this notification?",
+"messageAll": "Are you sure you want to delete all notifications?",
  
 "family":"Family",
 "approve": "Approve",

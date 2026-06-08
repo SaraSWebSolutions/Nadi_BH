@@ -775,6 +775,9 @@ class AppLocalizationsAr extends AppLocalizations {
   String get message => 'هل أنت متأكد أنك تريد حذف هذا الإشعار؟';
 
   @override
+  String get messageAll => 'هل أنت متأكد من رغبتك في حذف جميع الإشعارات؟';
+
+  @override
   String get family => 'عائلة';
 
   @override
