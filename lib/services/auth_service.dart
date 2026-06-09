@@ -425,4 +425,25 @@ class AuthService {
       rethrow;
     }
   }
+
+  Future<void> discardAccount(String userId) async {
+    try {
+      await _dio.post("user-account/discard", data: {"userId": userId});
+    } catch (e) {
+      debugPrint("Discard API Error: $e");
+      rethrow;
+    }
+  }
+
+  Future<Map<String, dynamic>> checkAccount({
+    required String email,
+    required String mobile,
+  }) async {
+    final response = await _dio.post(
+      "user-account/account-check",
+      data: {"email": email, "mobile": mobile},
+    );
+
+    return Map<String, dynamic>.from(response.data);
+  }
 }

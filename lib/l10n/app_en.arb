@@ -509,6 +509,22 @@
   "flat": "Flat",
   "home": "Home",
    "pleaseEnterBlock": "Please enter block",
-  "pleaseEnterRoad": "Please enter road"
+  "pleaseEnterRoad": "Please enter road",
+  
+  "duplicateEmailWithMember": "This email address is already used by Member {member}. Please use a different email.",
+  "@duplicateEmailWithMember": {
+    "placeholders": {
+      "member": {}
+    }
+  },
+  "duplicateMobileWithMember": "This mobile number is already used by Member {member}. Please use a different mobile number.",
+  "@duplicateMobileWithMember": {
+    "placeholders": {
+      "member": {}
+    }
+  },
+  "fieldCannotBeEmpty": "This field cannot be empty",
+  "pleaseSelectAnOption": "Please select an option"
+
 
 }

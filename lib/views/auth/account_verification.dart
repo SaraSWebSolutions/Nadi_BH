@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:nadi_user_app/core/constants/app_consts.dart';
 import 'package:nadi_user_app/l10n/app_localizations.dart';
+import 'package:nadi_user_app/preferences/preferences.dart';
 import 'package:nadi_user_app/routing/app_router.dart';
+import 'package:nadi_user_app/services/auth_service.dart';
 import 'package:nadi_user_app/widgets/app_back.dart';
 import 'package:nadi_user_app/widgets/buttons/primary_button.dart';
 import 'package:nadi_user_app/widgets/confirm_dialog.dart';
@@ -15,9 +17,10 @@ class AccountVerification extends StatefulWidget {
 }
 
 class _AccountVerificationState extends State<AccountVerification> {
+  final AuthService _authService = AuthService();
+
   Future<bool> _confirmExit() async {
     final loc = AppLocalizations.of(context)!;
-
     return await showConfirmDialog(
       context,
       title: loc.discardSignUpTitle,
@@ -30,8 +33,30 @@ class _AccountVerificationState extends State<AccountVerification> {
 
   Future<void> _handleBack() async {
     final ok = await _confirmExit();
-    if (ok && context.mounted) {
-      context.push(RouteNames.Account); // ✅ correct back behavior
+
+    if (!ok) return;
+
+    await _discardAccount();
+
+    if (!mounted) return;
+
+    context.go(RouteNames.Account);
+  }
+
+  Future<void> _discardAccount() async {
+    try {
+      final userId = await AppPreferences.getUserId();
+
+      debugPrint("===== DISCARD ACCOUNT =====");
+      debugPrint("UserId: $userId");
+
+      if (userId == null) return;
+
+      await _authService.discardAccount(userId);
+
+      debugPrint("Discard API Success");
+    } catch (e) {
+      debugPrint("Discard API Error: $e");
     }
   }
 

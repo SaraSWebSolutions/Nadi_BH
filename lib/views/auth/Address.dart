@@ -601,33 +601,63 @@ class _AddressState extends State<Address> {
 //   }
 
 //   Future<void> _openMapPicker() async {
-//     setState(() {
-//       _isLocationLoading = true;
-//       _locationModeSelected = true;
-//       _showManualForm = false; // hide manual instantly
-//     });
+//     debugPrint("STEP 1");
 
-//     final result = await Navigator.push(
-//       context,
-//       MaterialPageRoute(builder: (_) => const MapPickerScreen()),
-//     );
+//     bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
 
-//     if (!mounted) return;
-
-//     setState(() {
-//       _isLocationLoading = false;
-//     });
-
-//     if (result == null) {
-//       // user cancelled → allow manual again
-//       setState(() {
-//         _locationModeSelected = false;
-//       });
+//     if (!serviceEnabled) {
+//       SnackbarHelper.showError(context, "Please enable location service");
 //       return;
 //     }
 
-//     if (result is LocationResult) {
-//       await _applyLocation(result);
+//     LocationPermission permission = await Geolocator.checkPermission();
+
+//     if (permission == LocationPermission.denied) {
+//       permission = await Geolocator.requestPermission();
+//     }
+
+//     if (permission == LocationPermission.denied) {
+//       SnackbarHelper.showError(context, "Location permission denied");
+//       return;
+//     }
+
+//     if (permission == LocationPermission.deniedForever) {
+//       SnackbarHelper.showError(
+//         context,
+//         "Location permission permanently denied",
+//       );
+
+//       await Geolocator.openAppSettings();
+//       return;
+//     }
+
+//     try {
+//       setState(() {
+//         _isLocationLoading = true;
+//         _locationModeSelected = true;
+//         _showManualForm = false;
+//       });
+
+//       debugPrint("STEP 2");
+
+//       final result = await Navigator.push(
+//         context,
+//         MaterialPageRoute(builder: (_) => const MapPickerScreen()),
+//       );
+
+//       debugPrint("STEP 3");
+
+//       if (result is LocationResult) {
+//         await _applyLocation(result);
+//       }
+//     } catch (e) {
+//       debugPrint("MAP ERROR: $e");
+//     } finally {
+//       if (mounted) {
+//         setState(() {
+//           _isLocationLoading = false;
+//         });
+//       }
 //     }
 //   }
 
@@ -693,12 +723,14 @@ class _AddressState extends State<Address> {
 //       setState(() => _isLocationLoading = true);
 
 //       final serviceEnabled = await Geolocator.isLocationServiceEnabled();
+
 //       if (!serviceEnabled) {
 //         SnackbarHelper.showError(context, "Enable location services");
 //         return;
 //       }
 
 //       var permission = await Geolocator.checkPermission();
+
 //       if (permission == LocationPermission.denied) {
 //         permission = await Geolocator.requestPermission();
 //       }
@@ -709,14 +741,31 @@ class _AddressState extends State<Address> {
 //         return;
 //       }
 
-//       final position = await Geolocator.getCurrentPosition(
-//         desiredAccuracy: LocationAccuracy.high,
+//       final stopwatch = Stopwatch()..start();
+
+//       // 1️⃣ Try cached location first
+//       Position? position = await Geolocator.getLastKnownPosition();
+
+//       // 2️⃣ Fallback to live GPS
+//       position ??= await Geolocator.getCurrentPosition(
+//         desiredAccuracy: LocationAccuracy.medium,
+//         timeLimit: const Duration(seconds: 10),
 //       );
 
+//       debugPrint("GPS fetched in ${stopwatch.elapsedMilliseconds} ms");
+
+//       // 3️⃣ Reverse Geocoding
 //       final placemarks = await placemarkFromCoordinates(
 //         position.latitude,
 //         position.longitude,
 //       );
+
+//       debugPrint("Geocoding completed in ${stopwatch.elapsedMilliseconds} ms");
+
+//       if (placemarks.isEmpty) {
+//         SnackbarHelper.showError(context, "Unable to determine address");
+//         return;
+//       }
 
 //       final place = placemarks.first;
 
@@ -744,10 +793,18 @@ class _AddressState extends State<Address> {
 
 //       setState(() {
 //         _locationDetected = true;
+//         _locationModeSelected = true;
+//         _showManualForm = true;
+
 //         _detectedAddress = fullAddress;
+
+//         // Save coordinates
+//         controller.latitude = position!.latitude;
+//         controller.longitude = position.longitude;
 
 //         controller.city.text = place.locality ?? "";
 
+//         // Reset block & road
 //         controller.block = null;
 //         controller.blockId = null;
 
@@ -758,28 +815,15 @@ class _AddressState extends State<Address> {
 //       });
 
 //       SnackbarHelper.ShowSuccess(context, "Location detected successfully");
-//       // setState(() {
-//       //   controller.city.text = place.locality ?? "";
-//       //   controller.block = place.subLocality ?? "";
-//       //   controller.road = place.thoroughfare ?? "";
-//       // });
-//       // setState(() {
-//       //   controller.city.text = place.locality ?? "";
-
-//       //   // Don't directly assign dropdown values
-//       //   controller.block = null;
-//       //   controller.road = null;
-
-//       //   controller.blockId = null;
-//       //   controller.roadId = null;
-
-//       //   controller.roadsForSelectedBlock.clear();
-//       // });
-//       // SnackbarHelper.ShowSuccess(context, "Location detected successfully");
 //     } catch (e) {
-//       SnackbarHelper.showError(context, "Failed to fetch location");
-//     } finally {
-//       if (mounted) setState(() => _isLocationLoading = false);
+//       if (e.toString().contains('TimeoutException')) {
+//         SnackbarHelper.showError(
+//           context,
+//           "Location request timed out. Please try again.",
+//         );
+//       } else {
+//         SnackbarHelper.showError(context, "Failed to fetch location");
+//       }
 //     }
 //   }
 
@@ -861,6 +905,8 @@ class _AddressState extends State<Address> {
 //           width: double.infinity,
 //           isLoading: _isLocationLoading,
 //           color: AppColors.btn_primery,
+//           // onPressed: _isLocationLoading ? null : _useMyLocation,
+
 //           // onPressed: _isLocationLoading ? null : _useMyLocation,
 //           onPressed: _openMapPicker,
 //         ),

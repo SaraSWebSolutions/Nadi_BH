@@ -37,6 +37,8 @@ class _AdminQuestionerviewState extends ConsumerState<AdminQuestionerview>
   AnimationController? _controller;
   Animation<double>? _scaleAnimation;
   Animation<double>? _fadeAnimation;
+  final Map<int, String?> inputErrors = {};
+  final Map<int, String?> chooseErrors = {};
   @override
   void initState() {
     super.initState();
@@ -61,24 +63,54 @@ class _AdminQuestionerviewState extends ConsumerState<AdminQuestionerview>
     );
   }
 
+  // void nextQuestion(int totalQuestions, questions) {
+  //   final currentQuestion = questions[currentQuestionIndex];
+
+  //   bool isValid = false;
+
+  //   if (currentQuestion.type == "choose") {
+  //     isValid = selectedAnswers.containsKey(currentQuestionIndex);
+  //   } else if (currentQuestion.type == "input") {
+  //     isValid =
+  //         inputControllers[currentQuestionIndex]?.text.trim().isNotEmpty ??
+  //         false;
+  //   }
+
+  //   if (!isValid) {
+  //     final loc = AppLocalizations.of(context)!;
+  //     setState(() {
+  //       errorMessage = loc.pleaseAnswerBeforeNext;
+  //     });
+  //     return;
+  //   }
+
+  //   setState(() {
+  //     errorMessage = null;
+  //     if (currentQuestionIndex < totalQuestions - 1) {
+  //       currentQuestionIndex++;
+  //     }
+  //   });
+  // }
   void nextQuestion(int totalQuestions, questions) {
     final currentQuestion = questions[currentQuestionIndex];
 
-    bool isValid = false;
+    bool isValid = true;
 
     if (currentQuestion.type == "choose") {
       isValid = selectedAnswers.containsKey(currentQuestionIndex);
     } else if (currentQuestion.type == "input") {
-      isValid =
-          inputControllers[currentQuestionIndex]?.text.trim().isNotEmpty ??
-          false;
+      final text = inputControllers[currentQuestionIndex]?.text.trim() ?? "";
+
+      if (text.isEmpty) {
+        isValid = false;
+        inputErrors[currentQuestionIndex] = "This field cannot be empty";
+      } else {
+        inputErrors[currentQuestionIndex] = null;
+      }
     }
 
     if (!isValid) {
-      final loc = AppLocalizations.of(context)!;
-      setState(() {
-        errorMessage = loc.pleaseAnswerBeforeNext;
-      });
+      setState(() {});
       return;
     }
 
@@ -100,26 +132,71 @@ class _AdminQuestionerviewState extends ConsumerState<AdminQuestionerview>
   }
 
   Future<void> submitQuestions(List questions, String questionnaireId) async {
+    final loc = AppLocalizations.of(context)!;
+
+    // 🔥 CLEAR OLD ERRORS FIRST
     setState(() {
-      isSubmitting = true; //  START LOADING
+      inputErrors.clear();
+      errorMessage = null;
     });
 
-    List<Map<String, dynamic>> answers = [];
+    // 🔴 VALIDATION PHASE
     for (int i = 0; i < questions.length; i++) {
-      final question = questions[i];
-      if (question.type == "choose") {
-        answers.add({"questionIndex": i, "selectedOption": selectedAnswers[i]});
-      } else if (question.type == "input") {
-        answers.add({
-          "questionIndex": i,
-          "selectedOption": inputControllers[i]?.text.trim() ?? "",
-        });
+      final q = questions[i];
+
+      // ❌ INPUT VALIDATION
+      if (q.type == "input") {
+        final text = inputControllers[i]?.text.trim() ?? "";
+
+        if (text.isEmpty) {
+          setState(() {
+            currentQuestionIndex = i;
+            inputErrors[i] = loc.fieldCannotBeEmpty;
+          });
+          return;
+        }
+      }
+
+      // ❌ CHOOSE VALIDATION
+      if (q.type == "choose") {
+        if (!selectedAnswers.containsKey(i)) {
+          setState(() {
+            currentQuestionIndex = i;
+            chooseErrors[i] = loc.pleaseSelectAnOption;
+          });
+          return;
+        } else {
+          chooseErrors[i] = null;
+        }
       }
     }
 
-    final payload = {"questionnaireId": questionnaireId, "answers": answers};
+    // 🔥 START LOADING ONLY AFTER VALIDATION PASSES
+    setState(() {
+      isSubmitting = true;
+    });
 
     try {
+      List<Map<String, dynamic>> answers = [];
+
+      for (int i = 0; i < questions.length; i++) {
+        final question = questions[i];
+
+        if (question.type == "choose") {
+          answers.add({
+            "questionIndex": i,
+            "selectedOption": selectedAnswers[i],
+          });
+        } else {
+          answers.add({
+            "questionIndex": i,
+            "selectedOption": inputControllers[i]?.text.trim() ?? "",
+          });
+        }
+      }
+
+      final payload = {"questionnaireId": questionnaireId, "answers": answers};
+
       final response = await adminQuestioner.submitquestiondatas(
         payload: payload,
       );
@@ -130,14 +207,16 @@ class _AdminQuestionerviewState extends ConsumerState<AdminQuestionerview>
         pointsEarned = response["pointsEarned"].toString();
         totalUserPoints = response["totalUserPoints"].toString();
       });
+
       _controller?.forward();
+
       ref.refresh(fetchadminquestionerprovider);
       ref.refresh(pointshistoryprovider);
     } catch (e) {
       print(e);
     } finally {
       setState(() {
-        isSubmitting = false; // 🔥 STOP LOADING
+        isSubmitting = false;
       });
     }
   }
@@ -257,7 +336,8 @@ class _AdminQuestionerviewState extends ConsumerState<AdminQuestionerview>
                                 const SizedBox(height: 20),
 
                                 /// TYPE BASED UI
-                                if (currentQuestion.type == "choose")
+                                /// TYPE BASED UI
+                                if (currentQuestion.type == "choose") ...[
                                   ...List.generate(currentQuestion.options.length, (
                                     index,
                                   ) {
@@ -270,9 +350,21 @@ class _AdminQuestionerviewState extends ConsumerState<AdminQuestionerview>
                                         setState(() {
                                           selectedAnswers[currentQuestionIndex] =
                                               index;
-                                          errorMessage = null;
+
+                                          chooseErrors[currentQuestionIndex] =
+                                              null;
+                                          errorMessage =
+                                              null; // 🔥 IMPORTANT FIX
                                         });
                                       },
+                                      // onTap: () {
+                                      //   setState(() {
+                                      //     selectedAnswers[currentQuestionIndex] =
+                                      //         index;
+                                      //     chooseErrors[currentQuestionIndex] =
+                                      //         null;
+                                      //   });
+                                      // },
                                       child: Container(
                                         margin: const EdgeInsets.only(
                                           bottom: 12,
@@ -308,52 +400,75 @@ class _AdminQuestionerviewState extends ConsumerState<AdminQuestionerview>
                                             Expanded(
                                               child: Text(
                                                 currentQuestion.options[index],
-                                                style: TextStyle(
-                                                  fontSize: 15,
-                                                  fontWeight: isSelected
-                                                      ? FontWeight.w600
-                                                      : FontWeight.w400,
-                                                  color: Theme.of(
-                                                    context,
-                                                  ).textTheme.bodyLarge?.color,
-                                                ),
                                               ),
                                             ),
                                             if (isSelected)
-                                              Container(
-                                                height: 22,
-                                                width: 22,
-                                                decoration: const BoxDecoration(
-                                                  shape: BoxShape.circle,
-                                                  color: AppColors.gold_coin,
-                                                ),
-                                                child: const Icon(
-                                                  Icons.check,
-                                                  size: 14,
-                                                  color: Colors.white,
-                                                ),
+                                              const Icon(
+                                                Icons.check,
+                                                color: Colors.green,
                                               ),
                                           ],
                                         ),
                                       ),
                                     );
-                                  })
-                                else if (currentQuestion.type == "input")
-                                  TextField(
-                                    controller: inputControllers.putIfAbsent(
-                                      currentQuestionIndex,
-                                      () => TextEditingController(),
-                                    ),
-                                    keyboardType: TextInputType.multiline,
-                                    textInputAction: TextInputAction.newline,
-                                    minLines: 3, // starting height
-                                    maxLines: null, // grows automatically
-                                    decoration: InputDecoration(
-                                      hintText: loc.enterYourAnswer,
-                                      border: OutlineInputBorder(
-                                        borderRadius: BorderRadius.circular(12),
+                                  }),
+
+                                  /// ✅ ERROR MUST BE INSIDE SAME BLOCK
+                                  if (chooseErrors[currentQuestionIndex] !=
+                                      null)
+                                    Padding(
+                                      padding: const EdgeInsets.only(top: 8),
+                                      child: Text(
+                                        chooseErrors[currentQuestionIndex]!,
+                                        style: const TextStyle(
+                                          color: Colors.red,
+                                          fontSize: 12,
+                                        ),
                                       ),
                                     ),
+                                ] else if (currentQuestion.type == "input")
+                                  Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      TextField(
+                                        controller: inputControllers
+                                            .putIfAbsent(
+                                              currentQuestionIndex,
+                                              () => TextEditingController(),
+                                            ),
+                                        onChanged: (value) {
+                                          if (value.trim().isNotEmpty) {
+                                            inputErrors[currentQuestionIndex] =
+                                                null;
+                                            setState(() {});
+                                          }
+                                        },
+                                        keyboardType: TextInputType.multiline,
+                                        minLines: 3,
+                                        maxLines: null,
+                                        decoration: InputDecoration(
+                                          hintText: loc.enterYourAnswer,
+                                          border: OutlineInputBorder(
+                                            borderRadius: BorderRadius.circular(
+                                              12,
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+
+                                      if (inputErrors[currentQuestionIndex] !=
+                                          null) ...[
+                                        const SizedBox(height: 6),
+                                        Text(
+                                          inputErrors[currentQuestionIndex]!,
+                                          style: const TextStyle(
+                                            color: Colors.red,
+                                            fontSize: 12,
+                                          ),
+                                        ),
+                                      ],
+                                    ],
                                   ),
 
                                 if (errorMessage != null) ...[

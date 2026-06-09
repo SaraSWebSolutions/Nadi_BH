@@ -2395,6 +2395,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Please enter road'**
   String get pleaseEnterRoad;
+
+  /// No description provided for @duplicateEmailWithMember.
+  ///
+  /// In en, this message translates to:
+  /// **'This email address is already used by Member {member}. Please use a different email.'**
+  String duplicateEmailWithMember(Object member);
+
+  /// No description provided for @duplicateMobileWithMember.
+  ///
+  /// In en, this message translates to:
+  /// **'This mobile number is already used by Member {member}. Please use a different mobile number.'**
+  String duplicateMobileWithMember(Object member);
+
+  /// No description provided for @fieldCannotBeEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'This field cannot be empty'**
+  String get fieldCannotBeEmpty;
+
+  /// No description provided for @pleaseSelectAnOption.
+  ///
+  /// In en, this message translates to:
+  /// **'Please select an option'**
+  String get pleaseSelectAnOption;
 }
 
 class _AppLocalizationsDelegate

@@ -1207,4 +1207,20 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get pleaseEnterRoad => 'يرجى إدخال اسم الشارع';
+
+  @override
+  String duplicateEmailWithMember(Object member) {
+    return 'عنوان البريد الإلكتروني هذا مستخدم بالفعل من قبل العضو رقم $member. يرجى استخدام بريد إلكتروني مختلف.';
+  }
+
+  @override
+  String duplicateMobileWithMember(Object member) {
+    return 'رقم الهاتف هذا مستخدم بالفعل من قبل العضو رقم $member. يرجى استخدام رقم هاتف مختلف.';
+  }
+
+  @override
+  String get fieldCannotBeEmpty => 'هذا الحقل لا يمكن أن يكون فارغاً';
+
+  @override
+  String get pleaseSelectAnOption => 'Please select an option';
 }

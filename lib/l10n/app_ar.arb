@@ -474,7 +474,20 @@
   "flat": "شقة",
   "home": "منزل",
   "pleaseEnterBlock": "يرجى إدخال اسم المجمع",
-  "pleaseEnterRoad": "يرجى إدخال اسم الشارع"
-
+  "pleaseEnterRoad": "يرجى إدخال اسم الشارع",
+ "duplicateEmailWithMember": "عنوان البريد الإلكتروني هذا مستخدم بالفعل من قبل العضو رقم {member}. يرجى استخدام بريد إلكتروني مختلف.",
+  "@duplicateEmailWithMember": {
+    "placeholders": {
+      "member": {}
+    }
+  },
+  "duplicateMobileWithMember": "رقم الهاتف هذا مستخدم بالفعل من قبل العضو رقم {member}. يرجى استخدام رقم هاتف مختلف.",
+  "@duplicateMobileWithMember": {
+    "placeholders": {
+      "member": {}
+    }
+  },
+  "fieldCannotBeEmpty": "هذا الحقل لا يمكن أن يكون فارغاً",
+  "pleaseSelectAnOption": "Please select an option"
 
 }

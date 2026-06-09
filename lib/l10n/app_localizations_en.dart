@@ -1217,4 +1217,20 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get pleaseEnterRoad => 'Please enter road';
+
+  @override
+  String duplicateEmailWithMember(Object member) {
+    return 'This email address is already used by Member $member. Please use a different email.';
+  }
+
+  @override
+  String duplicateMobileWithMember(Object member) {
+    return 'This mobile number is already used by Member $member. Please use a different mobile number.';
+  }
+
+  @override
+  String get fieldCannotBeEmpty => 'This field cannot be empty';
+
+  @override
+  String get pleaseSelectAnOption => 'Please select an option';
 }

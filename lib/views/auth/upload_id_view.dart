@@ -51,11 +51,33 @@ class _UploadIdViewState extends State<UploadIdView> {
     );
   }
 
+  Future<void> _discardSignup() async {
+    try {
+      final userId = await AppPreferences.getUserId();
+
+      debugPrint("===== DISCARD SIGNUP =====");
+      debugPrint("UserId: $userId");
+
+      if (userId == null) return;
+
+      await _authService.discardAccount(userId);
+
+      debugPrint("Discard API Success");
+    } catch (e) {
+      debugPrint("Discard API Error: $e");
+    }
+  }
+
   Future<void> _handleBack() async {
     final ok = await _confirmExit();
-    if (ok && context.mounted) {
-      context.push(RouteNames.Account);
-    }
+
+    if (!ok) return;
+
+    await _discardSignup();
+
+    if (!mounted) return;
+
+    context.go(RouteNames.Account);
   }
 
   Future<void> UploadIDproof(BuildContext context) async {

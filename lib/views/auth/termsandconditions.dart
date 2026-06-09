@@ -33,6 +33,37 @@ class _TermsAndConditionsState extends ConsumerState<TermsAndConditions> {
     fetchTermsAndConditions();
   }
 
+  Future<void> _discardSignup() async {
+    try {
+      final userId = await AppPreferences.getUserId();
+
+      debugPrint("===== TERMS DISCARD =====");
+      debugPrint("UserId: $userId");
+
+      if (userId == null) return;
+
+      await _authService.discardAccount(userId);
+
+      debugPrint("Discard API Success");
+    } catch (e) {
+      debugPrint("Discard API Error: $e");
+    }
+  }
+
+  Future<void> _handleBack() async {
+    final ok = await _confirmExit();
+
+    debugPrint("Terms shouldExit = $ok");
+
+    if (!ok) return;
+
+    await _discardSignup();
+
+    if (!mounted) return;
+
+    context.go(RouteNames.Account);
+  }
+
   Future<void> fetchTermsAndConditions() async {
     setState(() {
       _isFetchingTerms = true;
@@ -108,10 +139,7 @@ class _TermsAndConditionsState extends ConsumerState<TermsAndConditions> {
       onPopInvokedWithResult: (didPop, _) async {
         if (didPop) return;
 
-        final ok = await _confirmExit();
-        if (ok && context.mounted) {
-          context.push(RouteNames.Account);
-        }
+        await _handleBack();
       },
       child: Scaffold(
         backgroundColor: Theme.of(context).scaffoldBackgroundColor,
@@ -144,10 +172,7 @@ class _TermsAndConditionsState extends ConsumerState<TermsAndConditions> {
                   child: AppCircleIconButton(
                     icon: Icons.arrow_back,
                     onPressed: () async {
-                      final ok = await _confirmExit();
-                      if (ok && context.mounted) {
-                        context.push(RouteNames.Account);
-                      }
+                      await _handleBack();
                     },
                   ),
                 ),

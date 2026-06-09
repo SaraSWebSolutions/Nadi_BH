@@ -27,13 +27,48 @@ class _MapPickerScreenState extends State<MapPickerScreen> {
   }
 
   Future<void> _loadCurrentLocation() async {
-    final position = await Geolocator.getCurrentPosition();
+    try {
+      bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
 
-    selectedLatLng = LatLng(position.latitude, position.longitude);
+      if (!serviceEnabled) {
+        if (mounted) {
+          Navigator.pop(context);
+        }
+        return;
+      }
 
-    await _reverseGeocode();
+      LocationPermission permission = await Geolocator.checkPermission();
 
-    setState(() {});
+      if (permission == LocationPermission.denied) {
+        permission = await Geolocator.requestPermission();
+      }
+
+      if (permission == LocationPermission.denied ||
+          permission == LocationPermission.deniedForever) {
+        if (mounted) {
+          Navigator.pop(context);
+        }
+        return;
+      }
+
+      final position = await Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.high,
+      );
+
+      selectedLatLng = LatLng(position.latitude, position.longitude);
+
+      await _reverseGeocode();
+
+      if (mounted) {
+        setState(() {});
+      }
+    } catch (e) {
+      debugPrint("Location Error: $e");
+
+      if (mounted) {
+        Navigator.pop(context);
+      }
+    }
   }
 
   Future<void> _reverseGeocode() async {
@@ -42,13 +77,27 @@ class _MapPickerScreenState extends State<MapPickerScreen> {
       selectedLatLng!.longitude,
     );
 
+    if (placemarks.isEmpty) return;
+
     final place = placemarks.first;
 
-    address = [
-      place.street,
-      place.subLocality,
-      place.locality,
-    ].where((e) => e != null && e.isNotEmpty).join(", ");
+    final building = place.name ?? "";
+    final road = place.street ?? "";
+    final block = place.subLocality ?? "";
+    final city = place.locality ?? "";
+
+    address =
+        '''
+Building: $building
+Road: $road
+Block: $block
+City: $city
+''';
+
+    debugPrint("Building: $building");
+    debugPrint("Road: $road");
+    debugPrint("Block: $block");
+    debugPrint("City: $city");
   }
 
   Future<void> _confirmLocation() async {

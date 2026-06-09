@@ -253,6 +253,46 @@ class _AddmemberState extends State<Addmember> {
     };
   }
 
+  bool _hasDuplicateEmailOrMobile() {
+    final l10n = AppLocalizations.of(context)!;
+
+    final Map<String, int> emails = {};
+    final Map<String, int> mobiles = {};
+
+    for (int i = 0; i < familyMembers.length; i++) {
+      final member = familyMembers[i];
+
+      final email = (member["email"] ?? "").toString().trim().toLowerCase();
+
+      final mobile = (member["mobile"] ?? "").toString().trim();
+
+      if (email.isNotEmpty) {
+        if (emails.containsKey(email)) {
+          SnackbarHelper.showError(
+            context,
+            l10n.duplicateEmailWithMember((emails[email]! + 1).toString()),
+          );
+          return true;
+        }
+
+        emails[email] = i;
+      }
+
+      if (mobile.isNotEmpty) {
+        if (mobiles.containsKey(mobile)) {
+          SnackbarHelper.showError(
+            context,
+            l10n.duplicateMobileWithMember((mobiles[mobile]! + 1).toString()),
+          );
+          return true;
+        }
+
+        mobiles[mobile] = i;
+      }
+    }
+
+    return false;
+  }
   // void _handleMemberCountChange(int count) {
   //   if (count <= 0) return;
 
@@ -668,27 +708,27 @@ class _AddmemberState extends State<Addmember> {
       _resetForm();
       context.push(RouteNames.accountverfy);
     } on DioException catch (e) {
-  debugPrint("========== DIO ERROR ==========");
-  debugPrint("Type: ${e.type}");
-  debugPrint("Message: ${e.message}");
-  debugPrint("Status Code: ${e.response?.statusCode}");
-  debugPrint("Response Data: ${e.response?.data}");
-  debugPrint("Response Headers: ${e.response?.headers}");
-  debugPrint("Request Path: ${e.requestOptions.path}");
-  debugPrint("Request Data: ${e.requestOptions.data}");
-  debugPrint("================================");
+      debugPrint("========== DIO ERROR ==========");
+      debugPrint("Type: ${e.type}");
+      debugPrint("Message: ${e.message}");
+      debugPrint("Status Code: ${e.response?.statusCode}");
+      debugPrint("Response Data: ${e.response?.data}");
+      debugPrint("Response Headers: ${e.response?.headers}");
+      debugPrint("Request Path: ${e.requestOptions.path}");
+      debugPrint("Request Data: ${e.requestOptions.data}");
+      debugPrint("================================");
 
-  if (!mounted) return;
+      if (!mounted) return;
 
-  setState(() => _isLoading = false);
+      setState(() => _isLoading = false);
 
-  SnackbarHelper.showError(
-    context,
-    e.response?.data?["message"]?.toString() ??
-        e.message ??
-        "Something went wrong",
-  );
-} catch (e) {
+      SnackbarHelper.showError(
+        context,
+        e.response?.data?["message"]?.toString() ??
+            e.message ??
+            "Something went wrong",
+      );
+    } catch (e) {
       if (!mounted) return;
 
       setState(() => _isLoading = false);
@@ -1631,39 +1671,41 @@ class _AddmemberState extends State<Addmember> {
                   onPressed: () async {
                     final l10n = AppLocalizations.of(context)!;
 
+                    /// Family Count Validation
                     final isCountEmpty = controller.familyCount.text
                         .trim()
                         .isEmpty;
+
                     if (isCountEmpty) {
                       setState(() => _showFamilyCountError = true);
                       return;
                     }
 
+                    /// Member Form Validation
                     final isMemberValid =
                         widget.formKey.currentState?.validate() ?? false;
 
                     if (!isMemberValid) return;
 
+                    /// Address Section Visible
                     if (!_isAddress) {
                       SnackbarHelper.showError(context, l10n.addAddressError);
                       return;
                     }
 
+                    /// Address Validation
                     final isAddressValid =
                         _addressFormKey.currentState?.validate() ?? false;
 
                     if (!isAddressValid) return;
 
-                    /// 1. SAVE CURRENT FORM LOCALLY
+                    /// Save Current Member Locally
                     updateCurrentMember();
 
-                    /// 2. CHECK IF CURRENT MEMBER IS COMPLETE
                     final current = familyMembers[currentIndex];
 
-                    final isComplete = isMemberComplete(current);
-
-                    /// ❌ IF NOT COMPLETE → DO NOT MOVE
-                    if (!isComplete) {
+                    /// Check Current Member Complete
+                    if (!isMemberComplete(current)) {
                       SnackbarHelper.showError(
                         context,
                         l10n.completeCurrentMemberBeforeContinue,
@@ -1671,7 +1713,68 @@ class _AddmemberState extends State<Addmember> {
                       return;
                     }
 
-                    /// 3. IF LAST MEMBER → CALL API
+                    /// Local Duplicate Check
+                    if (_hasDuplicateEmailOrMobile()) {
+                      return;
+                    }
+
+                    /// Server Account Check
+                    try {
+                      setState(() => _isLoading = true);
+
+                      final response = await _authService.checkAccount(
+                        email: current["email"].toString(),
+                        mobile: current["mobile"].toString(),
+                      );
+
+                      final exists = response["exists"] ?? false;
+                      final success = response["success"] ?? false;
+
+                      debugPrint("SUCCESS => $success");
+                      debugPrint("EXISTS => $exists");
+
+                      if (exists == true) {
+                        SnackbarHelper.showError(
+                          context,
+                          "Account already exists",
+                        );
+                        return; //
+                      }
+                    } on DioException catch (e) {
+                      debugPrint("========== ACCOUNT CHECK ERROR ==========");
+                      debugPrint("Status Code => ${e.response?.statusCode}");
+                      debugPrint("Response => ${e.response?.data}");
+                      debugPrint("Message => ${e.message}");
+                      debugPrint("========================================");
+
+                      if (!mounted) return;
+
+                      SnackbarHelper.showError(
+                        context,
+                        e.response?.data?["message"]?.toString() ??
+                            "Account already exists",
+                      );
+
+                      return;
+                    } catch (e, stack) {
+                      debugPrint("ERROR => $e");
+                      debugPrint("STACK => $stack");
+
+                      if (!mounted) return;
+
+                      SnackbarHelper.showError(context, e.toString());
+                      return;
+                    } finally {
+                      if (mounted) {
+                        setState(() => _isLoading = false);
+                      }
+                    }
+
+                    if (!mounted) return;
+
+                    setState(() => _isLoading = false);
+
+                    /// Last Member → Submit All
                     final completed = completedMembers;
 
                     if (completed >= _totalMembers) {
@@ -1679,7 +1782,7 @@ class _AddmemberState extends State<Addmember> {
                       return;
                     }
 
-                    /// 4. MOVE TO NEXT EMPTY MEMBER
+                    /// Move To Next Member
                     final nextIndex = familyMembers.indexWhere(
                       (m) => !isMemberComplete(m),
                     );

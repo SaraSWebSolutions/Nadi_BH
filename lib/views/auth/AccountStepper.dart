@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:nadi_user_app/controllers/address_controller.dart';
 import 'package:nadi_user_app/core/constants/app_consts.dart';
 import 'package:nadi_user_app/l10n/app_localizations.dart';
+import 'package:nadi_user_app/preferences/preferences.dart';
+import 'package:nadi_user_app/services/auth_service.dart';
 import 'package:nadi_user_app/views/auth/AccountFormView.dart';
 import 'package:nadi_user_app/views/auth/AddMember.dart';
 import 'package:nadi_user_app/views/auth/Address.dart';
@@ -19,7 +21,7 @@ class AccountStepper extends StatefulWidget {
 
 class _AccountStepperState extends State<AccountStepper> {
   int _currentStep = 0;
-
+  final AuthService _authService = AuthService();
   final _formKeyIndividual = GlobalKey<FormState>();
   final _formKeyAddress = GlobalKey<FormState>();
   final _formKeyAddMember = GlobalKey<FormState>();
@@ -33,6 +35,30 @@ class _AccountStepperState extends State<AccountStepper> {
         return loc.individual;
       default:
         return widget.accountType;
+    }
+  }
+
+  Future<void> _discardSignup() async {
+    debugPrint("===== _discardSignup CALLED =====");
+
+    try {
+      final userId = await AppPreferences.getUserId();
+
+      debugPrint("Retrieved UserId: $userId");
+
+      if (userId == null) {
+        debugPrint("User ID is NULL");
+        return;
+      }
+
+      debugPrint("Calling discard API...");
+
+      await _authService.discardAccount(userId);
+
+      debugPrint("Account discarded successfully");
+    } catch (e, stackTrace) {
+      debugPrint("Discard failed: $e");
+      debugPrint(stackTrace.toString());
     }
   }
 
@@ -116,7 +142,13 @@ class _AccountStepperState extends State<AccountStepper> {
         if (didPop) return;
         final navigator = Navigator.of(context);
         final shouldExit = await _confirmExit();
+
         if (!shouldExit) return;
+        debugPrint("BACK BUTTON PRESSED");
+
+        await _discardSignup();
+
+        if (!mounted) return;
         navigator.pop();
       },
       child: Scaffold(
@@ -147,9 +179,18 @@ class _AccountStepperState extends State<AccountStepper> {
                   child: AppCircleIconButton(
                     icon: Icons.arrow_back,
                     onPressed: () async {
+                      debugPrint("APP BAR BACK CLICKED");
+
                       final navigator = Navigator.of(context);
+
                       final shouldExit = await _confirmExit();
+
+                      debugPrint("shouldExit = $shouldExit");
+
                       if (!shouldExit) return;
+
+                      await _discardSignup();
+
                       navigator.pop();
                     },
                   ),

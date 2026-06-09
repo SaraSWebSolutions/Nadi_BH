@@ -79,7 +79,7 @@ class _AddmemberssState extends ConsumerState<Addmemberss> {
     // BUILD BODY (CORRECT FORMAT)
     final body = {
       "userId": userId,
-      "accountTypeId": widget.accountTypeId,
+      // "accountTypeId": widget.accountTypeId,
       "fullName": nameCtrl.text,
       "relation": relation?.toLowerCase(),
       "mobile": mobileCtrl.text,
@@ -159,11 +159,19 @@ class _AddmemberssState extends ConsumerState<Addmemberss> {
       );
     } catch (e) {
       if (!mounted) return;
+
       setState(() => _isLoading = false);
+
+      String errorMsg = e.toString();
+
+      if (errorMsg.startsWith('Exception: ')) {
+        errorMsg = errorMsg.replaceFirst('Exception: ', '');
+      }
+
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
-            '${loc.somethingWentWrong}: ${e.toString()}',
+            errorMsg,
             style: const TextStyle(fontFamily: 'Poppins'),
           ),
           backgroundColor: Colors.red,
