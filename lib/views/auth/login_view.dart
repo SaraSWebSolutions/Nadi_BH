@@ -669,6 +669,7 @@ class _LoginViewState extends State<LoginView> {
   Widget build(BuildContext context) {
     final screenHeight = MediaQuery.of(context).size.height;
     final isIOS = Theme.of(context).platform == TargetPlatform.iOS;
+    final size = MediaQuery.of(context).size;
 
     return Scaffold(
       // true = Scaffold body shrinks when keyboard opens; scroll view viewport shrinks too,
@@ -702,9 +703,12 @@ class _LoginViewState extends State<LoginView> {
                   // shrinks but minHeight stays → content overflows viewport → scrollable.
                   constraints: BoxConstraints(
                     minHeight:
-                        MediaQuery.of(context).size.height -
-                        MediaQuery.of(context).padding.top -
-                        MediaQuery.of(context).padding.bottom,
+                        size.height -
+                        (isIOS ? size.height * 0.36 : size.height * 0.38),
+                    // minHeight:
+                    //     MediaQuery.of(context).size.height -
+                    //     MediaQuery.of(context).padding.top -
+                    //     MediaQuery.of(context).padding.bottom,
                   ),
                   child: IntrinsicHeight(
                     child: Column(

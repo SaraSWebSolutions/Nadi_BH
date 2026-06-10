@@ -84,7 +84,7 @@ class _AddmemberssState extends ConsumerState<Addmemberss> {
       "relation": relation?.toLowerCase(),
       "mobile": mobileCtrl.text,
       "email": emailCtrl.text,
-      "password": "123456",
+      // "password": "123456",
       "gender": gender?.toLowerCase(),
       if (_showAddress)
         "address": {

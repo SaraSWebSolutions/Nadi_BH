@@ -441,6 +441,93 @@ class _SettingsViewState extends ConsumerState<SettingsView> {
       }
     }
 
+    Widget settingsSection({
+      required String title,
+      required List<Widget> children,
+    }) {
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Padding(
+            padding: const EdgeInsets.only(left: 20, bottom: 8),
+            child: Text(
+              title,
+              style: const TextStyle(
+                fontSize: 13,
+                fontWeight: FontWeight.w600,
+                color: Colors.grey,
+                letterSpacing: 1.2,
+              ),
+            ),
+          ),
+          Container(
+            margin: const EdgeInsets.symmetric(horizontal: 15),
+            decoration: BoxDecoration(
+              color: Theme.of(context).colorScheme.surface,
+              borderRadius: BorderRadius.circular(18),
+            ),
+            child: Column(children: children),
+          ),
+        ],
+      );
+    }
+
+    Widget dividerItem() {
+      return Divider(
+        height: 1,
+        thickness: .5,
+        color: Colors.grey.shade300,
+        indent: 70,
+      );
+    }
+
+    Widget settingsTile({
+      required String title,
+      required Widget icon,
+      required VoidCallback onTap,
+      Widget? trailing,
+    }) {
+      return InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(16),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+          child: Row(
+            children: [
+              Container(
+                height: 42,
+                width: 42,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: const Color(0xffE8EBFF),
+                ),
+                child: Padding(padding: const EdgeInsets.all(10), child: icon),
+              ),
+
+              const SizedBox(width: 14),
+
+              Expanded(
+                child: Text(
+                  title,
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ),
+
+              trailing ??
+                  const Icon(
+                    Icons.arrow_forward_ios_rounded,
+                    size: 15,
+                    color: Colors.grey,
+                  ),
+            ],
+          ),
+        ),
+      );
+    }
+
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
 
@@ -480,234 +567,130 @@ class _SettingsViewState extends ConsumerState<SettingsView> {
       ),
 
       body: SingleChildScrollView(
+        padding: const EdgeInsets.symmetric(vertical: 16),
         child: Column(
           children: [
-            const SizedBox(height: 10),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 15),
-              child: Container(
-                padding: const EdgeInsets.all(15),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(12),
-                  color: Theme.of(context).colorScheme.surface,
+            /// GENERAL
+            settingsSection(
+              title: "GENERAL",
+              children: [
+                settingsTile(
+                  title: l10n.aboutApp,
+                  icon: Image.asset("assets/icons/i.png"),
+                  onTap: () => context.push(RouteNames.aboutscreen),
                 ),
-                child: Column(
-                  children: [
-                    settingItem(
-                      text: AppLocalizations.of(context)!.aboutApp,
-                      icon: Image.asset("assets/icons/i.png"),
-                      onTap: () {
-                        context.push(RouteNames.aboutscreen);
-                      },
-                    ),
-                    const SizedBox(height: 15),
-                    settingItem(
-                      text: AppLocalizations.of(context)!.helpSupport,
-                      icon: Image.asset("assets/icons/help.png"),
-                      onTap: () {
-                        context.push(RouteNames.helpSupport);
-                      },
-                    ),
+                dividerItem(),
+                settingsTile(
+                  title: l10n.helpSupport,
+                  icon: Image.asset("assets/icons/help.png"),
+                  onTap: () => context.push(RouteNames.helpSupport),
+                ),
+                dividerItem(),
+                settingsTile(
+                  title: l10n.history,
+                  icon: Image.asset("assets/icons/menu.png"),
+                  onTap: () => context.push(RouteNames.viewalllogs),
+                ),
+              ],
+            ),
 
-                    const SizedBox(height: 15),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            const SizedBox(height: 24),
+
+            /// PREFERENCES
+            settingsSection(
+              title: "PREFERENCES",
+              children: [
+                settingsTile(
+                  title: l10n.notification,
+                  icon: Image.asset("assets/icons/noti.png"),
+                  onTap: notificationToggle,
+                  trailing: Switch(
+                    value: isToggleOn,
+                    onChanged: (_) => notificationToggle(),
+                  ),
+                ),
+
+                dividerItem(),
+
+                settingsTile(
+                  title: l10n.changeLanguage,
+                  icon: Image.asset("assets/icons/global.png"),
+                  onTap: () {},
+                  trailing: Container(
+                    padding: const EdgeInsets.all(3),
+                    decoration: BoxDecoration(
+                      color: const Color(0xffE8EBFF),
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [languageOption("BH"), languageOption("ENG")],
+                    ),
+                  ),
+                ),
+
+                dividerItem(),
+
+                settingsTile(
+                  title: l10n.theme,
+                  icon: Image.asset("assets/icons/idea.png"),
+                  onTap: () {},
+                  trailing: Container(
+                    padding: const EdgeInsets.all(3),
+                    decoration: BoxDecoration(
+                      color: const Color(0xffE8EBFF),
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
                       children: [
-                        Row(
-                          children: [
-                            Container(
-                              height: 40,
-                              width: 40,
-                              decoration: BoxDecoration(
-                                shape: BoxShape.circle,
-                                color: const Color.fromARGB(255, 166, 176, 219),
-                              ),
-                              child: Padding(
-                                padding: const EdgeInsets.all(10),
-                                child: Image.asset("assets/icons/noti.png"),
-                              ),
-                            ),
-                            const SizedBox(width: 15),
-                            Text(
-                              AppLocalizations.of(context)!.notification,
-                              style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.w400,
-                              ),
-                            ),
-                          ],
+                        GestureDetector(
+                          onTap: () {
+                            ref
+                                .read(themeProvider.notifier)
+                                .changeTheme(ThemeMode.light);
+                          },
+                          child: themeOption("Light"),
                         ),
                         GestureDetector(
-                          onTap: notificationToggle,
-                          child: AnimatedContainer(
-                            duration: const Duration(milliseconds: 200),
-                            width: 45,
-                            height: 25,
-                            padding: const EdgeInsets.symmetric(horizontal: 3),
-                            decoration: BoxDecoration(
-                              color: isToggleOn
-                                  ? AppColors.app_background_clr
-                                  : Colors.grey,
-                              borderRadius: BorderRadius.circular(20),
-                            ),
-                            child: AnimatedAlign(
-                              duration: const Duration(milliseconds: 200),
-                              alignment: isToggleOn
-                                  ? Alignment.centerRight
-                                  : Alignment.centerLeft,
-                              child: Container(
-                                width: 18,
-                                height: 18,
-                                decoration: const BoxDecoration(
-                                  color: Colors.white,
-                                  shape: BoxShape.circle,
-                                ),
-                              ),
-                            ),
-                          ),
+                          onTap: () {
+                            ref
+                                .read(themeProvider.notifier)
+                                .changeTheme(ThemeMode.dark);
+                          },
+                          child: themeOption("Dark"),
+                        ),
+                        GestureDetector(
+                          onTap: () {
+                            ref
+                                .read(themeProvider.notifier)
+                                .changeTheme(ThemeMode.system);
+                          },
+                          child: themeOption("System"),
                         ),
                       ],
                     ),
-                    const SizedBox(height: 15),
-
-                    // settingItem(
-                    //   text: "Change Language",
-                    //   icon: Image.asset("assets/icons/global.png"),
-                    //   onTap: () {},
-                    // ),
-                    Row(
-                      children: [
-                        Container(
-                          height: 40,
-                          width: 40,
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            color: const Color.fromARGB(255, 166, 176, 219),
-                          ),
-                          child: Padding(
-                            padding: const EdgeInsets.all(10),
-                            child: Image.asset("assets/icons/global.png"),
-                          ),
-                        ),
-                        const SizedBox(width: 10),
-                        Text(
-                          AppLocalizations.of(context)!.changeLanguage,
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w400,
-                          ),
-                        ),
-                        const Spacer(),
-                        Container(
-                          padding: const EdgeInsets.all(2),
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(12),
-                            color: const Color.fromARGB(255, 166, 176, 219),
-                          ),
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              languageOption("BH"),
-                              languageOption("ENG"),
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
-
-                    const SizedBox(height: 15),
-                    settingItem(
-                      text: AppLocalizations.of(context)!.history,
-                      icon: Image.asset("assets/icons/menu.png"),
-                      onTap: () {
-                        context.push(RouteNames.viewalllogs);
-                      },
-                    ),
-                    const SizedBox(height: 15),
-                    settingItem(
-                      text: AppLocalizations.of(context)!.privacyPolicy,
-
-                      icon: Image.asset("assets/icons/policy.png"),
-                      onTap: () {
-                        context.push(RouteNames.privacyPolicy);
-                      },
-                    ),
-                    const SizedBox(height: 20),
-                    Row(
-                      children: [
-                        Container(
-                          height: 40,
-                          width: 40,
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            color: const Color.fromARGB(255, 166, 176, 219),
-                          ),
-                          child: Padding(
-                            padding: const EdgeInsets.all(10),
-                            child: Image.asset("assets/icons/idea.png"),
-                          ),
-                        ),
-                        const SizedBox(width: 10),
-                        Text(
-                          AppLocalizations.of(context)!.theme,
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w400,
-                          ),
-                        ),
-                        const Spacer(),
-                        Container(
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(12),
-                            color: const Color.fromARGB(255, 166, 176, 219),
-                          ),
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              GestureDetector(
-                                onTap: () {
-                                  ref
-                                      .read(themeProvider.notifier)
-                                      .changeTheme(ThemeMode.light);
-                                },
-                                child: themeOption("Light"),
-                              ),
-                              GestureDetector(
-                                onTap: () {
-                                  ref
-                                      .read(themeProvider.notifier)
-                                      .changeTheme(ThemeMode.dark);
-                                },
-                                child: themeOption("Dark"),
-                              ),
-                              GestureDetector(
-                                onTap: () {
-                                  ref
-                                      .read(themeProvider.notifier)
-                                      .changeTheme(ThemeMode.system);
-                                },
-                                child: themeOption("System"),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
+                  ),
                 ),
-              ),
+
+                dividerItem(),
+
+                settingsTile(
+                  title: l10n.privacyPolicy,
+                  icon: Image.asset("assets/icons/policy.png"),
+                  onTap: () => context.push(RouteNames.privacyPolicy),
+                ),
+              ],
             ),
-            const SizedBox(height: 25),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 15),
-              child: Container(
-                padding: const EdgeInsets.all(15),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(12),
-                  color: Theme.of(context).colorScheme.surface,
-                ),
-                child: settingItem(
-                  text: AppLocalizations.of(context)!.logout,
+
+            const SizedBox(height: 24),
+
+            /// ACCOUNT
+            settingsSection(
+              title: "ACCOUNT",
+              children: [
+                settingsTile(
+                  title: l10n.logout,
                   icon: Image.asset("assets/icons/logout.png"),
                   onTap: () async {
                     final confirmed = await showConfirmDialog(
@@ -718,29 +701,26 @@ class _SettingsViewState extends ConsumerState<SettingsView> {
                       icon: Icons.logout_rounded,
                       destructive: true,
                     );
-                    if (!context.mounted) return;
-                    if (confirmed) logout(context);
+
+                    if (confirmed == true) {
+                      logout(context);
+                    }
                   },
                 ),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 15),
-              child: Container(
-                padding: const EdgeInsets.all(15),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(12),
-                  color: Theme.of(context).colorScheme.surface,
-                ),
-                child: settingItem(
-                  text: AppLocalizations.of(context)!.accountDelete,
+
+                dividerItem(),
+
+                settingsTile(
+                  title: l10n.accountDelete,
                   icon: Image.asset("assets/icons/accout_delete.png"),
                   onTap: () {
                     showDeleteAccountDialog(context);
                   },
                 ),
-              ),
+              ],
             ),
+
+            const SizedBox(height: 30),
           ],
         ),
       ),
