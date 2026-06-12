@@ -639,6 +639,7 @@ class _SignInOtpState extends State<SignInOtp> {
     final isIOS = Theme.of(context).platform == TargetPlatform.iOS;
     final isRTL = Directionality.of(context) == TextDirection.rtl;
     final l10n = AppLocalizations.of(context)!;
+    final isArabic = Localizations.localeOf(context).languageCode == 'ar';
 
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
@@ -830,24 +831,29 @@ class _SignInOtpState extends State<SignInOtp> {
                                   const SizedBox(height: 15),
 
                                   Center(
-                                    child: Pinput(
-                                      controller: _otpController,
-                                      length: 4,
-                                      defaultPinTheme: defaultPinTheme,
-                                      focusedPinTheme: focusedPinTheme,
-                                      submittedPinTheme: submittedPinTheme,
-                                      errorPinTheme: errorPinTheme,
-                                      keyboardType: TextInputType.number,
-                                      onChanged: (_) {
-                                        if (_isOtpError) {
-                                          setState(
-                                            () => {
-                                              _isOtpError = false,
-                                              _otpErrorMessage = null,
-                                            },
-                                          );
-                                        }
-                                      },
+                                    child: Directionality(
+                                      textDirection: isArabic
+                                          ? TextDirection.rtl
+                                          : TextDirection.ltr,
+                                      child: Pinput(
+                                        controller: _otpController,
+                                        length: 4,
+                                        defaultPinTheme: defaultPinTheme,
+                                        focusedPinTheme: focusedPinTheme,
+                                        submittedPinTheme: submittedPinTheme,
+                                        errorPinTheme: errorPinTheme,
+                                        keyboardType: TextInputType.number,
+                                        onChanged: (_) {
+                                          if (_isOtpError) {
+                                            setState(
+                                              () => {
+                                                _isOtpError = false,
+                                                _otpErrorMessage = null,
+                                              },
+                                            );
+                                          }
+                                        },
+                                      ),
                                     ),
                                   ),
                                   if (_otpErrorMessage != null) ...[

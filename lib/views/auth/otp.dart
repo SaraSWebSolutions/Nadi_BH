@@ -244,6 +244,8 @@ class _OtpState extends State<Otp> {
 
   @override
   Widget build(BuildContext context) {
+    final isArabic = Localizations.localeOf(context).languageCode == 'ar';
+
     // final isDark = Theme.of(context).brightness == Brightness.dark;
     final defaultPinTheme = PinTheme(
       width: 50,
@@ -295,22 +297,27 @@ class _OtpState extends State<Otp> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Pinput(
-                    controller: otpController,
-                    length: 4,
-                    defaultPinTheme: defaultPinTheme,
-                    focusedPinTheme: defaultPinTheme.copyDecorationWith(
-                      border: Border.all(color: AppColors.app_background_clr),
+                  Directionality(
+                    textDirection: isArabic
+                        ? TextDirection.rtl
+                        : TextDirection.ltr,
+                    child: Pinput(
+                      controller: otpController,
+                      length: 4,
+                      defaultPinTheme: defaultPinTheme,
+                      focusedPinTheme: defaultPinTheme.copyDecorationWith(
+                        border: Border.all(color: AppColors.app_background_clr),
+                      ),
+                      submittedPinTheme: defaultPinTheme.copyDecorationWith(
+                        border: Border.all(color: Colors.green),
+                      ),
+                      errorPinTheme: errorPinTheme,
+                      forceErrorState: isOtpError,
+                      keyboardType: TextInputType.number,
+                      onChanged: (value) {
+                        if (isOtpError) setState(() => isOtpError = false);
+                      },
                     ),
-                    submittedPinTheme: defaultPinTheme.copyDecorationWith(
-                      border: Border.all(color: Colors.green),
-                    ),
-                    errorPinTheme: errorPinTheme,
-                    forceErrorState: isOtpError,
-                    keyboardType: TextInputType.number,
-                    onChanged: (value) {
-                      if (isOtpError) setState(() => isOtpError = false);
-                    },
                   ),
                 ],
               ),

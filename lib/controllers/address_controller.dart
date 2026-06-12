@@ -1,159 +1,82 @@
-// import 'package:flutter/material.dart';
-// import 'package:nadi_user_app/l10n/app_localizations.dart';
-
-// class AddressController {
-//   TextEditingController building = TextEditingController();
-//   TextEditingController city = TextEditingController();
-//   TextEditingController aptNo = TextEditingController();
-//   TextEditingController floor = TextEditingController();
-//   String? block;
-//   String? blockId;
-
-//   String? road;
-//   String? roadId;
-
-//   List<Map<String, dynamic>> roadsForSelectedBlock = [];
-
-//   /// For debugging / local use
-//   Map<String, dynamic> getAddressData() {
-//     return {
-//       "roadId": roadId,
-//       "roadName": road,
-//       "blockId": blockId,
-//       "blockName": block,
-//       "city": city.text,
-//       "building": building.text,
-//       "aptNo": aptNo.text,
-//       "floor": floor.text,
-//     };
-//   }
-
-//   void clear() {
-//     city.clear();
-//     floor.clear();
-//     building.clear();
-//     aptNo.clear();
-
-//     // ✅ reset dropdown values
-//     block = null;
-//     blockId = null;
-
-//     road = null;
-//     roadId = null;
-
-//     // ✅ clear dependent dropdown list
-//     roadsForSelectedBlock = [];
-//   }
-
-//   void loadAddress(Map<String, dynamic> address) {
-//     city.text = address["city"] ?? "";
-//     building.text = address["building"] ?? "";
-//     aptNo.text = address["aptNo"] ?? "";
-//     floor.text = address["floor"] ?? "";
-
-//     blockId = address["blockId"];
-//     roadId = address["roadId"];
-
-//     /// OPTIONAL
-//     block = address["block"];
-//     road = address["road"];
-//   }
-
-//   Map<String, dynamic> getOnlyAddressMap({required String addressType}) {
-//     return {
-//       "city": city.text,
-//       "addressType": addressType,
-//       "floor": floor.text,
-//       "building": building.text,
-//       "aptNo": aptNo.text,
-//       "roadId": roadId,
-//       "road": road,
-//       "blockId": blockId,
-//       "block": block, // ✅ ADD THIS
-//     };
-//   }
-
-//   Map<String, dynamic> getApiAddressBody({
-//     required String userId,
-//     required String addressType, // flat / villa / office
-//   }) {
-//     return {
-//       "userId": userId,
-//       "address": {
-//         "addressType": addressType,
-//         "city": city.text,
-//         "building": building.text,
-//         "aptNo": aptNo.text,
-//         "floor": floor.text,
-//         "roadId": roadId,
-//         "blockId": blockId,
-//       },
-//     };
-//   }
-
-//   // Validators
-//   String? validateBuilding(String? val, AppLocalizations l10n) =>
-//       (val == null || val.isEmpty) ? l10n.enteryour_build : null;
-
-//   String? validateAptNo(String? val, AppLocalizations l10n) =>
-//       (val == null || val.isEmpty) ? l10n.enteraptno : null;
-
-//   String? validateFloor(String? val, AppLocalizations l10n) =>
-//       (val == null || val.isEmpty) ? l10n.enterFloorno : null;
-// }
-
 import 'package:flutter/material.dart';
 import 'package:nadi_user_app/l10n/app_localizations.dart';
+import 'package:nadi_user_app/models/location_result.dart';
+
+enum AddressSource {
+  familyHeader,
+  currentLocation,
+  manual,
+}
 
 class AddressController {
-  // Text Fields
   final TextEditingController building = TextEditingController();
   final TextEditingController city = TextEditingController();
   final TextEditingController aptNo = TextEditingController();
   final TextEditingController floor = TextEditingController();
 
-  // Dropdown Values
   String? block;
   String? blockId;
-
   String? road;
   String? roadId;
 
-  // Location Data
   double? latitude;
   double? longitude;
-
   String? fullAddress;
+  AddressSource? addressSource;
 
-  // Roads
   List<Map<String, dynamic>> roadsForSelectedBlock = [];
 
-  /// =========================
-  /// CLEAR (ONLY ONE VERSION)
-  /// =========================
+  static AddressSource? parseSource(dynamic value) {
+    switch (value?.toString()) {
+      case 'family_header':
+      case 'familyHeader':
+        return AddressSource.familyHeader;
+      case 'current_location':
+      case 'currentLocation':
+        return AddressSource.currentLocation;
+      case 'manual':
+        return AddressSource.manual;
+      default:
+        return null;
+    }
+  }
+
+  static String sourceToApiValue(AddressSource? source) {
+    switch (source) {
+      case AddressSource.familyHeader:
+        return 'family_header';
+      case AddressSource.currentLocation:
+        return 'current_location';
+      case AddressSource.manual:
+        return 'manual';
+      default:
+        return 'manual';
+    }
+  }
+
+  static double? toDouble(dynamic value) {
+    if (value == null) return null;
+    if (value is double) return value;
+    if (value is int) return value.toDouble();
+    return double.tryParse(value.toString());
+  }
+
   void clear() {
     city.clear();
     building.clear();
     aptNo.clear();
     floor.clear();
-
     block = null;
     blockId = null;
-
     road = null;
     roadId = null;
-
     latitude = null;
     longitude = null;
-
     fullAddress = null;
-
+    addressSource = null;
     roadsForSelectedBlock.clear();
   }
 
-  /// =========================
-  /// DISPOSE
-  /// =========================
   void dispose() {
     city.dispose();
     building.dispose();
@@ -161,78 +84,176 @@ class AddressController {
     floor.dispose();
   }
 
-  /// =========================
-  /// LOAD ADDRESS
-  /// =========================
   void loadAddress(Map<String, dynamic> address) {
-    city.text = address["city"] ?? "";
-    building.text = address["building"] ?? "";
-    aptNo.text = address["aptNo"] ?? "";
-    floor.text = address["floor"] ?? "";
+    city.text = address['city']?.toString() ?? '';
+    building.text = address['building']?.toString() ?? '';
+    aptNo.text = address['aptNo']?.toString() ?? '';
+    floor.text = address['floor']?.toString() ?? '';
 
-    block = address["block"];
-    blockId = address["blockId"];
+    block = address['block'] ?? address['blockName'];
+    blockId = _extractId(address['blockId']);
+    road = address['road'] ?? address['roadName'];
+    roadId = _extractId(address['roadId']);
 
-    road = address["road"];
-    roadId = address["roadId"];
+    latitude = toDouble(address['latitude']);
+    longitude = toDouble(address['longitude']);
+    fullAddress =
+        address['currentLocationAddress']?.toString() ??
+        address['fullAddress']?.toString();
 
-    latitude = address["latitude"];
-    longitude = address["longitude"];
+    addressSource =
+        parseSource(address['addressSource']) ??
+        (fullAddress != null &&
+                latitude != null &&
+                longitude != null &&
+                building.text.trim().isEmpty &&
+                blockId == null
+            ? AddressSource.currentLocation
+            : null);
 
-    fullAddress = address["fullAddress"];
+    roadsForSelectedBlock = List<Map<String, dynamic>>.from(
+      address['roads'] ?? [],
+    );
+  }
+
+  String? _extractId(dynamic value) {
+    if (value == null) return null;
+    if (value is Map) return value['_id']?.toString();
+    return value.toString();
+  }
+
+  void applyFamilyHeader(Map<String, dynamic> address) {
+    loadAddress(address);
+    addressSource = AddressSource.familyHeader;
+  }
+
+  void applyCurrentLocation(LocationResult result) {
+    clearManualFields();
+    addressSource = AddressSource.currentLocation;
+    latitude = result.latitude;
+    longitude = result.longitude;
+    fullAddress = result.fullAddress;
+  }
+
+  void applyManualEntry() {
+    clear();
+    addressSource = AddressSource.manual;
+  }
+
+  void clearManualFields() {
+    city.clear();
+    building.clear();
+    aptNo.clear();
+    floor.clear();
+    block = null;
+    blockId = null;
+    road = null;
+    roadId = null;
+    roadsForSelectedBlock.clear();
+  }
+
+  bool get isComplete {
+    switch (addressSource) {
+      case AddressSource.currentLocation:
+        return latitude != null &&
+            longitude != null &&
+            (fullAddress?.trim().isNotEmpty ?? false);
+      case AddressSource.familyHeader:
+      case AddressSource.manual:
+        return city.text.trim().isNotEmpty &&
+            building.text.trim().isNotEmpty &&
+            blockId != null &&
+            roadId != null;
+      default:
+        return false;
+    }
+  }
+
+  bool get isReadOnly => addressSource == AddressSource.familyHeader;
+
+  bool get showsManualForm =>
+      addressSource == AddressSource.familyHeader ||
+      addressSource == AddressSource.manual;
+
+  bool get showsLocationCard =>
+      addressSource == AddressSource.currentLocation &&
+      (fullAddress?.trim().isNotEmpty ?? false);
+
+  Map<String, dynamic> toMap({
+    String? blockNameOverride,
+    String? roadNameOverride,
+  }) {
+    return {
+      'addressSource': sourceToApiValue(addressSource),
+      'city': city.text.trim(),
+      'building': building.text.trim(),
+      'aptNo': aptNo.text.trim(),
+      'floor': floor.text.trim(),
+      'block': block,
+      'blockId': blockId,
+      'road': road,
+      'roadId': roadId,
+      'blockName': blockNameOverride ?? block,
+      'roadName': roadNameOverride ?? road,
+      'latitude': latitude,
+      'longitude': longitude,
+      'fullAddress': fullAddress,
+      'currentLocationAddress': fullAddress,
+      'roads': roadsForSelectedBlock,
+    };
   }
 
   Map<String, dynamic> getOnlyAddressMap({required String addressType}) {
-    return {
-      "addressType": addressType,
-
-      "city": city.text.trim(),
-      "building": building.text.trim(),
-      "aptNo": aptNo.text.trim().isEmpty ? null : aptNo.text.trim(),
-      "floor": floor.text.trim().isEmpty ? null : floor.text.trim(),
-
-      "block": block,
-      "blockId": blockId,
-
-      "road": road,
-      "roadId": roadId,
-
-      "latitude": latitude,
-      "longitude": longitude,
-
-      "fullAddress": fullAddress,
-    };
+    final map = toMap();
+    map['addressType'] = addressType;
+    return map;
   }
 
-  /// =========================
-  /// API BODY
-  /// =========================
   Map<String, dynamic> getApiAddressBody({
     required String userId,
     required String addressType,
+    String? blockNameOverride,
+    String? roadNameOverride,
   }) {
-    return {
-      "userId": userId,
-      "address": {
-        "addressType": addressType,
-        "city": city.text.trim(),
-        "building": building.text.trim(),
-        "aptNo": aptNo.text.trim(),
-        "floor": floor.text.trim(),
-        "blockId": blockId,
-        "roadId": roadId,
-        "block": block,
-        "road": road,
-        "latitude": latitude,
-        "longitude": longitude,
-        "fullAddress": fullAddress,
-      },
+    final address = <String, dynamic>{
+      'addressType': addressType,
+      'addressSource': sourceToApiValue(addressSource),
     };
+
+    switch (addressSource) {
+      case AddressSource.currentLocation:
+        address.addAll({
+          'currentLocationAddress': fullAddress,
+          'latitude': latitude,
+          'longitude': longitude,
+          'fullAddress': fullAddress,
+        });
+        break;
+      case AddressSource.familyHeader:
+      case AddressSource.manual:
+        address.addAll({
+          'city': city.text.trim(),
+          'building': building.text.trim(),
+          'aptNo': aptNo.text.trim(),
+          'floor': floor.text.trim(),
+          'blockId': blockId,
+          'roadId': roadId,
+          'block': block,
+          'road': road,
+          'blockName': blockNameOverride ?? block,
+          'roadName': roadNameOverride ?? road,
+          'latitude': latitude,
+          'longitude': longitude,
+          'fullAddress': fullAddress,
+        });
+        break;
+      default:
+        break;
+    }
+
+    return {'userId': userId, 'address': address};
   }
 
-  /// =========================
-  /// VALIDATORS
-  /// =========================
   String? validateBuilding(String? value, AppLocalizations l10n) {
     if (value == null || value.trim().isEmpty) {
       return l10n.enteryour_build;

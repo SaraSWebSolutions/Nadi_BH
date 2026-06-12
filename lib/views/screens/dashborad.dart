@@ -177,7 +177,7 @@ class _DashboardState extends ConsumerState<Dashboard> {
     ref.invalidate(fetchadvertisementprovider);
     ref.invalidate(userdashboardprovider);
     ref.invalidate(fetchquestionsdataprovider);
-ref.invalidate(approveTechProvider);
+    ref.invalidate(approveTechProvider);
 
     // await Future.wait([fetchongoinproces(), fetchapprovetechnician()]);
     await fetchongoinproces();
@@ -547,78 +547,92 @@ ref.invalidate(approveTechProvider);
                                       ),
 
                                       data: (dashboard) {
-                                        return Row(
-                                          children: [
-                                            dashboard.image.isEmpty
-                                                ? Container(
-                                                    width: 44,
-                                                    height: 44,
-                                                    decoration: BoxDecoration(
-                                                      shape: BoxShape.circle,
-                                                      border: Border.all(
-                                                        color: AppColors
-                                                            .btn_primery,
-                                                        width: 2,
-                                                      ),
-                                                    ),
-                                                    child: const CircleAvatar(
-                                                      radius: 22,
-                                                      backgroundColor:
-                                                          Colors.blue,
-                                                      child: Icon(
-                                                        Icons.person,
-                                                        color: Colors.white,
-                                                      ),
-                                                    ),
-                                                  )
-                                                : CachedNetworkImage(
-                                                    imageUrl:
-                                                        "${ImageBaseUrl.baseUrl}/${dashboard.image}",
-                                                    imageBuilder:
-                                                        (
-                                                          context,
-                                                          imageProvider,
-                                                        ) => CircleAvatar(
-                                                          radius: 22,
-                                                          backgroundImage:
-                                                              imageProvider,
+                                        return InkWell(
+                                          onTap: () async {
+                                            widget.onTabChange(3);
+
+                                            // if (mounted) {
+                                            //   ref.invalidate(dashboardProvider);
+                                            // }
+                                          },
+                                          borderRadius: BorderRadius.circular(
+                                            12,
+                                          ),
+                                          child: Row(
+                                            children: [
+                                              dashboard.image.isEmpty
+                                                  ? Container(
+                                                      width: 44,
+                                                      height: 44,
+                                                      decoration: BoxDecoration(
+                                                        shape: BoxShape.circle,
+                                                        border: Border.all(
+                                                          color: AppColors
+                                                              .btn_primery,
+                                                          width: 2,
                                                         ),
-                                                    placeholder: (_, __) =>
-                                                        const CircularProgressIndicator(
-                                                          strokeWidth: 2,
-                                                        ),
-                                                    errorWidget: (_, __, ___) =>
-                                                        const Icon(
+                                                      ),
+                                                      child: const CircleAvatar(
+                                                        radius: 22,
+                                                        backgroundColor:
+                                                            Colors.blue,
+                                                        child: Icon(
                                                           Icons.person,
+                                                          color: Colors.white,
                                                         ),
-                                                  ),
+                                                      ),
+                                                    )
+                                                  : CachedNetworkImage(
+                                                      imageUrl:
+                                                          "${ImageBaseUrl.baseUrl}/${dashboard.image}",
+                                                      imageBuilder:
+                                                          (
+                                                            context,
+                                                            imageProvider,
+                                                          ) => CircleAvatar(
+                                                            radius: 22,
+                                                            backgroundImage:
+                                                                imageProvider,
+                                                          ),
+                                                      placeholder: (_, __) =>
+                                                          const CircularProgressIndicator(
+                                                            strokeWidth: 2,
+                                                          ),
+                                                      errorWidget:
+                                                          (_, __, ___) =>
+                                                              const Icon(
+                                                                Icons.person,
+                                                              ),
+                                                    ),
 
-                                            const SizedBox(width: 12),
+                                              const SizedBox(width: 12),
 
-                                            Column(
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.start,
-                                              children: [
-                                                Text(
-                                                  AppLocalizations.of(
-                                                    context,
-                                                  )!.welcome,
-                                                  style: TextStyle(
-                                                    color: Colors.white,
-                                                    fontSize: 13,
+                                              Column(
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.start,
+                                                children: [
+                                                  Text(
+                                                    AppLocalizations.of(
+                                                      context,
+                                                    )!.welcome,
+                                                    style: TextStyle(
+                                                      color: Colors.white,
+                                                      fontSize: 13,
+                                                    ),
                                                   ),
-                                                ),
-                                                Text(
-                                                  dashboard.name,
-                                                  style: const TextStyle(
-                                                    color: Colors.white,
-                                                    fontSize: 16,
-                                                    fontWeight: FontWeight.bold,
+                                                  Text(
+                                                    dashboard.name,
+                                                    style: const TextStyle(
+                                                      color: Colors.white,
+                                                      fontSize: 16,
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                    ),
                                                   ),
-                                                ),
-                                              ],
-                                            ),
-                                          ],
+                                                ],
+                                              ),
+                                            ],
+                                          ),
                                         );
                                       },
                                     ),

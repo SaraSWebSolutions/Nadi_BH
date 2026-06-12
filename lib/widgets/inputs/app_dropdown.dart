@@ -7,6 +7,7 @@ class AppDropdown extends StatelessWidget {
   final String? value;
   final Function(String?) onChanged;
   final String? Function(String?)? validator;
+  final bool enabled;
 
   const AppDropdown({
     super.key,
@@ -15,6 +16,7 @@ class AppDropdown extends StatelessWidget {
     required this.value,
     required this.onChanged,
     this.validator,
+    this.enabled = true,
   });
 
   @override
@@ -120,7 +122,7 @@ class AppDropdown extends StatelessWidget {
         );
       }).toList(),
 
-      onChanged: onChanged,
+      onChanged: enabled ? onChanged : null,
 
       validator: validator,
     );

@@ -26,6 +26,7 @@ class _AccountStepperState extends State<AccountStepper> {
   final _formKeyAddress = GlobalKey<FormState>();
   final _formKeyAddMember = GlobalKey<FormState>();
   final addressController = AddressController();
+  Map<String, dynamic>? _familyHeadAddress;
 
   String _localizedAccountType(AppLocalizations loc) {
     switch (widget.accountType) {
@@ -83,9 +84,11 @@ class _AccountStepperState extends State<AccountStepper> {
           accountType: widget.accountType,
           formKey: _formKeyAddress,
           controller: addressController,
-          onNext: () {
+          isFromMemberScreen: false,
+          onNext: (address) {
             if (_formKeyAddress.currentState!.validate()) {
               setState(() {
+                _familyHeadAddress = address;
                 if (widget.accountType == "Family") {
                   _currentStep = 2;
                 } else {
@@ -96,6 +99,19 @@ class _AccountStepperState extends State<AccountStepper> {
               });
             }
           },
+          // onNext: () {
+          //   if (_formKeyAddress.currentState!.validate()) {
+          //     setState(() {
+          //       if (widget.accountType == "Family") {
+          //         _currentStep = 2;
+          //       } else {
+          //         ScaffoldMessenger.of(context).showSnackBar(
+          //           SnackBar(content: Text(loc.accountCreatedSuccessfully)),
+          //         );
+          //       }
+          //     });
+          //   }
+          // },
         );
 
       case 2:
@@ -103,6 +119,7 @@ class _AccountStepperState extends State<AccountStepper> {
           key: const ValueKey(2),
           accountType: widget.accountType,
           formKey: _formKeyAddMember,
+          familyHeadAddress: _familyHeadAddress,
           onNext: () {
             if (_formKeyAddMember.currentState!.validate()) {
               ScaffoldMessenger.of(
