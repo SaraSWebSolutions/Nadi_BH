@@ -672,12 +672,10 @@ class _LoginViewState extends State<LoginView> {
     final size = MediaQuery.of(context).size;
 
     return Scaffold(
-      // true = Scaffold body shrinks when keyboard opens; scroll view viewport shrinks too,
-      // so Flutter's auto-scroll-to-focused-field works correctly.
       resizeToAvoidBottomInset: true,
       body: Stack(
         children: [
-          /// LAYER 1 — background image, anchored to top so it crops from bottom (not squishes)
+          /// Background
           Positioned.fill(
             child: Image.asset(
               "assets/images/onboarding/1774802367130_PAGE-No3.png",
@@ -686,364 +684,309 @@ class _LoginViewState extends State<LoginView> {
             ),
           ),
 
-          /// LAYER 2 — scrollable form content
-          /// Positioned.fill gives SafeArea a TIGHT height = Stack height (= screen - keyboard).
-          /// Without this, SafeArea gets loose constraints → SingleChildScrollView has no bounded
-          /// viewport → never scrolls → content clips when keyboard opens.
+          /// Content
           Positioned.fill(
             child: SafeArea(
+              bottom: false,
               child: SingleChildScrollView(
-                // ClampingScrollPhysics: stops at bounds, no overscroll bounce
                 physics: const ClampingScrollPhysics(),
                 keyboardDismissBehavior:
                     ScrollViewKeyboardDismissBehavior.onDrag,
-                child: ConstrainedBox(
-                  // minHeight = safe-area height: content fills screen when keyboard closed
-                  // (scroll range = 0, so no dragging). When keyboard opens the viewport
-                  // shrinks but minHeight stays → content overflows viewport → scrollable.
-                  constraints: BoxConstraints(
-                    minHeight:
-                        size.height -
-                        (isIOS ? size.height * 0.36 : size.height * 0.38),
-                    // minHeight:
-                    //     MediaQuery.of(context).size.height -
-                    //     MediaQuery.of(context).padding.top -
-                    //     MediaQuery.of(context).padding.bottom,
-                  ),
-                  child: IntrinsicHeight(
-                    child: Column(
-                      children: [
-                        SizedBox(
-                          height: isIOS
-                              ? screenHeight * 0.36
-                              : screenHeight * 0.40,
-                        ),
-                        // Expanded pushes form to bottom (works with IntrinsicHeight)
-                        // const Expanded(child: SizedBox()),
-
-                        /// FORM CONTAINER
-                        Container(
-                          width: double.infinity,
-                          decoration: BoxDecoration(
-                            color: Theme.of(context).colorScheme.surface,
-                            borderRadius: const BorderRadius.only(
-                              topLeft: Radius.circular(30),
-                              topRight: Radius.circular(30),
-                            ),
-                          ),
-                          child: Padding(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 20,
-                              vertical: 25,
-                            ),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                /// TITLE
-                                const SizedBox(height: 20),
-                                Text(
-                                  AppLocalizations.of(context)!.welcome,
-                                  style: const TextStyle(
-                                    fontSize: 24,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-
-                                const SizedBox(height: 25),
-
-                                /// EMAIL
-                                TextFormField(
-                                  controller: controller.email,
-                                  keyboardType: TextInputType.emailAddress,
-                                  autovalidateMode:
-                                      AutovalidateMode.onUserInteraction,
-                                  onChanged: (value) {
-                                    if (emailError != null) {
-                                      setState(() => emailError = null);
-                                    }
-                                  },
-                                  decoration: InputDecoration(
-                                    labelText: AppLocalizations.of(
-                                      context,
-                                    )!.emailOrPhone,
-
-                                    filled: true,
-                                    fillColor: Theme.of(
-                                      context,
-                                    ).colorScheme.surface,
-
-                                    labelStyle: TextStyle(
-                                      color: Theme.of(
-                                        context,
-                                      ).colorScheme.onSurfaceVariant,
-                                    ),
-
-                                    floatingLabelStyle: TextStyle(
-                                      color: Theme.of(
-                                        context,
-                                      ).colorScheme.primary,
-                                    ),
-
-                                    errorText: emailError,
-
-                                    border: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(12),
-                                    ),
-
-                                    enabledBorder: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(12),
-                                      borderSide: BorderSide(
-                                        color: Theme.of(
-                                          context,
-                                        ).colorScheme.outline,
-                                      ),
-                                    ),
-
-                                    focusedBorder: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(12),
-                                      borderSide: BorderSide(
-                                        color: Theme.of(
-                                          context,
-                                        ).colorScheme.primary,
-                                        width: 1.5,
-                                      ),
-                                    ),
-                                  ),
-                                ),
-
-                                const SizedBox(height: 15),
-
-                                /// PASSWORD
-                                TextFormField(
-                                  controller: controller.password,
-                                  obscureText: _obscure,
-                                  autovalidateMode:
-                                      AutovalidateMode.onUserInteraction,
-                                  onChanged: (value) {
-                                    if (passwordError != null) {
-                                      setState(() => passwordError = null);
-                                    }
-                                  },
-                                  decoration: InputDecoration(
-                                    labelText: AppLocalizations.of(
-                                      context,
-                                    )!.password,
-
-                                    filled: true,
-                                    fillColor: Theme.of(
-                                      context,
-                                    ).colorScheme.surface,
-
-                                    labelStyle: TextStyle(
-                                      color: Theme.of(
-                                        context,
-                                      ).colorScheme.onSurfaceVariant,
-                                    ),
-
-                                    floatingLabelStyle: TextStyle(
-                                      color: Theme.of(
-                                        context,
-                                      ).colorScheme.primary,
-                                      fontWeight: FontWeight.w600,
-                                    ),
-
-                                    errorText: passwordError,
-
-                                    border: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(12),
-                                      borderSide: BorderSide(
-                                        color: Theme.of(
-                                          context,
-                                        ).colorScheme.outline,
-                                      ),
-                                    ),
-
-                                    enabledBorder: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(12),
-                                      borderSide: BorderSide(
-                                        color: Theme.of(
-                                          context,
-                                        ).colorScheme.outline,
-                                      ),
-                                    ),
-
-                                    focusedBorder: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(12),
-                                      borderSide: BorderSide(
-                                        color: Theme.of(
-                                          context,
-                                        ).colorScheme.primary,
-                                        width: 1.5,
-                                      ),
-                                    ),
-
-                                    suffixIcon: IconButton(
-                                      icon: Icon(
-                                        _obscure
-                                            ? Icons.visibility_off_outlined
-                                            : Icons.visibility_outlined,
-                                        color: Theme.of(
-                                          context,
-                                        ).colorScheme.onSurfaceVariant,
-                                      ),
-                                      onPressed: () {
-                                        setState(() => _obscure = !_obscure);
-                                      },
-                                    ),
-                                  ),
-                                ),
-
-                                const SizedBox(height: 10),
-
-                                /// REMEMBER + FORGOT
-                                Wrap(
-                                  alignment: WrapAlignment.spaceBetween,
-                                  children: [
-                                    Row(
-                                      mainAxisSize: MainAxisSize.min,
-                                      children: [
-                                        Checkbox(
-                                          value: isChecked,
-                                          activeColor: AppColors.btn_primery,
-                                          onChanged: (v) =>
-                                              setState(() => isChecked = v!),
-                                        ),
-                                        Text(
-                                          AppLocalizations.of(
-                                            context,
-                                          )!.rememberMe,
-                                        ),
-                                      ],
-                                    ),
-                                    TextButton(
-                                      onPressed: () => context.push(
-                                        RouteNames.forgotpassword,
-                                      ),
-                                      child: Text(
-                                        AppLocalizations.of(
-                                          context,
-                                        )!.forgotPassword,
-                                        style: const TextStyle(
-                                          fontWeight: FontWeight.bold,
-                                          color: AppColors.app_background_clr,
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-
-                                const SizedBox(height: 20),
-
-                                /// BUTTONS
-                                Row(
-                                  children: [
-                                    Expanded(
-                                      child: AppButton(
-                                        text: AppLocalizations.of(
-                                          context,
-                                        )!.signUp,
-                                        width: double.infinity,
-
-                                        color: AppColors.button_secondary,
-                                        height: 50,
-                                        onPressed: () =>
-                                            context.push(RouteNames.Account),
-                                      ),
-                                    ),
-                                    const SizedBox(width: 10),
-                                    Expanded(
-                                      child: AppButton(
-                                        text: AppLocalizations.of(
-                                          context,
-                                        )!.signIn,
-                                        width: double.infinity,
-                                        isLoading: _isLoading,
-
-                                        color: AppColors.button_secondary,
-                                        height: 50,
-                                        onPressed: () => login(context),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-
-                                const SizedBox(height: 10),
-
-                                Center(
-                                  child: Text(AppLocalizations.of(context)!.or),
-                                ),
-
-                                const SizedBox(height: 10),
-
-                                InkWell(
-                                  onTap: () {
-                                    context.push(RouteNames.phonewithotp);
-                                  },
-                                  child: Center(
-                                    child: Text(
-                                      AppLocalizations.of(
-                                        context,
-                                      )!.signInWithOtp,
-                                      style: const TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        color: AppColors.app_background_clr,
-                                      ),
-                                    ),
-                                  ),
-                                ),
-
-                                const SizedBox(height: 14),
-
-                                InkWell(
-                                  onTap: () {
-                                    context.push(RouteNames.helpSupport);
-                                  },
-                                  child: Center(
-                                    child: Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
-                                      children: [
-                                        Icon(
-                                          Icons.help_outline_rounded,
-                                          size: 18,
-                                          color: AppColors.app_background_clr,
-                                        ),
-                                        const SizedBox(width: 6),
-                                        Text(
-                                          AppLocalizations.of(
-                                            context,
-                                          )!.helpSupport,
-                                          style: TextStyle(
-                                            fontWeight: FontWeight.w600,
-                                            color: AppColors.app_background_clr,
-                                            decoration:
-                                                TextDecoration.underline,
-                                            decorationColor:
-                                                AppColors.app_background_clr,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ),
-
-                                const SizedBox(height: 20),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ],
+                child: Column(
+                  children: [
+                    /// TOP SPACE
+                    SizedBox(
+                      height: isIOS ? size.height * 0.36 : size.height * 0.38,
                     ),
-                  ),
+
+                    /// FORM CONTAINER
+                    Container(
+                      width: double.infinity,
+                      constraints: BoxConstraints(
+                        minHeight:
+                            size.height -
+                            (isIOS ? size.height * 0.36 : size.height * 0.38),
+                      ),
+                      padding: EdgeInsets.only(
+                        left: 20,
+                        right: 20,
+                        top: 25,
+                        bottom: MediaQuery.of(context).padding.bottom + 25,
+                      ),
+                      decoration: BoxDecoration(
+                        color: Theme.of(context).colorScheme.surface,
+                        borderRadius: const BorderRadius.only(
+                          topLeft: Radius.circular(30),
+                          topRight: Radius.circular(30),
+                        ),
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          /// TITLE
+                          const SizedBox(height: 20),
+
+                          Text(
+                            AppLocalizations.of(context)!.welcome,
+                            style: const TextStyle(
+                              fontSize: 24,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+
+                          const SizedBox(height: 25),
+
+                          /// EMAIL
+                          TextFormField(
+                            controller: controller.email,
+                            keyboardType: TextInputType.emailAddress,
+                            autovalidateMode:
+                                AutovalidateMode.onUserInteraction,
+                            onChanged: (value) {
+                              if (emailError != null) {
+                                setState(() => emailError = null);
+                              }
+                            },
+                            decoration: InputDecoration(
+                              labelText: AppLocalizations.of(
+                                context,
+                              )!.emailOrPhone,
+
+                              filled: true,
+                              fillColor: Theme.of(context).colorScheme.surface,
+
+                              labelStyle: TextStyle(
+                                color: Theme.of(
+                                  context,
+                                ).colorScheme.onSurfaceVariant,
+                              ),
+
+                              floatingLabelStyle: TextStyle(
+                                color: Theme.of(context).colorScheme.primary,
+                              ),
+
+                              errorText: emailError,
+
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+
+                              enabledBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12),
+                                borderSide: BorderSide(
+                                  color: Theme.of(context).colorScheme.outline,
+                                ),
+                              ),
+
+                              focusedBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12),
+                                borderSide: BorderSide(
+                                  color: Theme.of(context).colorScheme.primary,
+                                  width: 1.5,
+                                ),
+                              ),
+                            ),
+                          ),
+
+                          const SizedBox(height: 15),
+
+                          /// PASSWORD
+                          TextFormField(
+                            controller: controller.password,
+                            obscureText: _obscure,
+                            autovalidateMode:
+                                AutovalidateMode.onUserInteraction,
+                            onChanged: (value) {
+                              if (passwordError != null) {
+                                setState(() => passwordError = null);
+                              }
+                            },
+                            decoration: InputDecoration(
+                              labelText: AppLocalizations.of(context)!.password,
+
+                              filled: true,
+                              fillColor: Theme.of(context).colorScheme.surface,
+
+                              labelStyle: TextStyle(
+                                color: Theme.of(
+                                  context,
+                                ).colorScheme.onSurfaceVariant,
+                              ),
+
+                              floatingLabelStyle: TextStyle(
+                                color: Theme.of(context).colorScheme.primary,
+                                fontWeight: FontWeight.w600,
+                              ),
+
+                              errorText: passwordError,
+
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12),
+                                borderSide: BorderSide(
+                                  color: Theme.of(context).colorScheme.outline,
+                                ),
+                              ),
+
+                              enabledBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12),
+                                borderSide: BorderSide(
+                                  color: Theme.of(context).colorScheme.outline,
+                                ),
+                              ),
+
+                              focusedBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12),
+                                borderSide: BorderSide(
+                                  color: Theme.of(context).colorScheme.primary,
+                                  width: 1.5,
+                                ),
+                              ),
+
+                              suffixIcon: IconButton(
+                                icon: Icon(
+                                  _obscure
+                                      ? Icons.visibility_off_outlined
+                                      : Icons.visibility_outlined,
+                                  color: Theme.of(
+                                    context,
+                                  ).colorScheme.onSurfaceVariant,
+                                ),
+                                onPressed: () {
+                                  setState(() => _obscure = !_obscure);
+                                },
+                              ),
+                            ),
+                          ),
+
+                          const SizedBox(height: 10),
+
+                          /// REMEMBER + FORGOT
+                          Wrap(
+                            alignment: WrapAlignment.spaceBetween,
+                            children: [
+                              Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Checkbox(
+                                    value: isChecked,
+                                    activeColor: AppColors.btn_primery,
+                                    onChanged: (v) =>
+                                        setState(() => isChecked = v!),
+                                  ),
+                                  Text(
+                                    AppLocalizations.of(context)!.rememberMe,
+                                  ),
+                                ],
+                              ),
+                              TextButton(
+                                onPressed: () =>
+                                    context.push(RouteNames.forgotpassword),
+
+                                child: Text(
+                                  AppLocalizations.of(context)!.forgotPassword,
+                                  style: const TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    color: AppColors.app_background_clr,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+
+                          const SizedBox(height: 20),
+
+                          /// BUTTONS
+                          Row(
+                            children: [
+                              Expanded(
+                                child: AppButton(
+                                  text: AppLocalizations.of(context)!.signUp,
+                                  width: double.infinity,
+
+                                  color: AppColors.button_secondary,
+                                  height: 50,
+                                  onPressed: () =>
+                                      context.push(RouteNames.Account),
+                                ),
+                              ),
+                              const SizedBox(width: 10),
+                              Expanded(
+                                child: AppButton(
+                                  text: AppLocalizations.of(context)!.signIn,
+                                  width: double.infinity,
+                                  isLoading: _isLoading,
+
+                                  color: AppColors.button_secondary,
+                                  height: 50,
+                                  onPressed: () => login(context),
+                                ),
+                              ),
+                            ],
+                          ),
+
+                          const SizedBox(height: 10),
+
+                          Center(child: Text(AppLocalizations.of(context)!.or)),
+
+                          const SizedBox(height: 10),
+
+                          InkWell(
+                            onTap: () {
+                              context.push(RouteNames.phonewithotp);
+                            },
+                            child: Center(
+                              child: Text(
+                                AppLocalizations.of(context)!.signInWithOtp,
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  color: AppColors.app_background_clr,
+                                ),
+                              ),
+                            ),
+                          ),
+
+                          const SizedBox(height: 14),
+
+                          InkWell(
+                            onTap: () {
+                              context.push(RouteNames.helpSupport);
+                            },
+                            child: Center(
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Icon(
+                                    Icons.help_outline_rounded,
+                                    size: 18,
+                                    color: AppColors.app_background_clr,
+                                  ),
+                                  const SizedBox(width: 6),
+                                  Text(
+                                    AppLocalizations.of(context)!.helpSupport,
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.w600,
+                                      color: AppColors.app_background_clr,
+                                      decoration: TextDecoration.underline,
+                                      decorationColor:
+                                          AppColors.app_background_clr,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+
+                          const SizedBox(height: 20),
+                        ],
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ),
           ),
-          Positioned(
-            top: 50,
-            right: 20,
-            child: LanguageView(),
-          ), // closes Positioned.fill
+
+          Positioned(top: 50, right: 20, child: LanguageView()),
         ],
       ),
     );
