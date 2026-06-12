@@ -1233,4 +1233,257 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get pleaseSelectAnOption => 'Please select an option';
+
+  @override
+  String get pleaseEnableLocationService => 'Please enable location service';
+
+  @override
+  String get locationPermissionDenied => 'Location permission denied';
+
+  @override
+  String get locationPermissionPermanentlyDenied =>
+      'Location permission permanently denied';
+
+  @override
+  String get useFamilyHeaderAddress => 'Use Family Header Address';
+
+  @override
+  String get useCurrentLocation => 'Use Current Location';
+
+  @override
+  String get enterManually => 'Enter Manually';
+
+  @override
+  String get others => 'Others';
+
+  @override
+  String get enterBlockName => 'Enter Block Name';
+
+  @override
+  String get pleaseEnterBlockName => 'Please enter block name';
+
+  @override
+  String get enterRoadName => 'Enter Road Name';
+
+  @override
+  String get pleaseEnterRoadName => 'Please enter road name';
+
+  @override
+  String get selectedAddressLabel => 'Selected Address:';
+
+  @override
+  String get editLocation => 'Edit Location';
+
+  @override
+  String get enterFamilyCountFirst => 'Enter family count first';
+
+  @override
+  String get accountAlreadyExists => 'Account already exists';
+
+  @override
+  String get sessionExpiredLoginAgain =>
+      'Session expired. Please log in again.';
+
+  @override
+  String get supportPhoneNumber => '+973 17000000';
+
+  @override
+  String get supportEmail => 'support@nadibh.com';
+
+  @override
+  String get selectLocation => 'Select Location';
+
+  @override
+  String get searchAddress => 'Search Address';
+
+  @override
+  String get confirmLocation => 'Confirm Location';
+
+  @override
+  String get failedToResendOtp => 'Failed to resend OTP';
+
+  @override
+  String get registrationSuccessfulWaitVerification =>
+      'Registration Successful. Please wait for verification.';
+
+  @override
+  String get invalidOtp => 'Invalid OTP';
+
+  @override
+  String get accountRejectedRegistrationMessage =>
+      'Your account registration has been rejected. Please contact our support team for more information.';
+
+  @override
+  String get noTermsAvailable => 'No terms available at the moment.';
+
+  @override
+  String get failedToLoadTerms =>
+      'Failed to load terms. Please try again later.';
+
+  @override
+  String get chooseTheLanguage => 'Choose The Language';
+
+  @override
+  String get englishLanguage => 'English';
+
+  @override
+  String get languagePreferenceChangeHint =>
+      'Your language preference can be changed any time in settings';
+
+  @override
+  String get submittedSuccessfully => 'Submitted successfully';
+
+  @override
+  String get unknownMember => 'Unknown';
+
+  @override
+  String get serviceTitle => 'Service';
+
+  @override
+  String get workApprovedSuccessfully => 'Work approved successfully';
+
+  @override
+  String get workRejectedSuccessfully => 'Work rejected successfully';
+
+  @override
+  String get questionPopupBarrierLabel => 'Question Popup';
+
+  @override
+  String get ongoingStatus => 'ONGOING';
+
+  @override
+  String get addressTypeLabel => 'Address Type';
+
+  @override
+  String addressTypeWithValue(Object type) {
+    return 'Address Type: $type';
+  }
+
+  @override
+  String get fullLocationAddressLabel => 'Full Location Address';
+
+  @override
+  String get editAddress => 'Edit Address';
+
+  @override
+  String get noHelpDataAvailable => 'No help data available';
+
+  @override
+  String get maximum10ImagesUpload => 'You can only upload up to 10 images';
+
+  @override
+  String get serviceRequestSubmittedSuccess =>
+      'Service request\nsubmitted successfully.';
+
+  @override
+  String get serviceRequestReceivedProcessing =>
+      'Your request (SRM-001) has been\nreceived and is being processed.';
+
+  @override
+  String get settingsSectionGeneral => 'GENERAL';
+
+  @override
+  String get settingsSectionPreferences => 'PREFERENCES';
+
+  @override
+  String get settingsSectionAccount => 'ACCOUNT';
+
+  @override
+  String get languageBhAbbrev => 'BH';
+
+  @override
+  String get languageEngAbbrev => 'ENG';
+
+  @override
+  String get selectDate => 'Select Date';
+
+  @override
+  String get selectTime => 'Select Time';
+
+  @override
+  String get congratulations => 'Congratulations!';
+
+  @override
+  String get claimReward => 'Claim Reward';
+
+  @override
+  String get exitAppConfirmation => 'Do you want to exit the app?';
+
+  @override
+  String get exit => 'Exit';
+
+  @override
+  String get addMedia => 'Add Media';
+
+  @override
+  String get noInternetConnectionTitle => 'No Internet Connection';
+
+  @override
+  String get noInternetConnectionMessage =>
+      'Please check your internet connection and try again.';
+
+  @override
+  String get pointsToYou => 'Points to you';
+
+  @override
+  String pointsFromName(Object name) {
+    return 'Points from $name';
+  }
+
+  @override
+  String get accept => 'Accept';
+
+  @override
+  String get requestSent => 'Request Sent';
+
+  @override
+  String get requestAccepted => 'Request Accepted';
+
+  @override
+  String get requestRejected => 'Request Rejected';
+
+  @override
+  String get microphonePermissionDenied => 'Microphone permission denied';
+
+  @override
+  String get familyHeaderAddressLabel => 'Family Header Address';
+
+  @override
+  String get currentLocationLabel => 'Current Location';
+
+  @override
+  String get manualAddressLabel => 'Manual Address';
+
+  @override
+  String get genericAddressLabel => 'Address';
+
+  @override
+  String cityWithValue(Object value) {
+    return 'City $value';
+  }
+
+  @override
+  String buildingWithValue(Object value) {
+    return 'Building $value';
+  }
+
+  @override
+  String apartmentWithValue(Object value) {
+    return 'Apartment $value';
+  }
+
+  @override
+  String floorWithValue(Object value) {
+    return 'Floor $value';
+  }
+
+  @override
+  String blockWithValue(Object value) {
+    return 'Block $value';
+  }
+
+  @override
+  String roadWithValue(Object value) {
+    return 'Road $value';
+  }
 }

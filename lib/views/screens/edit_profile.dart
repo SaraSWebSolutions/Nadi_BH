@@ -94,12 +94,12 @@ class _EditProfileState extends ConsumerState<EditProfile> {
 
       if (blockData is Map) {
         selectedBlock = blockData['name']?.toString();
-        selectedBlockId = blockData['_id']?.toString();
+        selectedBlockId = AddressController.sanitizeId(blockData['_id']);
       }
 
       if (roadData is Map) {
         selectedRoad = roadData['name']?.toString();
-        selectedRoadId = roadData['_id']?.toString();
+        selectedRoadId = AddressController.sanitizeId(roadData['_id']);
       }
 
       debugPrint("Selected Block => $selectedBlock ($selectedBlockId)");
@@ -175,42 +175,61 @@ class _EditProfileState extends ConsumerState<EditProfile> {
     _addressSource = _addressController.addressSource;
 
     setState(() {
-      buildingController.text = _addressController.building.text;
-      blockController.text = _addressController.city.text;
-      floorController.text = _addressController.floor.text;
-      apartmentController.text = _addressController.aptNo.text;
-      selectedBlock = _addressController.block;
-      selectedBlockId = _addressController.blockId;
-      selectedRoad = _addressController.road;
-      selectedRoadId = _addressController.roadId;
+      final isGeo = _addressController.isGeoMode;
+
+      if (!isGeo) {
+        buildingController.text = _addressController.building.text;
+        blockController.text = _addressController.city.text;
+        floorController.text = _addressController.floor.text;
+        apartmentController.text = _addressController.aptNo.text;
+
+        selectedBlock = _addressController.block;
+        selectedBlockId = AddressController.sanitizeId(
+          _addressController.blockId,
+        );
+
+        selectedRoad = _addressController.road;
+        selectedRoadId = AddressController.sanitizeId(
+          _addressController.roadId,
+        );
+      } else {
+        // IMPORTANT: clear manual fields to avoid wrong payload
+        buildingController.clear();
+        blockController.clear();
+        floorController.clear();
+        apartmentController.clear();
+
+        selectedBlock = null;
+        selectedBlockId = null;
+        selectedRoad = null;
+        selectedRoadId = null;
+      }
     });
   }
 
   Map<String, dynamic> _buildAddressPayload(String propertyType) {
-    final source = _addressController.addressSource ?? _addressSource;
+    final isGeo = _addressController.isGeoMode;
 
-    if (source == AddressSource.currentLocation) {
+    if (isGeo) {
       return {
-        "addressSource": "current_location",
-        "currentLocationAddress": _addressController.fullAddress,
+        "isGeoAddress": true,
         "latitude": _addressController.latitude,
         "longitude": _addressController.longitude,
-        "fullAddress": _addressController.fullAddress,
+        "geoAddress": _addressController.geoAddress,
       };
     }
 
     return {
-      "addressSource": AddressController.sourceToApiValue(source),
+      "isGeoAddress": false,
+      "propertyType": propertyType,
       "building": buildingController.text.trim(),
       "city": blockController.text.trim(),
-      "block": selectedBlock,
-      "blockId": selectedBlockId,
-      "road": selectedRoad,
-      "roadId": selectedRoadId,
       "floor": floorController.text.trim(),
-      if (propertyType != "villa") "aptNo": apartmentController.text.trim(),
-      "latitude": _addressController.latitude,
-      "longitude": _addressController.longitude,
+      "aptNo": apartmentController.text.trim(),
+
+      // ⚠️ IMPORTANT: send ONLY IDs
+      "blockId": selectedBlockId,
+      "roadId": selectedRoadId,
     };
   }
 
@@ -327,13 +346,12 @@ class _EditProfileState extends ConsumerState<EditProfile> {
       await AppPreferences.saveProfileData(updatedProfile);
 
       if (mounted) context.pop(true);
-    }on DioException catch (e) {
-  final message =
-      e.response?.data?["message"]?.toString() ??
-      "Something went wrong";
-  SnackbarHelper.showError(context, message);
-
-} catch (e, stack) {
+    } on DioException catch (e) {
+      final message =
+          e.response?.data?["message"]?.toString() ??
+          AppLocalizations.of(context)!.somethingWentWrong;
+      SnackbarHelper.showError(context, message);
+    } catch (e, stack) {
       AppLogger.error(stack.toString());
     } finally {
       if (mounted) setState(() => _isLoading = false);
@@ -632,7 +650,7 @@ class _EditProfileState extends ConsumerState<EditProfile> {
                         ),
                         const SizedBox(height: 6),
                         Text(
-                          'Address Type',
+                          loc.addressTypeLabel,
                           style: const TextStyle(
                             fontSize: 14,
                             fontWeight: FontWeight.w600,
@@ -641,15 +659,20 @@ class _EditProfileState extends ConsumerState<EditProfile> {
                         const SizedBox(height: 5),
                         AppTextField(
                           controller: TextEditingController(
-                            text: AddressDisplayHelper.sourceLabel(_addressSource),
+                            text: AddressDisplayHelper.sourceLabel(
+                              _addressSource,
+                              l10n: loc,
+                            ),
                           ),
                           readonly: true,
                           enabled: false,
                         ),
                         const SizedBox(height: 10),
-                        if (_addressSource == AddressSource.currentLocation) ...[
+                        if (AddressDisplayHelper.isGeoAddress(
+                          _addressController.toMap(),
+                        )) ...[
                           Text(
-                            'Full Location Address',
+                            loc.fullLocationAddressLabel,
                             style: const TextStyle(
                               fontSize: 14,
                               fontWeight: FontWeight.w600,
@@ -658,7 +681,10 @@ class _EditProfileState extends ConsumerState<EditProfile> {
                           const SizedBox(height: 5),
                           AppTextField(
                             controller: TextEditingController(
-                              text: _addressController.fullAddress ?? '',
+                              text:
+                                  _addressController.geoAddress ??
+                                  _addressController.fullAddress ??
+                                  '',
                             ),
                             readonly: true,
                             enabled: false,
@@ -678,6 +704,7 @@ class _EditProfileState extends ConsumerState<EditProfile> {
                             controller: TextEditingController(
                               text: AddressDisplayHelper.formatProfileAddress(
                                 _addressController.toMap(),
+                                l10n: loc,
                               ),
                             ),
                             readonly: true,
@@ -693,9 +720,11 @@ class _EditProfileState extends ConsumerState<EditProfile> {
                             onPressed: _openAddressEditor,
                             icon: const Icon(Icons.edit_location_alt),
                             label: Text(
-                              _addressSource == AddressSource.currentLocation
-                                  ? 'Edit Location'
-                                  : 'Edit Address',
+                              AddressDisplayHelper.isGeoAddress(
+                                    _addressController.toMap(),
+                                  )
+                                  ? loc.editLocation
+                                  : loc.editAddress,
                             ),
                           ),
                         ),

@@ -40,7 +40,11 @@ class _RecordWidgetState extends State<RecordWidget> {
       /// ✅ Correct permission handling (DO NOT use permission_handler)
       if (!await _audioRecorder.hasPermission()) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text("Microphone permission denied")),
+          SnackBar(
+            content: Text(
+              AppLocalizations.of(context)!.microphonePermissionDenied,
+            ),
+          ),
         );
         return;
       }

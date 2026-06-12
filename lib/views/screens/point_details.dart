@@ -422,7 +422,9 @@ class _PointDetailsState extends ConsumerState<PointDetails> {
                                           ),
                                           Text(
                                             userName.isEmpty
-                                                ? "Loading..."
+                                                ? AppLocalizations.of(
+                                                    context,
+                                                  )!.loading
                                                 : userName,
                                             style: const TextStyle(
                                               color: Colors.white,
@@ -633,7 +635,8 @@ class _PointDetailsState extends ConsumerState<PointDetails> {
                   return const SizedBox.shrink(); // show nothing
                 }
                 final image = data['image'] ?? "";
-                final name = data['name'] ?? "Admin";
+                final name =
+                    data['name'] ?? AppLocalizations.of(context)!.admin;
                 return Padding(
                   padding: const EdgeInsets.only(left: 10, bottom: 4),
                   child: Column(

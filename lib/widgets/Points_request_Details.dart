@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:nadi_user_app/core/constants/app_consts.dart';
+import 'package:nadi_user_app/l10n/app_localizations.dart';
 import 'package:nadi_user_app/core/utils/Time_Date.dart';
 import 'package:nadi_user_app/core/utils/snackbar_helper.dart';
 import 'package:nadi_user_app/providers/fetchrequestpeopledetails_provider.dart';
@@ -59,7 +60,8 @@ class _PointsRequestDetailsState extends ConsumerState<PointsRequestDetails> {
       if (response["success"] == false) {
         SnackbarHelper.showError(
           context,
-          response["message"] ?? "Something went wrong",
+          response["message"] ??
+              AppLocalizations.of(context)!.somethingWentWrong,
         );
         return;
       }
@@ -80,6 +82,7 @@ class _PointsRequestDetailsState extends ConsumerState<PointsRequestDetails> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final bool showActionButtons =
         widget.status == "requested" &&
         widget.receiverId != null &&
@@ -108,8 +111,8 @@ class _PointsRequestDetailsState extends ConsumerState<PointsRequestDetails> {
           children: [
             Text(
               widget.isSender
-                  ? "Points to you "
-                  : "Points from ${widget.receivername}",
+                  ? l10n.pointsToYou
+                  : l10n.pointsFromName(widget.receivername),
               style: const TextStyle(fontWeight: FontWeight.w600),
             ),
 
@@ -143,9 +146,9 @@ class _PointsRequestDetailsState extends ConsumerState<PointsRequestDetails> {
                       ),
                     ),
                     onPressed: () => _sendPoint("reject"),
-                    child: const Text(
-                      "Reject",
-                      style: TextStyle(color: Colors.white),
+                    child: Text(
+                      l10n.reject,
+                      style: const TextStyle(color: Colors.white),
                     ),
                   ),
                   const SizedBox(width: 10),
@@ -158,9 +161,9 @@ class _PointsRequestDetailsState extends ConsumerState<PointsRequestDetails> {
                       ),
                     ),
                     onPressed: () => _sendacceptedPoint("accept"),
-                    child: const Text(
-                      "Accept",
-                      style: TextStyle(color: Colors.white),
+                    child: Text(
+                      l10n.accept,
+                      style: const TextStyle(color: Colors.white),
                     ),
                   ),
                 ],
@@ -169,19 +172,19 @@ class _PointsRequestDetailsState extends ConsumerState<PointsRequestDetails> {
               _statusRow(
                 icon: Icons.check_circle,
                 color: Colors.grey,
-                text: "Request Sent",
+                text: l10n.requestSent,
               )
             else if (widget.status == "accepted")
               _statusRow(
                 icon: Icons.check_circle,
                 color: Colors.green,
-                text: "Request Accepted",
+                text: l10n.requestAccepted,
               )
             else if (widget.status == "rejected")
               _statusRow(
                 icon: Icons.cancel,
                 color: Colors.red,
-                text: "Request Rejected",
+                text: l10n.requestRejected,
               ),
 
             const SizedBox(height: 8),

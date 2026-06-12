@@ -113,48 +113,7 @@ class _AddmemberState extends State<Addmember> {
       _familyHeadAddress = widget.familyHeadAddress;
     }
   }
-  // void loadMember(int index) {
-  //   currentIndex = index;
 
-  //   final member = familyMembers[index];
-
-  //   controller.fullName.text = member["fullName"] ?? "";
-
-  //   controller.mobile.text = member["mobile"] ?? "";
-
-  //   controller.email.text = member["email"] ?? "";
-
-  //   controller.relation =
-  //       member["relation"] == null ||
-  //           member["relation"].toString().trim().isEmpty
-  //       ? null
-  //       : member["relation"];
-
-  //   controller.gender =
-  //       member["gender"] == null || member["gender"].toString().trim().isEmpty
-  //       ? null
-  //       : member["gender"];
-
-  //   final address = member["address"] ?? {};
-
-  //   addressController.city.text = address["city"] ?? "";
-
-  //   addressController.building.text = address["building"] ?? "";
-
-  //   addressController.aptNo.text = address["aptNo"] ?? "";
-
-  //   addressController.floor.text = address["floor"] ?? "";
-
-  //   addressController.block = address["block"];
-
-  //   addressController.blockId = address["blockId"];
-
-  //   addressController.road = address["road"];
-
-  //   addressController.roadId = address["roadId"];
-
-  //   setState(() {});
-  // }
   void loadMember(int index) {
     currentIndex = index;
 
@@ -179,12 +138,19 @@ class _AddmemberState extends State<Addmember> {
     final source = AddressDisplayHelper.resolveSource(address);
     switch (source) {
       case AddressSource.currentLocation:
-        return address['latitude'] != null &&
+        return AddressController.parseIsGeoAddress(address['isGeoAddress']) &&
+            address['latitude'] != null &&
             address['longitude'] != null &&
-            (address['currentLocationAddress'] ?? address['fullAddress'] ?? '')
+            (address['geoAddress'] ??
+                    address['currentLocationAddress'] ??
+                    address['fullAddress'] ??
+                    '')
                 .toString()
                 .trim()
-                .isNotEmpty;
+                .isNotEmpty &&
+            (address['building'] ?? '').toString().trim().isNotEmpty &&
+            address['blockId'] != null &&
+            address['roadId'] != null;
       case AddressSource.familyHeader:
       case AddressSource.manual:
         return (address['building'] ?? '').toString().trim().isNotEmpty &&
@@ -195,7 +161,8 @@ class _AddmemberState extends State<Addmember> {
     }
   }
 
-  bool get _isLastMember => _totalMembers > 0 && currentIndex >= _totalMembers - 1;
+  bool get _isLastMember =>
+      _totalMembers > 0 && currentIndex >= _totalMembers - 1;
 
   String _primaryButtonLabel(AppLocalizations l10n) =>
       _isLastMember ? l10n.finish : l10n.next;
@@ -531,13 +498,25 @@ class _AddmemberState extends State<Addmember> {
   bool isMemberComplete(Map<String, dynamic> member) {
     final address = member["address"];
 
-    return (member["fullName"] ?? "").toString().trim().isNotEmpty &&
-        (member["mobile"] ?? "").toString().trim().isNotEmpty &&
-        (member["email"] ?? "").toString().trim().isNotEmpty &&
-        member["relation"] != null &&
-        member["gender"] != null &&
-        address != null &&
-        _isAddressDataComplete(Map<String, dynamic>.from(address));
+    if ((member["fullName"] ?? "").toString().trim().isEmpty ||
+        (member["mobile"] ?? "").toString().trim().isEmpty ||
+        (member["email"] ?? "").toString().trim().isEmpty ||
+        member["relation"] == null ||
+        member["gender"] == null ||
+        address == null) {
+      return false;
+    }
+
+    final addr = Map<String, dynamic>.from(address);
+
+    // ✅ GEO ADDRESS CASE
+    if (addr["isGeoAddress"] == true ||
+        (addr["latitude"] != null && addr["longitude"] != null)) {
+      return (addr["geoAddress"] ?? "").toString().trim().isNotEmpty;
+    }
+
+    // ✅ MANUAL / FAMILY HEADER CASE
+    return _isAddressDataComplete(addr);
   }
 
   bool _isAddressComplete() => addressController.isComplete;
@@ -562,32 +541,10 @@ class _AddmemberState extends State<Addmember> {
   }
 
   Map<String, dynamic> _memberAddressPayload(dynamic address) {
-    final map = Map<String, dynamic>.from(address as Map);
-    final source = AddressDisplayHelper.resolveSource(map);
-
-    if (source == AddressSource.currentLocation) {
-      return {
-        "addressType": "home",
-        "addressSource": "current_location",
-        "currentLocationAddress":
-            map["currentLocationAddress"] ?? map["fullAddress"],
-        "latitude": map["latitude"],
-        "longitude": map["longitude"],
-      };
-    }
-
-    return {
-      "addressType": "home",
-      "addressSource": AddressController.sourceToApiValue(source),
-      "city": map["city"],
-      "building": map["building"],
-      "floor": map["floor"],
-      "aptNo": map["aptNo"],
-      "roadId": map["roadId"],
-      "blockId": map["blockId"],
-      "latitude": map["latitude"],
-      "longitude": map["longitude"],
-    };
+    return AddressController.mapToApiAddress(
+      Map<String, dynamic>.from(address as Map),
+      addressType: 'home',
+    );
   }
 
   Future<void> _submitAllMembers() async {
@@ -652,7 +609,7 @@ class _AddmemberState extends State<Addmember> {
         context,
         e.response?.data?["message"]?.toString() ??
             e.message ??
-            "Something went wrong",
+            AppLocalizations.of(context)!.somethingWentWrong,
       );
     } catch (e) {
       if (!mounted) return;
@@ -1117,7 +1074,7 @@ class _AddmemberState extends State<Addmember> {
                   const SizedBox(height: 8),
 
                   if (_totalMembers == 0)
-                    Center(child: Text("Enter family count first"))
+                    Center(child: Text(l10n.enterFamilyCountFirst))
                   else ...[
                     const SizedBox(height: 15),
                     AppTextField(
@@ -1249,7 +1206,12 @@ class _AddmemberState extends State<Addmember> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              'Address Type: ${AddressDisplayHelper.sourceLabel(addressController.addressSource)}',
+                              l10n.addressTypeWithValue(
+                                AddressDisplayHelper.sourceLabel(
+                                  addressController.addressSource,
+                                  l10n: l10n,
+                                ),
+                              ),
                               style: const TextStyle(
                                 fontWeight: FontWeight.w600,
                                 fontSize: 14,
@@ -1259,9 +1221,12 @@ class _AddmemberState extends State<Addmember> {
                             Text(
                               addressController.addressSource ==
                                       AddressSource.currentLocation
-                                  ? (addressController.fullAddress ?? '')
+                                  ? (addressController.geoAddress ??
+                                        addressController.fullAddress ??
+                                        '')
                                   : AddressDisplayHelper.formatProfileAddress(
                                       addressController.toMap(),
+                                      l10n: l10n,
                                     ),
                             ),
                           ],
@@ -1407,7 +1372,7 @@ class _AddmemberState extends State<Addmember> {
                       if (exists == true) {
                         SnackbarHelper.showError(
                           context,
-                          "Account already exists",
+                          l10n.accountAlreadyExists,
                         );
                         return; //
                       }
@@ -1423,7 +1388,7 @@ class _AddmemberState extends State<Addmember> {
                       SnackbarHelper.showError(
                         context,
                         e.response?.data?["message"]?.toString() ??
-                            "Account already exists",
+                            l10n.accountAlreadyExists,
                       );
 
                       return;

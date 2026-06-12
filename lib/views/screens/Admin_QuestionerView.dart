@@ -103,7 +103,8 @@ class _AdminQuestionerviewState extends ConsumerState<AdminQuestionerview>
 
       if (text.isEmpty) {
         isValid = false;
-        inputErrors[currentQuestionIndex] = "This field cannot be empty";
+        inputErrors[currentQuestionIndex] =
+            AppLocalizations.of(context)!.fieldCannotBeEmpty;
       } else {
         inputErrors[currentQuestionIndex] = null;
       }
@@ -203,7 +204,9 @@ class _AdminQuestionerviewState extends ConsumerState<AdminQuestionerview>
 
       setState(() {
         isSuccess = true;
-        successMessage = response["message"] ?? "Submitted successfully";
+        successMessage =
+            response["message"] ??
+            AppLocalizations.of(context)!.submittedSuccessfully;
         pointsEarned = response["pointsEarned"].toString();
         totalUserPoints = response["totalUserPoints"].toString();
       });

@@ -79,7 +79,9 @@ class _OtpState extends State<Otp> {
       final response = await _authService.SendOTP(userId: userId);
       AppLogger.success("Resend OTP response: $response");
     } on DioException catch (e) {
-      final message = e.response?.data["message"] ?? "Failed to resend OTP";
+      final l10n = AppLocalizations.of(context)!;
+      final message =
+          e.response?.data["message"] ?? l10n.failedToResendOtp;
       if (mounted) _showOtpError(message);
     }
   }
@@ -88,7 +90,7 @@ class _OtpState extends State<Otp> {
     final userId = await AppPreferences.getUserId();
 
     if (userId == null || userId.isEmpty) {
-      _showOtpError("Session expired. Please log in again.");
+      _showOtpError(AppLocalizations.of(context)!.sessionExpiredLoginAgain);
       return;
     }
 
@@ -119,7 +121,8 @@ class _OtpState extends State<Otp> {
 
             final apiMessage =
                 completeuseraccount['message'] ??
-                "Registration Successful. Please wait for verification.";
+                AppLocalizations.of(context)!
+                    .registrationSuccessfulWaitVerification;
 
             ScaffoldMessenger.of(
               context,
@@ -151,7 +154,9 @@ class _OtpState extends State<Otp> {
         }
       } else {
         setState(() => isLoading = false);
-        _showOtpError(response["message"] ?? "Invalid OTP");
+        _showOtpError(
+          response["message"] ?? AppLocalizations.of(context)!.invalidOtp,
+        );
       }
     } on DioException catch (e) {
       setState(() => isLoading = false);
@@ -159,7 +164,7 @@ class _OtpState extends State<Otp> {
       final errorResponse = e.response?.data;
       final message = (errorResponse is Map && errorResponse["message"] != null)
           ? errorResponse["message"]
-          : "Something went wrong";
+          : AppLocalizations.of(context)!.somethingWentWrong;
 
       _showOtpError(message);
     } finally {
@@ -340,7 +345,9 @@ class _OtpState extends State<Otp> {
                           ),
                         )
                       : Text(
-                          "Resend OTP in 00:${_secountleft.toString().padLeft(2, '0')}",
+                          AppLocalizations.of(context)!.resendOtpIn(
+                            _secountleft.toString().padLeft(2, '0'),
+                          ),
                           style: TextStyle(
                             color: Colors.grey,
                             fontWeight: FontWeight.w500,

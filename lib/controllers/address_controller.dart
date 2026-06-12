@@ -2,11 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:nadi_user_app/l10n/app_localizations.dart';
 import 'package:nadi_user_app/models/location_result.dart';
 
-enum AddressSource {
-  familyHeader,
-  currentLocation,
-  manual,
-}
+enum AddressSource { familyHeader, currentLocation, manual }
 
 class AddressController {
   final TextEditingController building = TextEditingController();
@@ -22,6 +18,8 @@ class AddressController {
   double? latitude;
   double? longitude;
   String? fullAddress;
+  bool isGeoAddress = false;
+  String? geoAddress;
   AddressSource? addressSource;
 
   List<Map<String, dynamic>> roadsForSelectedBlock = [];
@@ -55,11 +53,39 @@ class AddressController {
   }
 
   static double? toDouble(dynamic value) {
-    if (value == null) return null;
+    if (value == null || value == '') return null;
     if (value is double) return value;
     if (value is int) return value.toDouble();
     return double.tryParse(value.toString());
   }
+
+  static bool parseIsGeoAddress(dynamic value) {
+    if (value == null) return false;
+    if (value is bool) return value;
+    return value.toString().toLowerCase() == 'true';
+  }
+
+  static bool toBool(dynamic value) => parseIsGeoAddress(value);
+
+  /// Never send empty string ObjectIds to the backend.
+  static String? sanitizeId(dynamic value) {
+    if (value == null) return null;
+    if (value is Map) {
+      return sanitizeId(value['_id']);
+    }
+    final trimmed = value.toString().trim();
+    if (trimmed.isEmpty) return null;
+    return trimmed;
+  }
+
+  bool get isGeoMode =>
+      isGeoAddress &&
+      (addressSource == AddressSource.currentLocation ||
+          addressSource == AddressSource.familyHeader);
+
+  bool get isManualMode =>
+      addressSource == AddressSource.manual ||
+      (addressSource == AddressSource.familyHeader && !isGeoAddress);
 
   void clear() {
     city.clear();
@@ -73,6 +99,8 @@ class AddressController {
     latitude = null;
     longitude = null;
     fullAddress = null;
+    isGeoAddress = false;
+    geoAddress = null;
     addressSource = null;
     roadsForSelectedBlock.clear();
   }
@@ -84,63 +112,7 @@ class AddressController {
     floor.dispose();
   }
 
-  void loadAddress(Map<String, dynamic> address) {
-    city.text = address['city']?.toString() ?? '';
-    building.text = address['building']?.toString() ?? '';
-    aptNo.text = address['aptNo']?.toString() ?? '';
-    floor.text = address['floor']?.toString() ?? '';
-
-    block = address['block'] ?? address['blockName'];
-    blockId = _extractId(address['blockId']);
-    road = address['road'] ?? address['roadName'];
-    roadId = _extractId(address['roadId']);
-
-    latitude = toDouble(address['latitude']);
-    longitude = toDouble(address['longitude']);
-    fullAddress =
-        address['currentLocationAddress']?.toString() ??
-        address['fullAddress']?.toString();
-
-    addressSource =
-        parseSource(address['addressSource']) ??
-        (fullAddress != null &&
-                latitude != null &&
-                longitude != null &&
-                building.text.trim().isEmpty &&
-                blockId == null
-            ? AddressSource.currentLocation
-            : null);
-
-    roadsForSelectedBlock = List<Map<String, dynamic>>.from(
-      address['roads'] ?? [],
-    );
-  }
-
-  String? _extractId(dynamic value) {
-    if (value == null) return null;
-    if (value is Map) return value['_id']?.toString();
-    return value.toString();
-  }
-
-  void applyFamilyHeader(Map<String, dynamic> address) {
-    loadAddress(address);
-    addressSource = AddressSource.familyHeader;
-  }
-
-  void applyCurrentLocation(LocationResult result) {
-    clearManualFields();
-    addressSource = AddressSource.currentLocation;
-    latitude = result.latitude;
-    longitude = result.longitude;
-    fullAddress = result.fullAddress;
-  }
-
-  void applyManualEntry() {
-    clear();
-    addressSource = AddressSource.manual;
-  }
-
-  void clearManualFields() {
+  void _clearManualFields() {
     city.clear();
     building.clear();
     aptNo.clear();
@@ -152,61 +124,165 @@ class AddressController {
     roadsForSelectedBlock.clear();
   }
 
-  bool get isComplete {
-    switch (addressSource) {
-      case AddressSource.currentLocation:
-        return latitude != null &&
-            longitude != null &&
-            (fullAddress?.trim().isNotEmpty ?? false);
-      case AddressSource.familyHeader:
-      case AddressSource.manual:
-        return city.text.trim().isNotEmpty &&
-            building.text.trim().isNotEmpty &&
-            blockId != null &&
-            roadId != null;
-      default:
-        return false;
+  void loadAddress(Map<String, dynamic> address) {
+    isGeoAddress = parseIsGeoAddress(address['isGeoAddress']);
+    geoAddress =
+        address['geoAddress']?.toString() ??
+        address['currentLocationAddress']?.toString() ??
+        address['fullAddress']?.toString();
+    fullAddress = geoAddress;
+
+    latitude = toDouble(address['latitude']);
+    longitude = toDouble(address['longitude']);
+
+    addressSource = parseSource(address['addressSource']);
+    if (addressSource == null) {
+      if (isGeoAddress) {
+        addressSource = AddressSource.currentLocation;
+      } else if ((address['building'] ?? '').toString().trim().isNotEmpty) {
+        addressSource = AddressSource.manual;
+      }
     }
+
+    if (isGeoMode) {
+      _clearManualFields();
+      return;
+    }
+
+    city.text = address['city']?.toString() ?? '';
+    building.text = address['building']?.toString() ?? '';
+    aptNo.text = address['aptNo']?.toString() ?? '';
+    floor.text = address['floor']?.toString() ?? '';
+    block = address['block'] ?? address['blockName'];
+    blockId = sanitizeId(address['blockId']);
+    road = address['road'] ?? address['roadName'];
+    roadId = sanitizeId(address['roadId']);
+
+    roadsForSelectedBlock = List<Map<String, dynamic>>.from(
+      address['roads'] ?? [],
+    );
+  }
+
+  void applyFamilyHeader(Map<String, dynamic> address) {
+    loadAddress(address);
+    addressSource = AddressSource.familyHeader;
+
+    if (isGeoAddress) {
+      _clearManualFields();
+    }
+  }
+
+  void applyCurrentLocation(LocationResult result) {
+    addressSource = AddressSource.currentLocation;
+    latitude = result.latitude;
+    longitude = result.longitude;
+    fullAddress = result.fullAddress;
+    geoAddress = result.fullAddress;
+    isGeoAddress = true;
+    _clearManualFields();
+  }
+
+  void applyManualEntry() {
+    clear();
+    addressSource = AddressSource.manual;
+    isGeoAddress = false;
+    geoAddress = null;
+    latitude = null;
+    longitude = null;
+  }
+
+  bool get isComplete {
+    if (isGeoMode) {
+      return latitude != null &&
+          longitude != null &&
+          isGeoAddress &&
+          (geoAddress?.trim().isNotEmpty ?? false);
+    }
+
+    if (isManualMode) {
+      return city.text.trim().isNotEmpty &&
+          building.text.trim().isNotEmpty &&
+          sanitizeId(blockId) != null &&
+          sanitizeId(roadId) != null;
+    }
+
+    return false;
   }
 
   bool get isReadOnly => addressSource == AddressSource.familyHeader;
 
-  bool get showsManualForm =>
-      addressSource == AddressSource.familyHeader ||
-      addressSource == AddressSource.manual;
+  bool get showsManualForm => isManualMode && addressSource != null;
 
-  bool get showsLocationCard =>
-      addressSource == AddressSource.currentLocation &&
-      (fullAddress?.trim().isNotEmpty ?? false);
+  bool get showsLocationCard => isGeoMode && (geoAddress?.trim().isNotEmpty ?? false);
 
-  Map<String, dynamic> toMap({
+  Map<String, dynamic> buildAddressPayload({
+    required String addressType,
     String? blockNameOverride,
     String? roadNameOverride,
   }) {
-    return {
+    final sanitizedBlockId = sanitizeId(blockId);
+    final sanitizedRoadId = sanitizeId(roadId);
+    final resolvedBlockName = blockNameOverride ?? block;
+    final resolvedRoadName = roadNameOverride ?? road;
+
+    final payload = <String, dynamic>{
+      'addressType': addressType,
       'addressSource': sourceToApiValue(addressSource),
+      'latitude': latitude,
+      'longitude': longitude,
+      'isGeoAddress': isGeoAddress,
+      'geoAddress': isGeoAddress ? (geoAddress ?? '') : '',
+      'fullAddress': fullAddress ?? geoAddress ?? '',
+      'currentLocationAddress': isGeoAddress ? (geoAddress ?? '') : '',
+    };
+
+    if (isGeoMode) {
+      payload.addAll({
+        'blockId': null,
+        'roadId': null,
+        'city': '',
+        'building': '',
+        'aptNo': '',
+        'floor': '',
+        'block': null,
+        'road': null,
+        'blockName': null,
+        'roadName': null,
+      });
+      return payload;
+    }
+
+    payload.addAll({
       'city': city.text.trim(),
       'building': building.text.trim(),
       'aptNo': aptNo.text.trim(),
       'floor': floor.text.trim(),
       'block': block,
-      'blockId': blockId,
+      'blockId': sanitizedBlockId,
       'road': road,
-      'roadId': roadId,
-      'blockName': blockNameOverride ?? block,
-      'roadName': roadNameOverride ?? road,
-      'latitude': latitude,
-      'longitude': longitude,
-      'fullAddress': fullAddress,
-      'currentLocationAddress': fullAddress,
-      'roads': roadsForSelectedBlock,
-    };
+      'roadId': sanitizedRoadId,
+      'blockName': resolvedBlockName,
+      'roadName': resolvedRoadName,
+    });
+
+    return payload;
+  }
+
+  Map<String, dynamic> toMap({
+    String? blockNameOverride,
+    String? roadNameOverride,
+  }) {
+    final payload = buildAddressPayload(
+      addressType: 'flat',
+      blockNameOverride: blockNameOverride,
+      roadNameOverride: roadNameOverride,
+    );
+    payload['roads'] = roadsForSelectedBlock;
+    return payload;
   }
 
   Map<String, dynamic> getOnlyAddressMap({required String addressType}) {
-    final map = toMap();
-    map['addressType'] = addressType;
-    return map;
+    return buildAddressPayload(addressType: addressType);
   }
 
   Map<String, dynamic> getApiAddressBody({
@@ -215,43 +291,50 @@ class AddressController {
     String? blockNameOverride,
     String? roadNameOverride,
   }) {
-    final address = <String, dynamic>{
-      'addressType': addressType,
-      'addressSource': sourceToApiValue(addressSource),
+    return {
+      'userId': userId,
+      'address': buildAddressPayload(
+        addressType: addressType,
+        blockNameOverride: blockNameOverride,
+        roadNameOverride: roadNameOverride,
+      ),
     };
+  }
 
-    switch (addressSource) {
-      case AddressSource.currentLocation:
-        address.addAll({
-          'currentLocationAddress': fullAddress,
-          'latitude': latitude,
-          'longitude': longitude,
-          'fullAddress': fullAddress,
-        });
-        break;
-      case AddressSource.familyHeader:
-      case AddressSource.manual:
-        address.addAll({
-          'city': city.text.trim(),
-          'building': building.text.trim(),
-          'aptNo': aptNo.text.trim(),
-          'floor': floor.text.trim(),
-          'blockId': blockId,
-          'roadId': roadId,
-          'block': block,
-          'road': road,
-          'blockName': blockNameOverride ?? block,
-          'roadName': roadNameOverride ?? road,
-          'latitude': latitude,
-          'longitude': longitude,
-          'fullAddress': fullAddress,
-        });
-        break;
-      default:
-        break;
+  static Map<String, dynamic> mapToApiAddress(
+    Map<String, dynamic> address, {
+    String addressType = 'home',
+  }) {
+    final controller = AddressController();
+    controller.loadAddress(address);
+    return controller.buildAddressPayload(addressType: addressType);
+  }
+
+  static bool isGeoAddressMap(Map<String, dynamic> address) {
+    if (parseIsGeoAddress(address['isGeoAddress'])) return true;
+    final source = parseSource(address['addressSource']);
+    return source == AddressSource.currentLocation;
+  }
+
+  static bool isAddressDataComplete(Map<String, dynamic> address) {
+    if (isGeoAddressMap(address)) {
+      return toDouble(address['latitude']) != null &&
+          toDouble(address['longitude']) != null &&
+          (address['geoAddress'] ??
+                  address['currentLocationAddress'] ??
+                  address['fullAddress'] ??
+                  '')
+              .toString()
+              .trim()
+              .isNotEmpty;
     }
 
-    return {'userId': userId, 'address': address};
+    final blockId = sanitizeId(address['blockId']);
+    final roadId = sanitizeId(address['roadId']);
+
+    return (address['building'] ?? '').toString().trim().isNotEmpty &&
+        blockId != null &&
+        roadId != null;
   }
 
   String? validateBuilding(String? value, AppLocalizations l10n) {

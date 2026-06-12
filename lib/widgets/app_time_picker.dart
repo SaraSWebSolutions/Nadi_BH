@@ -1,20 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:nadi_user_app/core/constants/app_consts.dart';
+import 'package:nadi_user_app/l10n/app_localizations.dart';
 
 class AppTimePicker extends StatelessWidget {
   final TextEditingController controller;
-  final String label;
+  final String? label;
   final ValueChanged<String>? onTimeSelected;
 
   const AppTimePicker({
     super.key,
     required this.controller,
-    this.label = "Select Time",
+    this.label,
     this.onTimeSelected,
   });
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return GestureDetector(
       onTap: () async {
         final TimeOfDay? pickedTime = await showTimePicker(
@@ -42,7 +44,7 @@ class AppTimePicker extends StatelessWidget {
           controller: controller,
           readOnly: true,
           decoration: InputDecoration(
-            labelText: label,
+            labelText: label ?? l10n.selectTime,
             floatingLabelStyle: const TextStyle(
               color: AppColors.btn_primery,
             ),

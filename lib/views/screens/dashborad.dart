@@ -256,11 +256,12 @@ class _DashboardState extends ConsumerState<Dashboard> {
       /// 🔥 force refresh provider (this fixes return-to-page issue)
       ref.invalidate(approveTechProvider);
 
+      final l10n = AppLocalizations.of(context)!;
       SnackbarHelper.ShowSuccess(
         context,
         isApproved
-            ? "Work approved successfully"
-            : "Work rejected successfully",
+            ? l10n.workApprovedSuccessfully
+            : l10n.workRejectedSuccessfully,
       );
     } catch (e) {
       AppLogger.error("Approve error: $e");
@@ -332,7 +333,7 @@ class _DashboardState extends ConsumerState<Dashboard> {
     return showGeneralDialog(
       context: context,
       barrierDismissible: false, //  DO NOT CLOSE ON OUTSIDE CLICK
-      barrierLabel: "Question Popup",
+      barrierLabel: AppLocalizations.of(context)!.questionPopupBarrierLabel,
       barrierColor: Colors.black54,
       transitionDuration: const Duration(milliseconds: 300),
       pageBuilder: (context, animation, secondaryAnimation) {
@@ -1031,7 +1032,10 @@ class _DashboardState extends ConsumerState<Dashboard> {
                                           ),
                                           const SizedBox(height: 4),
                                           Text(
-                                            "Request ID: ${data['requestId']}",
+                                            AppLocalizations.of(context)!
+                                                .requestIdLabel(
+                                              data['requestId'].toString(),
+                                            ),
                                             maxLines: 1,
                                             overflow: TextOverflow.ellipsis,
                                             style: TextStyle(
@@ -1065,7 +1069,13 @@ class _DashboardState extends ConsumerState<Dashboard> {
                                             const SizedBox(width: 6),
                                           ],
                                           Text(
-                                            isOngoing ? "ONGOING" : "COMPLETED",
+                                            isOngoing
+                                                ? AppLocalizations.of(
+                                                    context,
+                                                  )!.ongoingStatus
+                                                : AppLocalizations.of(
+                                                    context,
+                                                  )!.completed,
                                             style: TextStyle(
                                               fontSize: 12,
                                               fontWeight: FontWeight.w600,

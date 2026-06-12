@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:nadi_user_app/core/constants/app_consts.dart';
 import 'package:nadi_user_app/providers/language_provider.dart';
 import 'package:nadi_user_app/routing/app_router.dart';
+import 'package:nadi_user_app/l10n/app_localizations.dart';
 import 'package:nadi_user_app/widgets/buttons/primary_button.dart';
 
 class LanguangeView extends ConsumerStatefulWidget {
@@ -55,9 +56,9 @@ class _LanguangeViewState extends ConsumerState<LanguangeView> {
                         mainAxisSize: MainAxisSize.min, // 👈 important fix
                         children: [
                           const SizedBox(height: 20),
-                          const Text(
-                            "Choose The Language",
-                            style: TextStyle(
+                          Text(
+                            AppLocalizations.of(context)!.chooseTheLanguage,
+                            style: const TextStyle(
                               fontWeight: FontWeight.bold,
                               fontSize: AppFontSizes.xLarge,
                               fontFamily: 'Poppins',
@@ -82,7 +83,7 @@ class _LanguangeViewState extends ConsumerState<LanguangeView> {
                           const SizedBox(height: 25),
 
                           AppButton(
-                            text: "English",
+                            text: AppLocalizations.of(context)!.englishLanguage,
                             onPressed: () async {
                               ref
                                   .read(languageProvider.notifier)
@@ -100,9 +101,10 @@ class _LanguangeViewState extends ConsumerState<LanguangeView> {
 
                           const SizedBox(height: 10),
 
-                          const Text(
-                            "Your language preference can be changed any time in settings",
-                            style: TextStyle(
+                          Text(
+                            AppLocalizations.of(context)!
+                                .languagePreferenceChangeHint,
+                            style: const TextStyle(
                               fontSize: AppFontSizes.small,
                               fontWeight: FontWeight.w400,
                               fontFamily: 'Poppins',

@@ -58,7 +58,7 @@ class _AccountFormViewState extends State<AccountFormView> {
       setState(() => _isLoading = false);
       SnackbarHelper.showError(
         context,
-        "Session expired. Please log in again.",
+        AppLocalizations.of(context)!.sessionExpiredLoginAgain,
       );
       return;
     }
@@ -86,14 +86,18 @@ class _AccountFormViewState extends State<AccountFormView> {
       if (!context.mounted) return;
       setState(() => _isLoading = false);
       if (e is DioException) {
+        final l10n = AppLocalizations.of(context)!;
         final errorMessage =
             e.response?.data['message'] ??
             e.response?.data.toString() ??
-            "Something went wrong";
+            l10n.somethingWentWrong;
 
         SnackbarHelper.showError(context, errorMessage);
       } else {
-        SnackbarHelper.showError(context, "Something went wrong");
+        SnackbarHelper.showError(
+          context,
+          AppLocalizations.of(context)!.somethingWentWrong,
+        );
       }
     }
   }

@@ -2419,6 +2419,462 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Please select an option'**
   String get pleaseSelectAnOption;
+
+  /// No description provided for @pleaseEnableLocationService.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enable location service'**
+  String get pleaseEnableLocationService;
+
+  /// No description provided for @locationPermissionDenied.
+  ///
+  /// In en, this message translates to:
+  /// **'Location permission denied'**
+  String get locationPermissionDenied;
+
+  /// No description provided for @locationPermissionPermanentlyDenied.
+  ///
+  /// In en, this message translates to:
+  /// **'Location permission permanently denied'**
+  String get locationPermissionPermanentlyDenied;
+
+  /// No description provided for @useFamilyHeaderAddress.
+  ///
+  /// In en, this message translates to:
+  /// **'Use Family Header Address'**
+  String get useFamilyHeaderAddress;
+
+  /// No description provided for @useCurrentLocation.
+  ///
+  /// In en, this message translates to:
+  /// **'Use Current Location'**
+  String get useCurrentLocation;
+
+  /// No description provided for @enterManually.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter Manually'**
+  String get enterManually;
+
+  /// No description provided for @others.
+  ///
+  /// In en, this message translates to:
+  /// **'Others'**
+  String get others;
+
+  /// No description provided for @enterBlockName.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter Block Name'**
+  String get enterBlockName;
+
+  /// No description provided for @pleaseEnterBlockName.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter block name'**
+  String get pleaseEnterBlockName;
+
+  /// No description provided for @enterRoadName.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter Road Name'**
+  String get enterRoadName;
+
+  /// No description provided for @pleaseEnterRoadName.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter road name'**
+  String get pleaseEnterRoadName;
+
+  /// No description provided for @selectedAddressLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Selected Address:'**
+  String get selectedAddressLabel;
+
+  /// No description provided for @editLocation.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit Location'**
+  String get editLocation;
+
+  /// No description provided for @enterFamilyCountFirst.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter family count first'**
+  String get enterFamilyCountFirst;
+
+  /// No description provided for @accountAlreadyExists.
+  ///
+  /// In en, this message translates to:
+  /// **'Account already exists'**
+  String get accountAlreadyExists;
+
+  /// No description provided for @sessionExpiredLoginAgain.
+  ///
+  /// In en, this message translates to:
+  /// **'Session expired. Please log in again.'**
+  String get sessionExpiredLoginAgain;
+
+  /// No description provided for @supportPhoneNumber.
+  ///
+  /// In en, this message translates to:
+  /// **'+973 17000000'**
+  String get supportPhoneNumber;
+
+  /// No description provided for @supportEmail.
+  ///
+  /// In en, this message translates to:
+  /// **'support@nadibh.com'**
+  String get supportEmail;
+
+  /// No description provided for @selectLocation.
+  ///
+  /// In en, this message translates to:
+  /// **'Select Location'**
+  String get selectLocation;
+
+  /// No description provided for @searchAddress.
+  ///
+  /// In en, this message translates to:
+  /// **'Search Address'**
+  String get searchAddress;
+
+  /// No description provided for @confirmLocation.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm Location'**
+  String get confirmLocation;
+
+  /// No description provided for @failedToResendOtp.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to resend OTP'**
+  String get failedToResendOtp;
+
+  /// No description provided for @registrationSuccessfulWaitVerification.
+  ///
+  /// In en, this message translates to:
+  /// **'Registration Successful. Please wait for verification.'**
+  String get registrationSuccessfulWaitVerification;
+
+  /// No description provided for @invalidOtp.
+  ///
+  /// In en, this message translates to:
+  /// **'Invalid OTP'**
+  String get invalidOtp;
+
+  /// No description provided for @accountRejectedRegistrationMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Your account registration has been rejected. Please contact our support team for more information.'**
+  String get accountRejectedRegistrationMessage;
+
+  /// No description provided for @noTermsAvailable.
+  ///
+  /// In en, this message translates to:
+  /// **'No terms available at the moment.'**
+  String get noTermsAvailable;
+
+  /// No description provided for @failedToLoadTerms.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to load terms. Please try again later.'**
+  String get failedToLoadTerms;
+
+  /// No description provided for @chooseTheLanguage.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose The Language'**
+  String get chooseTheLanguage;
+
+  /// No description provided for @englishLanguage.
+  ///
+  /// In en, this message translates to:
+  /// **'English'**
+  String get englishLanguage;
+
+  /// No description provided for @languagePreferenceChangeHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Your language preference can be changed any time in settings'**
+  String get languagePreferenceChangeHint;
+
+  /// No description provided for @submittedSuccessfully.
+  ///
+  /// In en, this message translates to:
+  /// **'Submitted successfully'**
+  String get submittedSuccessfully;
+
+  /// No description provided for @unknownMember.
+  ///
+  /// In en, this message translates to:
+  /// **'Unknown'**
+  String get unknownMember;
+
+  /// No description provided for @serviceTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Service'**
+  String get serviceTitle;
+
+  /// No description provided for @workApprovedSuccessfully.
+  ///
+  /// In en, this message translates to:
+  /// **'Work approved successfully'**
+  String get workApprovedSuccessfully;
+
+  /// No description provided for @workRejectedSuccessfully.
+  ///
+  /// In en, this message translates to:
+  /// **'Work rejected successfully'**
+  String get workRejectedSuccessfully;
+
+  /// No description provided for @questionPopupBarrierLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Question Popup'**
+  String get questionPopupBarrierLabel;
+
+  /// No description provided for @ongoingStatus.
+  ///
+  /// In en, this message translates to:
+  /// **'ONGOING'**
+  String get ongoingStatus;
+
+  /// No description provided for @addressTypeLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Address Type'**
+  String get addressTypeLabel;
+
+  /// No description provided for @addressTypeWithValue.
+  ///
+  /// In en, this message translates to:
+  /// **'Address Type: {type}'**
+  String addressTypeWithValue(Object type);
+
+  /// No description provided for @fullLocationAddressLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Full Location Address'**
+  String get fullLocationAddressLabel;
+
+  /// No description provided for @editAddress.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit Address'**
+  String get editAddress;
+
+  /// No description provided for @noHelpDataAvailable.
+  ///
+  /// In en, this message translates to:
+  /// **'No help data available'**
+  String get noHelpDataAvailable;
+
+  /// No description provided for @maximum10ImagesUpload.
+  ///
+  /// In en, this message translates to:
+  /// **'You can only upload up to 10 images'**
+  String get maximum10ImagesUpload;
+
+  /// No description provided for @serviceRequestSubmittedSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Service request\nsubmitted successfully.'**
+  String get serviceRequestSubmittedSuccess;
+
+  /// No description provided for @serviceRequestReceivedProcessing.
+  ///
+  /// In en, this message translates to:
+  /// **'Your request (SRM-001) has been\nreceived and is being processed.'**
+  String get serviceRequestReceivedProcessing;
+
+  /// No description provided for @settingsSectionGeneral.
+  ///
+  /// In en, this message translates to:
+  /// **'GENERAL'**
+  String get settingsSectionGeneral;
+
+  /// No description provided for @settingsSectionPreferences.
+  ///
+  /// In en, this message translates to:
+  /// **'PREFERENCES'**
+  String get settingsSectionPreferences;
+
+  /// No description provided for @settingsSectionAccount.
+  ///
+  /// In en, this message translates to:
+  /// **'ACCOUNT'**
+  String get settingsSectionAccount;
+
+  /// No description provided for @languageBhAbbrev.
+  ///
+  /// In en, this message translates to:
+  /// **'BH'**
+  String get languageBhAbbrev;
+
+  /// No description provided for @languageEngAbbrev.
+  ///
+  /// In en, this message translates to:
+  /// **'ENG'**
+  String get languageEngAbbrev;
+
+  /// No description provided for @selectDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Select Date'**
+  String get selectDate;
+
+  /// No description provided for @selectTime.
+  ///
+  /// In en, this message translates to:
+  /// **'Select Time'**
+  String get selectTime;
+
+  /// No description provided for @congratulations.
+  ///
+  /// In en, this message translates to:
+  /// **'Congratulations!'**
+  String get congratulations;
+
+  /// No description provided for @claimReward.
+  ///
+  /// In en, this message translates to:
+  /// **'Claim Reward'**
+  String get claimReward;
+
+  /// No description provided for @exitAppConfirmation.
+  ///
+  /// In en, this message translates to:
+  /// **'Do you want to exit the app?'**
+  String get exitAppConfirmation;
+
+  /// No description provided for @exit.
+  ///
+  /// In en, this message translates to:
+  /// **'Exit'**
+  String get exit;
+
+  /// No description provided for @addMedia.
+  ///
+  /// In en, this message translates to:
+  /// **'Add Media'**
+  String get addMedia;
+
+  /// No description provided for @noInternetConnectionTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'No Internet Connection'**
+  String get noInternetConnectionTitle;
+
+  /// No description provided for @noInternetConnectionMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Please check your internet connection and try again.'**
+  String get noInternetConnectionMessage;
+
+  /// No description provided for @pointsToYou.
+  ///
+  /// In en, this message translates to:
+  /// **'Points to you'**
+  String get pointsToYou;
+
+  /// No description provided for @pointsFromName.
+  ///
+  /// In en, this message translates to:
+  /// **'Points from {name}'**
+  String pointsFromName(Object name);
+
+  /// No description provided for @accept.
+  ///
+  /// In en, this message translates to:
+  /// **'Accept'**
+  String get accept;
+
+  /// No description provided for @requestSent.
+  ///
+  /// In en, this message translates to:
+  /// **'Request Sent'**
+  String get requestSent;
+
+  /// No description provided for @requestAccepted.
+  ///
+  /// In en, this message translates to:
+  /// **'Request Accepted'**
+  String get requestAccepted;
+
+  /// No description provided for @requestRejected.
+  ///
+  /// In en, this message translates to:
+  /// **'Request Rejected'**
+  String get requestRejected;
+
+  /// No description provided for @microphonePermissionDenied.
+  ///
+  /// In en, this message translates to:
+  /// **'Microphone permission denied'**
+  String get microphonePermissionDenied;
+
+  /// No description provided for @familyHeaderAddressLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Family Header Address'**
+  String get familyHeaderAddressLabel;
+
+  /// No description provided for @currentLocationLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Current Location'**
+  String get currentLocationLabel;
+
+  /// No description provided for @manualAddressLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Manual Address'**
+  String get manualAddressLabel;
+
+  /// No description provided for @genericAddressLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Address'**
+  String get genericAddressLabel;
+
+  /// No description provided for @cityWithValue.
+  ///
+  /// In en, this message translates to:
+  /// **'City {value}'**
+  String cityWithValue(Object value);
+
+  /// No description provided for @buildingWithValue.
+  ///
+  /// In en, this message translates to:
+  /// **'Building {value}'**
+  String buildingWithValue(Object value);
+
+  /// No description provided for @apartmentWithValue.
+  ///
+  /// In en, this message translates to:
+  /// **'Apartment {value}'**
+  String apartmentWithValue(Object value);
+
+  /// No description provided for @floorWithValue.
+  ///
+  /// In en, this message translates to:
+  /// **'Floor {value}'**
+  String floorWithValue(Object value);
+
+  /// No description provided for @blockWithValue.
+  ///
+  /// In en, this message translates to:
+  /// **'Block {value}'**
+  String blockWithValue(Object value);
+
+  /// No description provided for @roadWithValue.
+  ///
+  /// In en, this message translates to:
+  /// **'Road {value}'**
+  String roadWithValue(Object value);
 }
 
 class _AppLocalizationsDelegate

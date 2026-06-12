@@ -1222,5 +1222,257 @@ class AppLocalizationsAr extends AppLocalizations {
   String get fieldCannotBeEmpty => 'هذا الحقل لا يمكن أن يكون فارغاً';
 
   @override
-  String get pleaseSelectAnOption => 'Please select an option';
+  String get pleaseSelectAnOption => 'يرجى اختيار خيار';
+
+  @override
+  String get pleaseEnableLocationService => 'يرجى تفعيل خدمة الموقع';
+
+  @override
+  String get locationPermissionDenied => 'تم رفض إذن الموقع';
+
+  @override
+  String get locationPermissionPermanentlyDenied =>
+      'تم رفض إذن الموقع بشكل دائم';
+
+  @override
+  String get useFamilyHeaderAddress => 'استخدام عنوان رب الأسرة';
+
+  @override
+  String get useCurrentLocation => 'استخدام الموقع الحالي';
+
+  @override
+  String get enterManually => 'إدخال يدوي';
+
+  @override
+  String get others => 'أخرى';
+
+  @override
+  String get enterBlockName => 'أدخل اسم المجمع';
+
+  @override
+  String get pleaseEnterBlockName => 'يرجى إدخال اسم المجمع';
+
+  @override
+  String get enterRoadName => 'أدخل اسم الطريق';
+
+  @override
+  String get pleaseEnterRoadName => 'يرجى إدخال اسم الطريق';
+
+  @override
+  String get selectedAddressLabel => 'العنوان المحدد:';
+
+  @override
+  String get editLocation => 'تعديل الموقع';
+
+  @override
+  String get enterFamilyCountFirst => 'أدخل عدد أفراد العائلة أولاً';
+
+  @override
+  String get accountAlreadyExists => 'الحساب موجود بالفعل';
+
+  @override
+  String get sessionExpiredLoginAgain =>
+      'انتهت الجلسة. يرجى تسجيل الدخول مرة أخرى.';
+
+  @override
+  String get supportPhoneNumber => '+973 17000000';
+
+  @override
+  String get supportEmail => 'support@nadibh.com';
+
+  @override
+  String get selectLocation => 'اختر الموقع';
+
+  @override
+  String get searchAddress => 'ابحث عن عنوان';
+
+  @override
+  String get confirmLocation => 'تأكيد الموقع';
+
+  @override
+  String get failedToResendOtp => 'فشل في إعادة إرسال رمز التحقق';
+
+  @override
+  String get registrationSuccessfulWaitVerification =>
+      'تم التسجيل بنجاح. يرجى انتظار التحقق.';
+
+  @override
+  String get invalidOtp => 'رمز التحقق غير صالح';
+
+  @override
+  String get accountRejectedRegistrationMessage =>
+      'تم رفض تسجيل حسابك. يرجى التواصل مع فريق الدعم لمزيد من المعلومات.';
+
+  @override
+  String get noTermsAvailable => 'لا تتوفر شروط وأحكام في الوقت الحالي.';
+
+  @override
+  String get failedToLoadTerms =>
+      'فشل تحميل الشروط والأحكام. يرجى المحاولة لاحقاً.';
+
+  @override
+  String get chooseTheLanguage => 'اختر اللغة';
+
+  @override
+  String get englishLanguage => 'الإنجليزية';
+
+  @override
+  String get languagePreferenceChangeHint =>
+      'يمكنك تغيير تفضيل اللغة في أي وقت من الإعدادات';
+
+  @override
+  String get submittedSuccessfully => 'تم الإرسال بنجاح';
+
+  @override
+  String get unknownMember => 'غير معروف';
+
+  @override
+  String get serviceTitle => 'الخدمة';
+
+  @override
+  String get workApprovedSuccessfully => 'تمت الموافقة على العمل بنجاح';
+
+  @override
+  String get workRejectedSuccessfully => 'تم رفض العمل بنجاح';
+
+  @override
+  String get questionPopupBarrierLabel => 'نافذة الأسئلة';
+
+  @override
+  String get ongoingStatus => 'جاري التنفيذ';
+
+  @override
+  String get addressTypeLabel => 'نوع العنوان';
+
+  @override
+  String addressTypeWithValue(Object type) {
+    return 'نوع العنوان: $type';
+  }
+
+  @override
+  String get fullLocationAddressLabel => 'عنوان الموقع الكامل';
+
+  @override
+  String get editAddress => 'تعديل العنوان';
+
+  @override
+  String get noHelpDataAvailable => 'لا تتوفر بيانات مساعدة';
+
+  @override
+  String get maximum10ImagesUpload => 'يمكنك رفع 10 صور كحد أقصى';
+
+  @override
+  String get serviceRequestSubmittedSuccess => 'تم إرسال طلب الخدمة\nبنجاح.';
+
+  @override
+  String get serviceRequestReceivedProcessing =>
+      'تم استلام طلبك (SRM-001)\nوهو قيد المعالجة.';
+
+  @override
+  String get settingsSectionGeneral => 'عام';
+
+  @override
+  String get settingsSectionPreferences => 'التفضيلات';
+
+  @override
+  String get settingsSectionAccount => 'الحساب';
+
+  @override
+  String get languageBhAbbrev => 'عربي';
+
+  @override
+  String get languageEngAbbrev => 'ENG';
+
+  @override
+  String get selectDate => 'اختر التاريخ';
+
+  @override
+  String get selectTime => 'اختر الوقت';
+
+  @override
+  String get congratulations => 'تهانينا!';
+
+  @override
+  String get claimReward => 'استلام المكافأة';
+
+  @override
+  String get exitAppConfirmation => 'هل تريد الخروج من التطبيق؟';
+
+  @override
+  String get exit => 'خروج';
+
+  @override
+  String get addMedia => 'إضافة وسائط';
+
+  @override
+  String get noInternetConnectionTitle => 'لا يوجد اتصال بالإنترنت';
+
+  @override
+  String get noInternetConnectionMessage =>
+      'يرجى التحقق من اتصالك بالإنترنت والمحاولة مرة أخرى.';
+
+  @override
+  String get pointsToYou => 'نقاط إليك';
+
+  @override
+  String pointsFromName(Object name) {
+    return 'نقاط من $name';
+  }
+
+  @override
+  String get accept => 'قبول';
+
+  @override
+  String get requestSent => 'تم إرسال الطلب';
+
+  @override
+  String get requestAccepted => 'تم قبول الطلب';
+
+  @override
+  String get requestRejected => 'تم رفض الطلب';
+
+  @override
+  String get microphonePermissionDenied => 'تم رفض إذن الميكروفون';
+
+  @override
+  String get familyHeaderAddressLabel => 'عنوان رب الأسرة';
+
+  @override
+  String get currentLocationLabel => 'الموقع الحالي';
+
+  @override
+  String get manualAddressLabel => 'عنوان يدوي';
+
+  @override
+  String get genericAddressLabel => 'العنوان';
+
+  @override
+  String cityWithValue(Object value) {
+    return 'المدينة $value';
+  }
+
+  @override
+  String buildingWithValue(Object value) {
+    return 'المبنى $value';
+  }
+
+  @override
+  String apartmentWithValue(Object value) {
+    return 'الشقة $value';
+  }
+
+  @override
+  String floorWithValue(Object value) {
+    return 'الطابق $value';
+  }
+
+  @override
+  String blockWithValue(Object value) {
+    return 'المجمع $value';
+  }
+
+  @override
+  String roadWithValue(Object value) {
+    return 'الطريق $value';
+  }
 }

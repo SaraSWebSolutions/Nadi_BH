@@ -1,399 +1,9 @@
-// import 'package:flutter/material.dart';
-// import 'package:flutter_riverpod/flutter_riverpod.dart';
-// import 'package:go_router/go_router.dart';
-// import 'package:nadi_user_app/controllers/address_controller.dart';
-// import 'package:nadi_user_app/core/constants/app_consts.dart';
-// import 'package:nadi_user_app/core/utils/logger.dart';
-// import 'package:nadi_user_app/core/utils/snackbar_helper.dart';
-// import 'package:nadi_user_app/l10n/app_localizations.dart';
-// import 'package:nadi_user_app/preferences/preferences.dart';
-// import 'package:nadi_user_app/providers/auth_Provider.dart';
-// import 'package:nadi_user_app/routing/app_router.dart';
-// import 'package:nadi_user_app/services/auth_service.dart';
-// import 'package:nadi_user_app/widgets/buttons/primary_button.dart';
-// import 'package:nadi_user_app/widgets/inputs/app_dropdown.dart';
-// import 'package:nadi_user_app/widgets/inputs/app_text_field.dart';
-
-// class Address extends StatefulWidget {
-//   final String accountType;
-//   final VoidCallback? onNext;
-//   final VoidCallback? onChanged;
-//   final bool family;
-//   final GlobalKey<FormState> formKey;
-//   final AddressController controller;
-//   const Address({
-//     super.key,
-//     required this.accountType,
-//     this.onNext,
-//     this.family = false,
-//     required this.formKey,
-//     required this.controller,
-//     this.onChanged, // ✅ ADD THIS
-//   });
-
-//   @override
-//   State<Address> createState() => _AddressState();
-// }
-
-// class _AddressState extends State<Address> {
-//   String selected = "Flat";
-//   bool _isLoading = false;
-//   bool _hideBottomButton = false;
-//   bool get showButton {
-//     return controller.city.text.isNotEmpty &&
-//         controller.building.text.isNotEmpty &&
-//         controller.block != null &&
-//         controller.road != null;
-//   }
-
-//   // GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-//   final AuthService _adressservice = AuthService();
-//   AddressController get controller => widget.controller;
-//   @override
-//   void _resetAll() {
-//     WidgetsBinding.instance.addPostFrameCallback((_) {
-//       controller.clear();
-
-//       setState(() {
-//         selected = "Flat";
-//         _isLoading = false;
-//         // _formKey = GlobalKey<FormState>(); // clears validation UI
-//       });
-//     });
-//   }
-
-//   Future<void> familyAccount(BuildContext context) async {
-//     final userId = await AppPreferences.getUserId();
-//     final l10n = AppLocalizations.of(context)!;
-
-//     if (userId == null || !mounted) return;
-
-//     final body = controller.getApiAddressBody(
-//       userId: userId,
-//       addressType: selected.toLowerCase(),
-//     );
-
-//     setState(() => _isLoading = true);
-
-//     try {
-//       final response = await _adressservice.adressdetails(body: body);
-
-//       if (!mounted) return;
-//       setState(() => _isLoading = false);
-
-//       if (response == null) return;
-
-//       // FAMILY FLOW
-//       if (widget.accountType == "Family") {
-//         widget.onNext?.call();
-//         return;
-//       }
-
-//       if (!context.mounted) return;
-
-//       // SUCCESS MESSAGE
-//       SnackbarHelper.ShowSuccess(context, l10n.accountCreatedSuccessfully);
-
-//       await Future.delayed(const Duration(milliseconds: 800));
-
-//       if (!mounted) return;
-
-//       // CLEAN NAVIGATION FLOW
-//       await context.push(RouteNames.accountverfy);
-
-//       // CLEANUP AFTER NAVIGATION FRAME
-//       WidgetsBinding.instance.addPostFrameCallback((_) {
-//         if (!mounted) return;
-
-//         controller.clear();
-
-//         setState(() {
-//           selected = "Flat";
-//           // _hideBottomButton = true;
-//           _isLoading = false;
-//         });
-//       });
-//     } catch (e) {
-//       if (!mounted) return;
-
-//       setState(() => _isLoading = false);
-
-//       SnackbarHelper.showError(context, "${l10n.submitFailed}: $e");
-//     }
-//   }
-
-//   void _onAddressChanged() {
-//     if (_hideBottomButton) {
-//       setState(() {
-//         _hideBottomButton = false;
-//       });
-//     }
-
-//     widget.onChanged?.call();
-//   }
-
-//   Widget buildType(String type, String icon) {
-//     final bool isSelected = selected == type;
-
-//     return Expanded(
-//       child: GestureDetector(
-//         onTap: () {
-//           setState(() {
-//             selected = type;
-
-//             if (type == "Villa") {
-//               controller.aptNo.clear();
-//               controller.floor.clear();
-//             }
-//           });
-//         },
-//         child: Container(
-//           height: 58, // ✅ fixed height
-//           margin: const EdgeInsets.symmetric(horizontal: 4),
-//           decoration: BoxDecoration(
-//             color: isSelected
-//                 ? AppColors.btn_primery
-//                 : Theme.of(context).colorScheme.surface,
-
-//             borderRadius: BorderRadius.circular(14),
-
-//             border: Border.all(
-//               color: isSelected ? AppColors.btn_primery : Colors.grey.shade300,
-//             ),
-//           ),
-
-//           child: Center(
-//             // ✅ IMPORTANT
-//             child: Row(
-//               mainAxisSize: MainAxisSize.min,
-//               crossAxisAlignment: CrossAxisAlignment.center, // ✅ FIX
-//               children: [
-//                 Image.asset(
-//                   icon,
-//                   height: 23,
-//                   width: 23,
-//                   color: isSelected
-//                       ? Colors.white
-//                       : Theme.of(context).colorScheme.onSurfaceVariant,
-//                 ),
-
-//                 const SizedBox(width: 8),
-
-//                 Text(
-//                   type,
-//                   textAlign: TextAlign.center,
-//                   style: TextStyle(
-//                     fontSize: 15,
-//                     fontWeight: FontWeight.w600,
-//                     height: 1, // ✅ FIX TEXT VERTICAL ALIGN
-//                     color: isSelected
-//                         ? Colors.white
-//                         : Theme.of(context).colorScheme.onSurface,
-//                   ),
-//                 ),
-//               ],
-//             ),
-//           ),
-//         ),
-//       ),
-//     );
-//   }
-
-//   @override
-//   Widget build(BuildContext context) {
-//     final l10n = AppLocalizations.of(context)!;
-//     return Form(
-//       key: widget.formKey,
-//       autovalidateMode: AutovalidateMode.disabled,
-
-//       child: Column(
-//         children: [
-//           // AppTextField(
-//           //   controller: controller.building,
-//           //   label: l10n.pickLocation,
-//           // ),
-//           SizedBox(height: 10),
-
-//           // if (widget.accountType == "Family") ...[
-//           //   AppTextField(label: l10n.enterNumberOfKids),
-//           //   SizedBox(height: 10),
-//           //   Row(
-//           //     children: [
-//           //       Expanded(child: AppTextField(label: l10n.noOfBoys)),
-//           //       SizedBox(width: 10),
-//           //       Expanded(child: AppTextField(label: l10n.noOfGirls)),
-//           //     ],
-//           //   ),
-//           //   SizedBox(height: 17),
-//           // ],
-//           SizedBox(height: 15),
-//           // Image.asset("assets/images/map.png", height: 84),
-//           // SizedBox(height: 15),
-//           Row(
-//             mainAxisAlignment: MainAxisAlignment.spaceBetween,
-//             children: [
-//               buildType(l10n.flat, 'assets/icons/Flat.png'),
-//               buildType(l10n.villa, 'assets/icons/villa.png'),
-//               // buildType(l10n.office, 'assets/icons/office.png'),
-//             ],
-//           ),
-//           SizedBox(height: 17),
-//           AppTextField(
-//             controller: controller.city,
-//             label: l10n.enterCity,
-//             keyboardType: TextInputType.streetAddress,
-//             textInputAction: TextInputAction.next,
-//             onChanged: (_) => _onAddressChanged(),
-//           ),
-//           SizedBox(height: 17),
-//           AppTextField(
-//             controller: controller.building,
-//             label: l10n.enterBuilding,
-//             validator: (value) => controller.validateBuilding(value, l10n),
-//             keyboardType: TextInputType.text,
-//             textInputAction: TextInputAction.next,
-//             onChanged: (_) => _onAddressChanged(),
-//           ),
-//           SizedBox(height: 17),
-//           if (selected != l10n.villa) ...[
-//             Row(
-//               children: [
-//                 Expanded(
-//                   child: AppTextField(
-//                     controller: controller.aptNo,
-//                     keyboardType: TextInputType.number,
-//                     textInputAction: TextInputAction.next,
-//                     label: l10n.enterAptNo,
-//                     onChanged: (_) => _onAddressChanged(),
-//                     validator: (value) => controller.validateAptNo(value, l10n),
-//                   ),
-//                 ),
-//                 SizedBox(width: 10),
-//                 Expanded(
-//                   child: AppTextField(
-//                     controller: controller.floor,
-//                     keyboardType: TextInputType.number,
-//                     textInputAction: TextInputAction.done,
-//                     onChanged: (_) => _onAddressChanged(),
-//                     label: l10n.enterFloorNo,
-//                     validator: (value) => controller.validateFloor(value, l10n),
-//                   ),
-//                 ),
-//               ],
-//             ),
-//             SizedBox(height: 17),
-//           ],
-//           Consumer(
-//             builder: (context, ref, child) {
-//               final blockAsync = ref.watch(getBlockProvider);
-
-//               return blockAsync.when(
-//                 data: (blocks) {
-//                   if (controller.block != null &&
-//                       controller.roadsForSelectedBlock.isEmpty) {
-//                     final selectedBlock = blocks.firstWhere(
-//                       (b) => b['name'] == controller.block,
-//                       orElse: () => {},
-//                     );
-
-//                     if (selectedBlock.isNotEmpty) {
-//                       controller.roadsForSelectedBlock =
-//                           List<Map<String, dynamic>>.from(
-//                             selectedBlock['roads'] ?? [],
-//                           );
-//                     }
-//                   }
-//                   return Column(
-//                     crossAxisAlignment: CrossAxisAlignment.start,
-//                     children: [
-//                       /// BLOCK FIRST
-//                       AppDropdown(
-//                         label: l10n.selectBlock,
-//                         items: blocks.map((b) => b['name'] as String).toList(),
-//                         value: controller.block,
-//                         onChanged: (val) {
-//                           _onAddressChanged();
-//                           setState(() {
-//                             final block = blocks.firstWhere(
-//                               (b) => b['name'] == val,
-//                             );
-//                             controller.block = block['name'];
-//                             controller.blockId = block['_id'];
-//                             controller.road = null;
-//                             controller.roadId = null;
-
-//                             controller.roadsForSelectedBlock =
-//                                 List<Map<String, dynamic>>.from(block['roads']);
-//                           });
-//                         },
-//                         validator: (val) =>
-//                             val == null ? l10n.pleaseSelectBlock : null,
-//                       ),
-
-//                       SizedBox(height: 15),
-
-//                       /// ROAD SECOND
-//                       AppDropdown(
-//                         label: l10n.selectRoad,
-//                         items: controller.roadsForSelectedBlock
-//                             .map((r) => r['name'] as String)
-//                             .toList(),
-//                         value: controller.road,
-//                         onChanged: (val) {
-//                           _onAddressChanged();
-//                           setState(() {
-//                             final road = controller.roadsForSelectedBlock
-//                                 .firstWhere((r) => r['name'] == val);
-
-//                             controller.road = road['name'];
-//                             controller.roadId = road['_id'];
-//                           });
-//                         },
-//                         validator: (val) =>
-//                             val == null ? l10n.pleaseSelectRoad : null,
-//                       ),
-//                     ],
-//                   );
-//                 },
-//                 loading: () => const CircularProgressIndicator(),
-//                 error: (e, _) => Text("${l10n.failedToLoadBlocks}: $e"),
-//               );
-//             },
-//           ),
-
-//           SizedBox(height: 20),
-//           if (!widget.family)
-//             // if (!widget.family && showButton)
-//             // if (!_hideBottomButton)
-//             AppButton(
-//               text: widget.accountType == "Family"
-//                   ? l10n.continueBtn
-//                   : l10n.signIn,
-//               isLoading: _isLoading,
-//               onPressed: () {
-//                 final isValid =
-//                     widget.formKey.currentState?.validate() ?? false;
-
-//                 if (!isValid) return;
-
-//                 familyAccount(context);
-//               },
-//               color: AppColors.btn_primery,
-//               width: double.infinity,
-//             ),
-
-//           SizedBox(height: 10),
-//         ],
-//       ),
-//     );
-//   }
-// }
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:nadi_user_app/controllers/address_controller.dart';
 import 'package:nadi_user_app/core/constants/app_consts.dart';
+import 'package:nadi_user_app/core/utils/address_display_helper.dart';
 import 'package:nadi_user_app/core/utils/logger.dart';
 import 'package:nadi_user_app/core/utils/snackbar_helper.dart';
 import 'package:nadi_user_app/l10n/app_localizations.dart';
@@ -471,7 +81,9 @@ class _AddressState extends State<Address> {
         if (!mounted) return;
         controller.loadAddress(initial);
         if (controller.addressSource == null) {
-          controller.addressSource = AddressSource.manual;
+          controller.addressSource =
+              AddressDisplayHelper.resolveSource(initial) ??
+              AddressSource.manual;
         }
         setState(() {});
       });
@@ -507,7 +119,7 @@ class _AddressState extends State<Address> {
       otherRoadError = null;
     });
 
-    if (controller.addressSource != AddressSource.currentLocation) {
+    if (!controller.isGeoMode) {
       if (isOtherBlockSelected && otherBlockController.text.trim().isEmpty) {
         setState(() {
           otherBlockError = l10n.pleaseEnterBlock;
@@ -630,8 +242,10 @@ class _AddressState extends State<Address> {
 
     bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
 
+    final l10n = AppLocalizations.of(context)!;
+
     if (!serviceEnabled) {
-      SnackbarHelper.showError(context, "Please enable location service");
+      SnackbarHelper.showError(context, l10n.pleaseEnableLocationService);
       return;
     }
 
@@ -642,14 +256,14 @@ class _AddressState extends State<Address> {
     }
 
     if (permission == LocationPermission.denied) {
-      SnackbarHelper.showError(context, "Location permission denied");
+      SnackbarHelper.showError(context, l10n.locationPermissionDenied);
       return;
     }
 
     if (permission == LocationPermission.deniedForever) {
       SnackbarHelper.showError(
         context,
-        "Location permission permanently denied",
+        l10n.locationPermissionPermanentlyDenied,
       );
 
       await Geolocator.openAppSettings();
@@ -665,7 +279,7 @@ class _AddressState extends State<Address> {
       );
 
       if (result is LocationResult) {
-        _applyCurrentLocation(result);
+        await _applyCurrentLocation(result);
       }
     } catch (e) {
       debugPrint("MAP ERROR: $e");
@@ -678,7 +292,8 @@ class _AddressState extends State<Address> {
     }
   }
 
-  void _applyCurrentLocation(LocationResult result) {
+  Future<void> _applyCurrentLocation(LocationResult result) async {
+    if (!mounted) return;
     setState(() {
       controller.applyCurrentLocation(result);
     });
@@ -686,27 +301,7 @@ class _AddressState extends State<Address> {
 
   void fillAddressFromApi(Map<String, dynamic> data) {
     setState(() {
-      controller.city.text = data["city"] ?? "";
-      controller.building.text = data["building"] ?? "";
-      controller.aptNo.text = data["aptNo"] ?? "";
-      controller.floor.text = data["floor"] ?? "";
-
-      controller.block = data["blockName"] ?? data["block"];
-      controller.road = data["roadName"] ?? data["road"];
-
-      controller.blockId = data["blockId"];
-      controller.roadId = data["roadId"];
-
-      controller.latitude = AddressController.toDouble(data["latitude"]);
-      controller.longitude = AddressController.toDouble(data["longitude"]);
-      controller.addressSource =
-          AddressController.parseSource(data['addressSource']) ??
-          (controller.fullAddress != null &&
-                  controller.latitude != null &&
-                  controller.longitude != null &&
-                  controller.building.text.trim().isEmpty
-              ? AddressSource.currentLocation
-              : AddressSource.manual);
+      controller.loadAddress(Map<String, dynamic>.from(data));
     });
   }
 
@@ -723,37 +318,45 @@ class _AddressState extends State<Address> {
     final address = widget.familyHeaderAddress;
     if (address == null) return;
 
-    final ref = ProviderScope.containerOf(context);
-    final blocks = await ref.read(getBlockProvider.future);
-
     setState(() {
       controller.applyFamilyHeader(address);
       _resetLocalAddressState();
+    });
 
-      final blockName = controller.block;
-      if (blockName != null) {
-        Map<String, dynamic>? matchedBlock;
-        try {
-          matchedBlock = blocks.firstWhere((b) => b['name'] == blockName);
-        } catch (_) {
-          matchedBlock = null;
-        }
+    if (controller.isGeoMode || !mounted) return;
 
-        if (matchedBlock != null) {
-          controller.blockId ??= matchedBlock['_id']?.toString();
-          controller.roadsForSelectedBlock = List<Map<String, dynamic>>.from(
-            matchedBlock['roads'] ?? [],
+    final ref = ProviderScope.containerOf(context);
+    final blocks = await ref.read(getBlockProvider.future);
+    final blockName = controller.block;
+    if (blockName == null) return;
+
+    Map<String, dynamic>? matchedBlock;
+    try {
+      matchedBlock = blocks.firstWhere((b) => b['name'] == blockName);
+    } catch (_) {
+      matchedBlock = null;
+    }
+
+    if (!mounted || matchedBlock == null) return;
+
+    final resolvedBlock = matchedBlock;
+
+    setState(() {
+      controller.blockId ??=
+          AddressController.sanitizeId(resolvedBlock['_id']);
+      controller.roadsForSelectedBlock = List<Map<String, dynamic>>.from(
+        resolvedBlock['roads'] ?? [],
+      );
+
+      final roadName = controller.road;
+      if (roadName != null) {
+        final matchedRoad = controller.roadsForSelectedBlock.where(
+          (r) => r['name'] == roadName,
+        );
+        if (matchedRoad.isNotEmpty) {
+          controller.roadId ??= AddressController.sanitizeId(
+            matchedRoad.first['_id'],
           );
-
-          final roadName = controller.road;
-          if (roadName != null) {
-            final matchedRoad = controller.roadsForSelectedBlock.where(
-              (r) => r['name'] == roadName,
-            );
-            if (matchedRoad.isNotEmpty) {
-              controller.roadId ??= matchedRoad.first['_id']?.toString();
-            }
-          }
         }
       }
     });
@@ -780,6 +383,8 @@ class _AddressState extends State<Address> {
   bool _validateManualForm() {
     final l10n = AppLocalizations.of(context)!;
 
+    if (controller.isGeoMode) return true;
+
     setState(() {
       otherBlockError = null;
       otherRoadError = null;
@@ -795,6 +400,16 @@ class _AddressState extends State<Address> {
       return false;
     }
 
+    if (AddressController.sanitizeId(controller.roadId) == null) {
+      SnackbarHelper.showError(context, l10n.pleaseSelectRoad);
+      return false;
+    }
+
+    if (AddressController.sanitizeId(controller.blockId) == null) {
+      SnackbarHelper.showError(context, l10n.pleaseSelectBlock);
+      return false;
+    }
+
     return widget.formKey.currentState?.validate() ?? false;
   }
 
@@ -806,16 +421,10 @@ class _AddressState extends State<Address> {
       return;
     }
 
-    if (controller.addressSource == AddressSource.currentLocation) {
+    if (!_validateManualForm() || !controller.isComplete) {
       if (!controller.isComplete) {
         SnackbarHelper.showError(context, l10n.addAddressError);
-        return;
       }
-      widget.onNext?.call(controller.toMap());
-      return;
-    }
-
-    if (!_validateManualForm() || !controller.isComplete) {
       return;
     }
 
@@ -960,23 +569,24 @@ class _AddressState extends State<Address> {
   }
 
   Widget _buildAddressModeOptions() {
+    final l10n = AppLocalizations.of(context)!;
     return Column(
       children: [
         if (widget.isFromMemberScreen)
           _buildModeOptionCard(
-            title: "Use Family Header Address",
+            title: l10n.useFamilyHeaderAddress,
             icon: Icons.home_outlined,
             source: AddressSource.familyHeader,
             isSelected: controller.addressSource == AddressSource.familyHeader,
           ),
         _buildModeOptionCard(
-          title: "Use Current Location",
+          title: l10n.useCurrentLocation,
           icon: Icons.my_location,
           source: AddressSource.currentLocation,
           isSelected: controller.addressSource == AddressSource.currentLocation,
         ),
         _buildModeOptionCard(
-          title: "Enter Manually",
+          title: l10n.enterManually,
           icon: Icons.edit_location_alt,
           source: AddressSource.manual,
           isSelected: controller.addressSource == AddressSource.manual,
@@ -1098,7 +708,7 @@ class _AddressState extends State<Address> {
                       enabled: fieldsEnabled,
                       items: [
                         ...blocks.map((b) => b['name'] as String),
-                        if (!controller.isReadOnly) "Others",
+                        if (!controller.isReadOnly) l10n.others,
                       ],
 
                       value: blockValue,
@@ -1123,7 +733,7 @@ class _AddressState extends State<Address> {
                       onChanged: (val) {
                         _onAddressChanged();
 
-                        if (val == "Others") {
+                        if (val == l10n.others) {
                           setState(() {
                             isOtherBlockSelected = true;
 
@@ -1147,7 +757,9 @@ class _AddressState extends State<Address> {
                           );
 
                           controller.block = block['name'];
-                          controller.blockId = block['_id'];
+                          controller.blockId = AddressController.sanitizeId(
+                            block['_id'],
+                          );
 
                           controller.road = null;
                           controller.roadId = null;
@@ -1164,14 +776,14 @@ class _AddressState extends State<Address> {
                     if (isOtherBlockSelected) ...[
                       AppTextField(
                         controller: otherBlockController,
-                        label: "Enter Block Name",
+                        label: l10n.enterBlockName,
                         keyboardType: TextInputType.number,
                         readonly: controller.isReadOnly,
                         enabled: fieldsEnabled,
                         validator: (value) {
                           if (isOtherBlockSelected &&
                               (value == null || value.trim().isEmpty)) {
-                            return "Please enter block name";
+                            return l10n.pleaseEnterBlockName;
                           }
                           return null;
                         },
@@ -1206,7 +818,7 @@ class _AddressState extends State<Address> {
                         ...controller.roadsForSelectedBlock.map(
                           (r) => r['name'] as String,
                         ),
-                        if (!controller.isReadOnly) "Others",
+                        if (!controller.isReadOnly) l10n.others,
                       ],
                       value: roadValue,
                       // onChanged: (val) {
@@ -1223,7 +835,7 @@ class _AddressState extends State<Address> {
                       onChanged: (val) {
                         _onAddressChanged();
 
-                        if (val == "Others") {
+                        if (val == l10n.others) {
                           setState(() {
                             isOtherRoadSelected = true;
 
@@ -1240,7 +852,9 @@ class _AddressState extends State<Address> {
                               .firstWhere((r) => r['name'] == val);
 
                           controller.road = road['name'];
-                          controller.roadId = road['_id'];
+                          controller.roadId = AddressController.sanitizeId(
+                            road['_id'],
+                          );
                         });
                       },
                       validator: (val) =>
@@ -1251,14 +865,14 @@ class _AddressState extends State<Address> {
                     if (isOtherRoadSelected) ...[
                       AppTextField(
                         controller: otherRoadController,
-                        label: "Enter Road Name",
+                        label: l10n.enterRoadName,
                         keyboardType: TextInputType.number,
                         readonly: controller.isReadOnly,
                         enabled: fieldsEnabled,
                         validator: (value) {
                           if (isOtherRoadSelected &&
                               (value == null || value.trim().isEmpty)) {
-                            return "Please enter road name";
+                            return l10n.pleaseEnterRoadName;
                           }
                           return null;
                         },
@@ -1297,6 +911,7 @@ class _AddressState extends State<Address> {
   }
 
   Widget _buildCurrentLocationView() {
+    final l10n = AppLocalizations.of(context)!;
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(16),
@@ -1308,30 +923,30 @@ class _AddressState extends State<Address> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
-            'Selected Address:',
-            style: TextStyle(fontWeight: FontWeight.w600, fontSize: 14),
+          Text(
+            l10n.selectedAddressLabel,
+            style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 14),
           ),
           const SizedBox(height: 10),
           Text(
-            controller.fullAddress ?? '',
+            controller.geoAddress ?? controller.fullAddress ?? '',
             style: const TextStyle(fontSize: 15),
           ),
-          const SizedBox(height: 12),
-          OutlinedButton.icon(
-            onPressed: _isLocationLoading ? null : _openMapPicker,
-            icon: const Icon(Icons.edit_location_alt),
-            label: const Text('Edit Location'),
-          ),
+          if (!controller.isReadOnly) ...[
+            const SizedBox(height: 12),
+            OutlinedButton.icon(
+              onPressed: _isLocationLoading ? null : _openMapPicker,
+              icon: const Icon(Icons.edit_location_alt),
+              label: Text(l10n.editLocation),
+            ),
+          ],
         ],
       ),
     );
   }
 
-  bool get _canContinue {
-    if (controller.addressSource == null) return false;
-    return controller.isComplete;
-  }
+  bool get _canContinue =>
+      controller.addressSource != null && controller.isComplete;
 
   @override
   Widget build(BuildContext context) {
@@ -1519,7 +1134,6 @@ class _AddressState extends State<Address> {
               //     );
               //   },
               // ),
-
               if (widget.family && _canContinue)
                 AppButton(
                   text: l10n.continueBtn,
@@ -1535,12 +1149,12 @@ class _AddressState extends State<Address> {
                       : l10n.signIn,
                   isLoading: _isLoading,
                   onPressed: () {
-                    if (controller.addressSource ==
-                        AddressSource.currentLocation) {
-                      familyAccount(context);
+                    if (!_validateManualForm() || !controller.isComplete) {
+                      if (!controller.isComplete) {
+                        SnackbarHelper.showError(context, l10n.addAddressError);
+                      }
                       return;
                     }
-                    if (!_validateManualForm()) return;
                     familyAccount(context);
                   },
                   color: AppColors.btn_primery,

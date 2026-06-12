@@ -359,9 +359,13 @@ class _MyprofileState extends ConsumerState<Myprofile> {
           );
           final addressTypeLabel = AddressDisplayHelper.sourceLabel(
             addressSource,
+            l10n: loc,
           );
           final addressText = primaryAddress.isNotEmpty
-              ? AddressDisplayHelper.formatProfileAddress(primaryAddress)
+              ? AddressDisplayHelper.formatProfileAddress(
+                  primaryAddress,
+                  l10n: loc,
+                )
               : '';
 
           final addressCtrl = TextEditingController(text: addressText);
@@ -646,8 +650,8 @@ class _MyprofileState extends ConsumerState<Myprofile> {
                           ),
                           // const SizedBox(height: 6),
                           Text(
-                            'Address Type',
-                            style: TextStyle(
+                            loc.addressTypeLabel,
+                            style: const TextStyle(
                               fontSize: 14,
                               fontWeight: FontWeight.w600,
                             ),

@@ -488,6 +488,123 @@
     }
   },
   "fieldCannotBeEmpty": "هذا الحقل لا يمكن أن يكون فارغاً",
-  "pleaseSelectAnOption": "Please select an option"
+  "pleaseSelectAnOption": "يرجى اختيار خيار",
+
+  "pleaseEnableLocationService": "يرجى تفعيل خدمة الموقع",
+  "locationPermissionDenied": "تم رفض إذن الموقع",
+  "locationPermissionPermanentlyDenied": "تم رفض إذن الموقع بشكل دائم",
+  "useFamilyHeaderAddress": "استخدام عنوان رب الأسرة",
+  "useCurrentLocation": "استخدام الموقع الحالي",
+  "enterManually": "إدخال يدوي",
+  "others": "أخرى",
+  "enterBlockName": "أدخل اسم المجمع",
+  "pleaseEnterBlockName": "يرجى إدخال اسم المجمع",
+  "enterRoadName": "أدخل اسم الطريق",
+  "pleaseEnterRoadName": "يرجى إدخال اسم الطريق",
+  "selectedAddressLabel": "العنوان المحدد:",
+  "editLocation": "تعديل الموقع",
+  "enterFamilyCountFirst": "أدخل عدد أفراد العائلة أولاً",
+  "accountAlreadyExists": "الحساب موجود بالفعل",
+  "sessionExpiredLoginAgain": "انتهت الجلسة. يرجى تسجيل الدخول مرة أخرى.",
+  "supportPhoneNumber": "+973 17000000",
+  "supportEmail": "support@nadibh.com",
+  "selectLocation": "اختر الموقع",
+  "searchAddress": "ابحث عن عنوان",
+  "confirmLocation": "تأكيد الموقع",
+  "failedToResendOtp": "فشل في إعادة إرسال رمز التحقق",
+  "registrationSuccessfulWaitVerification": "تم التسجيل بنجاح. يرجى انتظار التحقق.",
+  "invalidOtp": "رمز التحقق غير صالح",
+  "accountRejectedRegistrationMessage": "تم رفض تسجيل حسابك. يرجى التواصل مع فريق الدعم لمزيد من المعلومات.",
+  "noTermsAvailable": "لا تتوفر شروط وأحكام في الوقت الحالي.",
+  "failedToLoadTerms": "فشل تحميل الشروط والأحكام. يرجى المحاولة لاحقاً.",
+  "chooseTheLanguage": "اختر اللغة",
+  "englishLanguage": "الإنجليزية",
+  "languagePreferenceChangeHint": "يمكنك تغيير تفضيل اللغة في أي وقت من الإعدادات",
+  "submittedSuccessfully": "تم الإرسال بنجاح",
+  "unknownMember": "غير معروف",
+  "serviceTitle": "الخدمة",
+  "workApprovedSuccessfully": "تمت الموافقة على العمل بنجاح",
+  "workRejectedSuccessfully": "تم رفض العمل بنجاح",
+  "questionPopupBarrierLabel": "نافذة الأسئلة",
+  "ongoingStatus": "جاري التنفيذ",
+  "addressTypeLabel": "نوع العنوان",
+  "addressTypeWithValue": "نوع العنوان: {type}",
+  "@addressTypeWithValue": {
+    "placeholders": {
+      "type": {}
+    }
+  },
+  "fullLocationAddressLabel": "عنوان الموقع الكامل",
+  "editAddress": "تعديل العنوان",
+  "noHelpDataAvailable": "لا تتوفر بيانات مساعدة",
+  "maximum10ImagesUpload": "يمكنك رفع 10 صور كحد أقصى",
+  "serviceRequestSubmittedSuccess": "تم إرسال طلب الخدمة\nبنجاح.",
+  "serviceRequestReceivedProcessing": "تم استلام طلبك (SRM-001)\nوهو قيد المعالجة.",
+  "settingsSectionGeneral": "عام",
+  "settingsSectionPreferences": "التفضيلات",
+  "settingsSectionAccount": "الحساب",
+  "languageBhAbbrev": "عربي",
+  "languageEngAbbrev": "ENG",
+  "selectDate": "اختر التاريخ",
+  "selectTime": "اختر الوقت",
+  "congratulations": "تهانينا!",
+  "claimReward": "استلام المكافأة",
+  "exitAppConfirmation": "هل تريد الخروج من التطبيق؟",
+  "exit": "خروج",
+  "addMedia": "إضافة وسائط",
+  "noInternetConnectionTitle": "لا يوجد اتصال بالإنترنت",
+  "noInternetConnectionMessage": "يرجى التحقق من اتصالك بالإنترنت والمحاولة مرة أخرى.",
+  "pointsToYou": "نقاط إليك",
+  "pointsFromName": "نقاط من {name}",
+  "@pointsFromName": {
+    "placeholders": {
+      "name": {}
+    }
+  },
+  "accept": "قبول",
+  "requestSent": "تم إرسال الطلب",
+  "requestAccepted": "تم قبول الطلب",
+  "requestRejected": "تم رفض الطلب",
+  "microphonePermissionDenied": "تم رفض إذن الميكروفون",
+  "familyHeaderAddressLabel": "عنوان رب الأسرة",
+  "currentLocationLabel": "الموقع الحالي",
+  "manualAddressLabel": "عنوان يدوي",
+  "genericAddressLabel": "العنوان",
+  "cityWithValue": "المدينة {value}",
+  "@cityWithValue": {
+    "placeholders": {
+      "value": {}
+    }
+  },
+  "buildingWithValue": "المبنى {value}",
+  "@buildingWithValue": {
+    "placeholders": {
+      "value": {}
+    }
+  },
+  "apartmentWithValue": "الشقة {value}",
+  "@apartmentWithValue": {
+    "placeholders": {
+      "value": {}
+    }
+  },
+  "floorWithValue": "الطابق {value}",
+  "@floorWithValue": {
+    "placeholders": {
+      "value": {}
+    }
+  },
+  "blockWithValue": "المجمع {value}",
+  "@blockWithValue": {
+    "placeholders": {
+      "value": {}
+    }
+  },
+  "roadWithValue": "الطريق {value}",
+  "@roadWithValue": {
+    "placeholders": {
+      "value": {}
+    }
+  }
 
 }

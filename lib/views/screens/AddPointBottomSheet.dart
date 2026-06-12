@@ -262,7 +262,8 @@ class _AddPointBottomSheetContentState
                               : Text(t.chooseMember),
                           items: _familyMembers.map((member) {
                             final name =
-                                member['basicInfo']?['fullName'] ?? "Unknown";
+                                member['basicInfo']?['fullName'] ??
+                                    t.unknownMember;
                             final relation = member['relation'] ?? "";
                             return DropdownMenuItem<Map<String, dynamic>>(
                               value: member,

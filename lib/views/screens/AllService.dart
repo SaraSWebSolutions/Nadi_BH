@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hive/hive.dart';
 import 'package:nadi_user_app/core/constants/app_consts.dart';
+import 'package:nadi_user_app/l10n/app_localizations.dart';
 import 'package:nadi_user_app/core/network/dio_client.dart';
 import 'package:nadi_user_app/providers/serviceProvider.dart';
 import 'package:nadi_user_app/routing/app_router.dart';
@@ -40,9 +41,9 @@ debugPrint('Services: $services');
         backgroundColor: AppColors.app_background_clr,
         elevation: 0,
         centerTitle: true,
-        title: const Text(
-          "Service",
-          style: TextStyle(
+        title: Text(
+          AppLocalizations.of(context)!.serviceTitle,
+          style: const TextStyle(
             color: Colors.white,
             fontSize: 20,
             fontWeight: FontWeight.w600,

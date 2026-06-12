@@ -524,7 +524,123 @@
     }
   },
   "fieldCannotBeEmpty": "This field cannot be empty",
-  "pleaseSelectAnOption": "Please select an option"
+  "pleaseSelectAnOption": "Please select an option",
 
+  "pleaseEnableLocationService": "Please enable location service",
+  "locationPermissionDenied": "Location permission denied",
+  "locationPermissionPermanentlyDenied": "Location permission permanently denied",
+  "useFamilyHeaderAddress": "Use Family Header Address",
+  "useCurrentLocation": "Use Current Location",
+  "enterManually": "Enter Manually",
+  "others": "Others",
+  "enterBlockName": "Enter Block Name",
+  "pleaseEnterBlockName": "Please enter block name",
+  "enterRoadName": "Enter Road Name",
+  "pleaseEnterRoadName": "Please enter road name",
+  "selectedAddressLabel": "Selected Address:",
+  "editLocation": "Edit Location",
+  "enterFamilyCountFirst": "Enter family count first",
+  "accountAlreadyExists": "Account already exists",
+  "sessionExpiredLoginAgain": "Session expired. Please log in again.",
+  "supportPhoneNumber": "+973 17000000",
+  "supportEmail": "support@nadibh.com",
+  "selectLocation": "Select Location",
+  "searchAddress": "Search Address",
+  "confirmLocation": "Confirm Location",
+  "failedToResendOtp": "Failed to resend OTP",
+  "registrationSuccessfulWaitVerification": "Registration Successful. Please wait for verification.",
+  "invalidOtp": "Invalid OTP",
+  "accountRejectedRegistrationMessage": "Your account registration has been rejected. Please contact our support team for more information.",
+  "noTermsAvailable": "No terms available at the moment.",
+  "failedToLoadTerms": "Failed to load terms. Please try again later.",
+  "chooseTheLanguage": "Choose The Language",
+  "englishLanguage": "English",
+  "languagePreferenceChangeHint": "Your language preference can be changed any time in settings",
+  "submittedSuccessfully": "Submitted successfully",
+  "unknownMember": "Unknown",
+  "serviceTitle": "Service",
+  "workApprovedSuccessfully": "Work approved successfully",
+  "workRejectedSuccessfully": "Work rejected successfully",
+  "questionPopupBarrierLabel": "Question Popup",
+  "ongoingStatus": "ONGOING",
+  "addressTypeLabel": "Address Type",
+  "addressTypeWithValue": "Address Type: {type}",
+  "@addressTypeWithValue": {
+    "placeholders": {
+      "type": {}
+    }
+  },
+  "fullLocationAddressLabel": "Full Location Address",
+  "editAddress": "Edit Address",
+  "noHelpDataAvailable": "No help data available",
+  "maximum10ImagesUpload": "You can only upload up to 10 images",
+  "serviceRequestSubmittedSuccess": "Service request\nsubmitted successfully.",
+  "serviceRequestReceivedProcessing": "Your request (SRM-001) has been\nreceived and is being processed.",
+  "settingsSectionGeneral": "GENERAL",
+  "settingsSectionPreferences": "PREFERENCES",
+  "settingsSectionAccount": "ACCOUNT",
+  "languageBhAbbrev": "BH",
+  "languageEngAbbrev": "ENG",
+  "selectDate": "Select Date",
+  "selectTime": "Select Time",
+  "congratulations": "Congratulations!",
+  "claimReward": "Claim Reward",
+  "exitAppConfirmation": "Do you want to exit the app?",
+  "exit": "Exit",
+  "addMedia": "Add Media",
+  "noInternetConnectionTitle": "No Internet Connection",
+  "noInternetConnectionMessage": "Please check your internet connection and try again.",
+  "pointsToYou": "Points to you",
+  "pointsFromName": "Points from {name}",
+  "@pointsFromName": {
+    "placeholders": {
+      "name": {}
+    }
+  },
+  "accept": "Accept",
+  "requestSent": "Request Sent",
+  "requestAccepted": "Request Accepted",
+  "requestRejected": "Request Rejected",
+  "microphonePermissionDenied": "Microphone permission denied",
+  "familyHeaderAddressLabel": "Family Header Address",
+  "currentLocationLabel": "Current Location",
+  "manualAddressLabel": "Manual Address",
+  "genericAddressLabel": "Address",
+  "cityWithValue": "City {value}",
+  "@cityWithValue": {
+    "placeholders": {
+      "value": {}
+    }
+  },
+  "buildingWithValue": "Building {value}",
+  "@buildingWithValue": {
+    "placeholders": {
+      "value": {}
+    }
+  },
+  "apartmentWithValue": "Apartment {value}",
+  "@apartmentWithValue": {
+    "placeholders": {
+      "value": {}
+    }
+  },
+  "floorWithValue": "Floor {value}",
+  "@floorWithValue": {
+    "placeholders": {
+      "value": {}
+    }
+  },
+  "blockWithValue": "Block {value}",
+  "@blockWithValue": {
+    "placeholders": {
+      "value": {}
+    }
+  },
+  "roadWithValue": "Road {value}",
+  "@roadWithValue": {
+    "placeholders": {
+      "value": {}
+    }
+  }
 
 }
