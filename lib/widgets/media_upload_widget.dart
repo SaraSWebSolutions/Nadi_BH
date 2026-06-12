@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:nadi_user_app/core/constants/app_consts.dart';
+import 'package:nadi_user_app/l10n/app_localizations.dart';
 
 class MediaUploadWidget extends StatelessWidget {
   final List<XFile> images;
@@ -37,13 +38,16 @@ class MediaUploadWidget extends StatelessWidget {
                   ),
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
-                    children: const [
-                      Icon(Icons.add, color: Colors.white, size: 35),
-                      SizedBox(height: 4),
+                    children: [
+                      const Icon(Icons.add, color: Colors.white, size: 35),
+                      const SizedBox(height: 4),
                       Text(
-                        "Add Media",
+                        AppLocalizations.of(context)!.addMedia,
                         textAlign: TextAlign.center,
-                        style: TextStyle(color: Colors.white, fontSize: 13),
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 13,
+                        ),
                       ),
                     ],
                   ),

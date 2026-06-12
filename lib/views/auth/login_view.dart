@@ -429,7 +429,7 @@ class _LoginViewState extends State<LoginView> {
       }
     } catch (_) {
       setState(() {
-        passwordError = "Something went wrong";
+        passwordError = AppLocalizations.of(context)!.somethingWentWrong;
       });
     } finally {
       if (mounted) setState(() => _isLoading = false); // 🔥 STOP LOADER
@@ -490,10 +490,10 @@ class _LoginViewState extends State<LoginView> {
                         size: 20,
                       ),
                       const SizedBox(width: 10),
-                      const Expanded(
+                      Expanded(
                         child: Text(
-                          "+973 17000000",
-                          style: TextStyle(
+                          AppLocalizations.of(context)!.supportPhoneNumber,
+                          style: const TextStyle(
                             fontSize: 14,
                             fontWeight: FontWeight.w600,
                           ),
@@ -510,10 +510,10 @@ class _LoginViewState extends State<LoginView> {
                         size: 20,
                       ),
                       const SizedBox(width: 10),
-                      const Expanded(
+                      Expanded(
                         child: Text(
-                          "support@nadibh.com",
-                          style: TextStyle(
+                          AppLocalizations.of(context)!.supportEmail,
+                          style: const TextStyle(
                             fontSize: 14,
                             fontWeight: FontWeight.w600,
                           ),
@@ -605,10 +605,10 @@ class _LoginViewState extends State<LoginView> {
                         size: 20,
                       ),
                       const SizedBox(width: 10),
-                      const Expanded(
+                      Expanded(
                         child: Text(
-                          "+973 17000000",
-                          style: TextStyle(
+                          AppLocalizations.of(context)!.supportPhoneNumber,
+                          style: const TextStyle(
                             fontSize: 14,
                             fontWeight: FontWeight.w600,
                           ),
@@ -625,10 +625,10 @@ class _LoginViewState extends State<LoginView> {
                         size: 20,
                       ),
                       const SizedBox(width: 10),
-                      const Expanded(
+                      Expanded(
                         child: Text(
-                          "support@nadibh.com",
-                          style: TextStyle(
+                          AppLocalizations.of(context)!.supportEmail,
+                          style: const TextStyle(
                             fontSize: 14,
                             fontWeight: FontWeight.w600,
                           ),

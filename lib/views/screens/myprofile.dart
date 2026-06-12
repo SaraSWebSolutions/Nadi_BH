@@ -275,6 +275,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:nadi_user_app/core/constants/app_consts.dart';
 import 'package:nadi_user_app/core/network/dio_client.dart';
+import 'package:nadi_user_app/core/utils/address_display_helper.dart';
 import 'package:nadi_user_app/core/utils/logger.dart';
 import 'package:nadi_user_app/l10n/app_localizations.dart';
 import 'package:nadi_user_app/providers/accountTypeProvider.dart';
@@ -350,57 +351,24 @@ class _MyprofileState extends ConsumerState<Myprofile> {
           final phoneCtrl = TextEditingController(
             text: safeString(basicData['basicInfo']?['mobileNumber']),
           );
-          String buildFullAddress(Map addr) {
-            final parts = <String>[];
-
-            void add(String text) {
-              if (text.trim().isNotEmpty) {
-                parts.add(text);
-              }
-            }
-
-            // City
-            if ((addr['city'] ?? "").toString().isNotEmpty) {
-              add("City ${addr['city']}");
-            }
-
-            // Building
-            add("Building ${addr['building'] ?? ''}");
-
-            // Apartment
-            if ((addr['aptNo'] ?? '').toString().isNotEmpty) {
-              add("Apartment ${addr['aptNo']}");
-            }
-
-            // Floor
-            if ((addr['floor'] ?? '').toString().isNotEmpty) {
-              add("Floor ${addr['floor']}");
-            }
-
-            // Block
-            if (addr['blockId'] is Map) {
-              add("Block ${addr['blockId']['name'] ?? ''}");
-            } else {
-              add("Block ${addr['blockName'] ?? ''}");
-            }
-
-            // Road
-            if (addr['roadId'] is Map) {
-              add("Road ${addr['roadId']['name'] ?? ''}");
-            } else {
-              add("Road ${addr['roadName'] ?? ''}");
-            }
-
-            add("${addr['additionalInfo'] ?? ''}");
-
-            return parts.join(", ");
-          }
-
-          final addressCtrl = TextEditingController(
-            text: addresses.isNotEmpty
-                ? buildFullAddress(addresses[0] as Map)
-                : "",
+          final primaryAddress = addresses.isNotEmpty
+              ? Map<String, dynamic>.from(addresses[0] as Map)
+              : <String, dynamic>{};
+          final addressSource = AddressDisplayHelper.resolveSource(
+            primaryAddress,
           );
+          final addressTypeLabel = AddressDisplayHelper.sourceLabel(
+            addressSource,
+            l10n: loc,
+          );
+          final addressText = primaryAddress.isNotEmpty
+              ? AddressDisplayHelper.formatProfileAddress(
+                  primaryAddress,
+                  l10n: loc,
+                )
+              : '';
+
+          final addressCtrl = TextEditingController(text: addressText);
           final familyCount = basicData['familyCount'] ?? 0;
           //final accountTypeId = basicData['accountTypeId'] ?? "";
 
@@ -681,6 +649,22 @@ class _MyprofileState extends ConsumerState<Myprofile> {
                             ),
                           ),
                           // const SizedBox(height: 6),
+                          Text(
+                            loc.addressTypeLabel,
+                            style: const TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                          const SizedBox(height: 4),
+                          AppTextField(
+                            controller: TextEditingController(
+                              text: addressTypeLabel,
+                            ),
+                            readonly: true,
+                            enabled: false,
+                          ),
+                          const SizedBox(height: 6),
                           Text(
                             loc.address,
                             style: TextStyle(

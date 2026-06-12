@@ -332,7 +332,9 @@ class _SignInOtpState extends State<SignInOtp> {
         SnackbarHelper.ShowSuccess(context, otp);
       }
     } on DioException catch (e) {
-      final message = e.response?.data?['message'] ?? 'Something went wrong';
+      final message =
+          e.response?.data?['message'] ??
+          AppLocalizations.of(context)!.somethingWentWrong;
       AppLogger.error("Send otp with phone: $message");
       if (!mounted) return;
       if (message.toString().toLowerCase().contains('disabled')) {
@@ -383,7 +385,9 @@ class _SignInOtpState extends State<SignInOtp> {
         RouteNames.bottomnav,
       ); // ignore: use_build_context_synchronously
     } on DioException catch (e) {
-      final message = e.response?.data?['message'] ?? 'Something went wrong';
+      final message =
+          e.response?.data?['message'] ??
+          AppLocalizations.of(context)!.somethingWentWrong;
       AppLogger.error("OTPphoneverify: $message");
       if (!mounted) return;
       if (message.toString().toLowerCase().contains('disabled')) {
@@ -426,10 +430,13 @@ class _SignInOtpState extends State<SignInOtp> {
               child: Icon(Icons.block, color: Colors.red.shade600, size: 28),
             ),
             const SizedBox(width: 12),
-            const Expanded(
+            Expanded(
               child: Text(
-                "Account Disabled",
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                AppLocalizations.of(context)!.accountDisabled,
+                style: const TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
             ),
           ],
@@ -438,9 +445,9 @@ class _SignInOtpState extends State<SignInOtp> {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
-              "Your account has been disabled. Please contact our support team for assistance.",
-              style: TextStyle(fontSize: 14, height: 1.5),
+            Text(
+              AppLocalizations.of(context)!.accountDisabledSupportMessage,
+              style: const TextStyle(fontSize: 14, height: 1.5),
             ),
             const SizedBox(height: 20),
             Container(
@@ -459,10 +466,10 @@ class _SignInOtpState extends State<SignInOtp> {
                         size: 20,
                       ),
                       const SizedBox(width: 10),
-                      const Expanded(
+                      Expanded(
                         child: Text(
-                          "+973 17000000",
-                          style: TextStyle(
+                          AppLocalizations.of(context)!.supportPhoneNumber,
+                          style: const TextStyle(
                             fontSize: 14,
                             fontWeight: FontWeight.w600,
                           ),
@@ -479,10 +486,10 @@ class _SignInOtpState extends State<SignInOtp> {
                         size: 20,
                       ),
                       const SizedBox(width: 10),
-                      const Expanded(
+                      Expanded(
                         child: Text(
-                          "support@nadibh.com",
-                          style: TextStyle(
+                          AppLocalizations.of(context)!.supportEmail,
+                          style: const TextStyle(
                             fontSize: 14,
                             fontWeight: FontWeight.w600,
                           ),
@@ -540,10 +547,13 @@ class _SignInOtpState extends State<SignInOtp> {
               ),
             ),
             const SizedBox(width: 12),
-            const Expanded(
+            Expanded(
               child: Text(
-                "Account Rejected",
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                AppLocalizations.of(context)!.accountRejected,
+                style: const TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
             ),
           ],
@@ -552,9 +562,9 @@ class _SignInOtpState extends State<SignInOtp> {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
-              "Your account registration has been rejected. Please contact our support team for more information.",
-              style: TextStyle(fontSize: 14, height: 1.5),
+            Text(
+              AppLocalizations.of(context)!.accountRejectedRegistrationMessage,
+              style: const TextStyle(fontSize: 14, height: 1.5),
             ),
             const SizedBox(height: 20),
             Container(
@@ -573,10 +583,10 @@ class _SignInOtpState extends State<SignInOtp> {
                         size: 20,
                       ),
                       const SizedBox(width: 10),
-                      const Expanded(
+                      Expanded(
                         child: Text(
-                          "+973 17000000",
-                          style: TextStyle(
+                          AppLocalizations.of(context)!.supportPhoneNumber,
+                          style: const TextStyle(
                             fontSize: 14,
                             fontWeight: FontWeight.w600,
                           ),
@@ -593,10 +603,10 @@ class _SignInOtpState extends State<SignInOtp> {
                         size: 20,
                       ),
                       const SizedBox(width: 10),
-                      const Expanded(
+                      Expanded(
                         child: Text(
-                          "support@nadibh.com",
-                          style: TextStyle(
+                          AppLocalizations.of(context)!.supportEmail,
+                          style: const TextStyle(
                             fontSize: 14,
                             fontWeight: FontWeight.w600,
                           ),
@@ -639,6 +649,7 @@ class _SignInOtpState extends State<SignInOtp> {
     final isIOS = Theme.of(context).platform == TargetPlatform.iOS;
     final isRTL = Directionality.of(context) == TextDirection.rtl;
     final l10n = AppLocalizations.of(context)!;
+    final isArabic = Localizations.localeOf(context).languageCode == 'ar';
 
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
@@ -830,24 +841,29 @@ class _SignInOtpState extends State<SignInOtp> {
                                   const SizedBox(height: 15),
 
                                   Center(
-                                    child: Pinput(
-                                      controller: _otpController,
-                                      length: 4,
-                                      defaultPinTheme: defaultPinTheme,
-                                      focusedPinTheme: focusedPinTheme,
-                                      submittedPinTheme: submittedPinTheme,
-                                      errorPinTheme: errorPinTheme,
-                                      keyboardType: TextInputType.number,
-                                      onChanged: (_) {
-                                        if (_isOtpError) {
-                                          setState(
-                                            () => {
-                                              _isOtpError = false,
-                                              _otpErrorMessage = null,
-                                            },
-                                          );
-                                        }
-                                      },
+                                    child: Directionality(
+                                      textDirection: isArabic
+                                          ? TextDirection.rtl
+                                          : TextDirection.ltr,
+                                      child: Pinput(
+                                        controller: _otpController,
+                                        length: 4,
+                                        defaultPinTheme: defaultPinTheme,
+                                        focusedPinTheme: focusedPinTheme,
+                                        submittedPinTheme: submittedPinTheme,
+                                        errorPinTheme: errorPinTheme,
+                                        keyboardType: TextInputType.number,
+                                        onChanged: (_) {
+                                          if (_isOtpError) {
+                                            setState(
+                                              () => {
+                                                _isOtpError = false,
+                                                _otpErrorMessage = null,
+                                              },
+                                            );
+                                          }
+                                        },
+                                      ),
                                     ),
                                   ),
                                   if (_otpErrorMessage != null) ...[

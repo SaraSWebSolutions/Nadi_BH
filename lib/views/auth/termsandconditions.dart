@@ -80,7 +80,7 @@ class _TermsAndConditionsState extends ConsumerState<TermsAndConditions> {
       final content = response['data']?[0]?['content'];
       if (content == null || content.isEmpty) {
         setState(() {
-          errorMessage = "No terms available at the moment.";
+          errorMessage = AppLocalizations.of(context)!.noTermsAvailable;
         });
       } else {
         setState(() {
@@ -89,7 +89,7 @@ class _TermsAndConditionsState extends ConsumerState<TermsAndConditions> {
       }
     } catch (e) {
       setState(() {
-        errorMessage = "Failed to load terms. Please try again later.";
+        errorMessage = AppLocalizations.of(context)!.failedToLoadTerms;
       });
     } finally {
       setState(() => _isFetchingTerms = false);

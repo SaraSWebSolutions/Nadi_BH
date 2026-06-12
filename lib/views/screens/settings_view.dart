@@ -54,7 +54,11 @@ class _SettingsViewState extends ConsumerState<SettingsView> {
         borderRadius: BorderRadius.circular(12),
       ),
       child: Text(
-        type,
+        type == "Light"
+            ? AppLocalizations.of(context)!.light
+            : type == "Dark"
+            ? AppLocalizations.of(context)!.dark
+            : AppLocalizations.of(context)!.system,
         style: TextStyle(
           fontSize: 12,
           color: isActive ? Colors.white : Colors.black87,
@@ -135,7 +139,9 @@ class _SettingsViewState extends ConsumerState<SettingsView> {
           borderRadius: BorderRadius.circular(12),
         ),
         child: Text(
-          value,
+          value == "ENG"
+              ? AppLocalizations.of(context)!.languageEngAbbrev
+              : AppLocalizations.of(context)!.languageBhAbbrev,
           style: TextStyle(
             fontSize: 12,
             fontWeight: FontWeight.w500,
@@ -572,7 +578,7 @@ class _SettingsViewState extends ConsumerState<SettingsView> {
           children: [
             /// GENERAL
             settingsSection(
-              title: "GENERAL",
+              title: l10n.settingsSectionGeneral,
               children: [
                 settingsTile(
                   title: l10n.aboutApp,
@@ -598,7 +604,7 @@ class _SettingsViewState extends ConsumerState<SettingsView> {
 
             /// PREFERENCES
             settingsSection(
-              title: "PREFERENCES",
+              title: l10n.settingsSectionPreferences,
               children: [
                 settingsTile(
                   title: l10n.notification,
@@ -687,7 +693,7 @@ class _SettingsViewState extends ConsumerState<SettingsView> {
 
             /// ACCOUNT
             settingsSection(
-              title: "ACCOUNT",
+              title: l10n.settingsSectionAccount,
               children: [
                 settingsTile(
                   title: l10n.logout,

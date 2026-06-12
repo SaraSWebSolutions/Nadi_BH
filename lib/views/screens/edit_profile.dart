@@ -19,6 +19,9 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:nadi_user_app/core/network/dio_client.dart';
 import 'package:nadi_user_app/widgets/inputs/app_dropdown.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:nadi_user_app/controllers/address_controller.dart';
+import 'package:nadi_user_app/core/utils/address_display_helper.dart';
+import 'package:nadi_user_app/views/auth/address_screen.dart';
 
 class EditProfile extends ConsumerStatefulWidget {
   const EditProfile({super.key});
@@ -55,6 +58,8 @@ class _EditProfileState extends ConsumerState<EditProfile> {
 
   List<Map<String, dynamic>> roadsForSelectedBlock = [];
   final ProfileService _profileService = ProfileService();
+  final AddressController _addressController = AddressController();
+  AddressSource? _addressSource;
   bool _controllersInitialized = false;
   bool _isLoading = false;
 
@@ -89,12 +94,12 @@ class _EditProfileState extends ConsumerState<EditProfile> {
 
       if (blockData is Map) {
         selectedBlock = blockData['name']?.toString();
-        selectedBlockId = blockData['_id']?.toString();
+        selectedBlockId = AddressController.sanitizeId(blockData['_id']);
       }
 
       if (roadData is Map) {
         selectedRoad = roadData['name']?.toString();
-        selectedRoadId = roadData['_id']?.toString();
+        selectedRoadId = AddressController.sanitizeId(roadData['_id']);
       }
 
       debugPrint("Selected Block => $selectedBlock ($selectedBlockId)");
@@ -138,10 +143,99 @@ class _EditProfileState extends ConsumerState<EditProfile> {
       text: addresses.isNotEmpty ? addresses[0]['aptNo']?.toString() : '',
     );
     additionalInfoController = TextEditingController(text: "");
+
+    if (addresses.isNotEmpty) {
+      final addressMap = Map<String, dynamic>.from(addresses[0] as Map);
+      _addressSource = AddressDisplayHelper.resolveSource(addressMap);
+      _addressController.loadAddress(addressMap);
+    }
+  }
+
+  Future<void> _openAddressEditor() async {
+    if (addresses.isEmpty) return;
+
+    final initial = _addressController.toMap();
+    final result = await Navigator.push<Map<String, dynamic>>(
+      context,
+      MaterialPageRoute(
+        builder: (_) => AddressScreen(
+          isEditMode: true,
+          isFromMemberScreen: false,
+          familyHeaderAddress: _addressSource == AddressSource.familyHeader
+              ? initial
+              : null,
+          initialAddress: initial,
+        ),
+      ),
+    );
+
+    if (!mounted || result == null) return;
+
+    _addressController.loadAddress(result);
+    _addressSource = _addressController.addressSource;
+
+    setState(() {
+      final isGeo = _addressController.isGeoMode;
+
+      if (!isGeo) {
+        buildingController.text = _addressController.building.text;
+        blockController.text = _addressController.city.text;
+        floorController.text = _addressController.floor.text;
+        apartmentController.text = _addressController.aptNo.text;
+
+        selectedBlock = _addressController.block;
+        selectedBlockId = AddressController.sanitizeId(
+          _addressController.blockId,
+        );
+
+        selectedRoad = _addressController.road;
+        selectedRoadId = AddressController.sanitizeId(
+          _addressController.roadId,
+        );
+      } else {
+        // IMPORTANT: clear manual fields to avoid wrong payload
+        buildingController.clear();
+        blockController.clear();
+        floorController.clear();
+        apartmentController.clear();
+
+        selectedBlock = null;
+        selectedBlockId = null;
+        selectedRoad = null;
+        selectedRoadId = null;
+      }
+    });
+  }
+
+  Map<String, dynamic> _buildAddressPayload(String propertyType) {
+    final isGeo = _addressController.isGeoMode;
+
+    if (isGeo) {
+      return {
+        "isGeoAddress": true,
+        "latitude": _addressController.latitude,
+        "longitude": _addressController.longitude,
+        "geoAddress": _addressController.geoAddress,
+      };
+    }
+
+    return {
+      "isGeoAddress": false,
+      "propertyType": propertyType,
+      "building": buildingController.text.trim(),
+      "city": blockController.text.trim(),
+      "floor": floorController.text.trim(),
+      "aptNo": apartmentController.text.trim(),
+
+      // ⚠️ IMPORTANT: send ONLY IDs
+      "blockId": selectedBlockId,
+      "roadId": selectedRoadId,
+    };
   }
 
   @override
   void dispose() {
+    _addressController.dispose();
     // Dispose controllers
     fullNameController.dispose();
     emailController.dispose();
@@ -200,19 +294,7 @@ class _EditProfileState extends ConsumerState<EditProfile> {
         "email": emailController.text.trim(),
         "mobileNumber": mobileNumber,
       },
-      "address": {
-        "building": buildingController.text.trim(),
-        "city": blockController.text.trim(),
-        "block": selectedBlock,
-        "blockId": selectedBlockId,
-
-        "road": selectedRoad,
-        "roadId": selectedRoadId,
-
-        "floor": floorController.text.trim(),
-
-        if (propertyType != "villa") "aptNo": apartmentController.text.trim(),
-      },
+      "address": _buildAddressPayload(propertyType.toString()),
     };
 
     // Convert to FormData
@@ -264,13 +346,12 @@ class _EditProfileState extends ConsumerState<EditProfile> {
       await AppPreferences.saveProfileData(updatedProfile);
 
       if (mounted) context.pop(true);
-    }on DioException catch (e) {
-  final message =
-      e.response?.data?["message"]?.toString() ??
-      "Something went wrong";
-  SnackbarHelper.showError(context, message);
-
-} catch (e, stack) {
+    } on DioException catch (e) {
+      final message =
+          e.response?.data?["message"]?.toString() ??
+          AppLocalizations.of(context)!.somethingWentWrong;
+      SnackbarHelper.showError(context, message);
+    } catch (e, stack) {
       AppLogger.error(stack.toString());
     } finally {
       if (mounted) setState(() => _isLoading = false);
@@ -568,202 +649,84 @@ class _EditProfileState extends ConsumerState<EditProfile> {
                           },
                         ),
                         const SizedBox(height: 6),
-                        // CITY
                         Text(
-                          loc.city,
+                          loc.addressTypeLabel,
                           style: const TextStyle(
                             fontSize: 14,
                             fontWeight: FontWeight.w600,
                           ),
                         ),
                         const SizedBox(height: 5),
-
-                        AppTextField(controller: blockController),
-                        const SizedBox(height: 6),
-
-                        // BUILDING
-                        Text(
-                          loc.building,
-                          style: const TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                        const SizedBox(height: 5),
-
                         AppTextField(
-                          controller: buildingController,
-                          validator: (v) {
-                            if (v == null || v.trim().isEmpty) {
-                              return loc.buildingRequired;
-                            }
-                            return null;
-                          },
-                        ),
-
-                        const SizedBox(height: 6),
-
-                        // APARTMENT + FLOOR
-                        if (propertyType != "villa")
-                          Row(
-                            children: [
-                              Expanded(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      loc.apartment,
-                                      style: const TextStyle(
-                                        fontSize: 14,
-                                        fontWeight: FontWeight.w600,
-                                      ),
-                                    ),
-                                    const SizedBox(height: 5),
-
-                                    AppTextField(
-                                      controller: apartmentController,
-                                      keyboardType: TextInputType.number,
-                                      inputFormatters: [
-                                        FilteringTextInputFormatter.digitsOnly,
-                                        LengthLimitingTextInputFormatter(6),
-                                      ],
-                                      validator: (v) {
-                                        if (v == null || v.trim().isEmpty) {
-                                          return loc.apartmentRequired;
-                                        }
-                                        return null;
-                                      },
-                                    ),
-                                  ],
-                                ),
-                              ),
-
-                              const SizedBox(width: 12),
-
-                              Expanded(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      loc.floor,
-                                      style: const TextStyle(
-                                        fontSize: 14,
-                                        fontWeight: FontWeight.w600,
-                                      ),
-                                    ),
-                                    const SizedBox(height: 5),
-
-                                    AppTextField(
-                                      controller: floorController,
-                                      keyboardType: TextInputType.number,
-                                      inputFormatters: [
-                                        FilteringTextInputFormatter.digitsOnly,
-                                      ],
-                                      validator: (v) {
-                                        if (v == null || v.trim().isEmpty) {
-                                          return loc.floorRequired;
-                                        }
-                                        return null;
-                                      },
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ],
+                          controller: TextEditingController(
+                            text: AddressDisplayHelper.sourceLabel(
+                              _addressSource,
+                              l10n: loc,
+                            ),
                           ),
-
-                        const SizedBox(height: 6),
-
-                        // BLOCK
-                        Consumer(
-                          builder: (context, ref, child) {
-                            final blockAsync = ref.watch(getBlockProvider);
-
-                            return blockAsync.when(
-                              data: (blocks) {
-                                if (selectedBlock != null &&
-                                    roadsForSelectedBlock.isEmpty) {
-                                  final block = blocks.firstWhere(
-                                    (b) => b['name'] == selectedBlock,
-                                    orElse: () => <String, dynamic>{},
-                                  );
-
-                                  if (block.isNotEmpty) {
-                                    roadsForSelectedBlock =
-                                        List<Map<String, dynamic>>.from(
-                                          block['roads'] ?? [],
-                                        );
-                                  }
-                                }
-
-                                return Column(
-                                  children: [
-                                    AppDropdown(
-                                      label: loc.selectBlock,
-                                      items: blocks
-                                          .map<String>(
-                                            (b) => b['name'].toString(),
-                                          )
-                                          .toList(),
-                                      value: selectedBlock,
-                                      onChanged: (val) {
-                                        setState(() {
-                                          final block = blocks.firstWhere(
-                                            (b) => b['name'].toString() == val,
-                                          );
-
-                                          selectedBlock = block['name']
-                                              .toString();
-
-                                          selectedBlockId = block['_id']
-                                              .toString();
-
-                                          selectedRoad = null;
-                                          selectedRoadId = null;
-
-                                          roadsForSelectedBlock =
-                                              List<Map<String, dynamic>>.from(
-                                                block['roads'] ?? [],
-                                              );
-                                        });
-                                      },
-                                    ),
-
-                                    const SizedBox(height: 6),
-
-                                    AppDropdown(
-                                      label: loc.selectRoad,
-                                      items: roadsForSelectedBlock
-                                          .map<String>(
-                                            (r) => r['name'].toString(),
-                                          )
-                                          .toList(),
-                                      value: selectedRoad,
-                                      onChanged: (val) {
-                                        setState(() {
-                                          final road = roadsForSelectedBlock
-                                              .firstWhere(
-                                                (r) =>
-                                                    r['name'].toString() == val,
-                                              );
-
-                                          selectedRoad = road['name']
-                                              .toString();
-
-                                          selectedRoadId = road['_id']
-                                              .toString();
-                                        });
-                                      },
-                                    ),
-                                  ],
-                                );
-                              },
-                              loading: () => const Center(
-                                child: CircularProgressIndicator(),
+                          readonly: true,
+                          enabled: false,
+                        ),
+                        const SizedBox(height: 10),
+                        if (AddressDisplayHelper.isGeoAddress(
+                          _addressController.toMap(),
+                        )) ...[
+                          Text(
+                            loc.fullLocationAddressLabel,
+                            style: const TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                          const SizedBox(height: 5),
+                          AppTextField(
+                            controller: TextEditingController(
+                              text:
+                                  _addressController.geoAddress ??
+                                  _addressController.fullAddress ??
+                                  '',
+                            ),
+                            readonly: true,
+                            enabled: false,
+                            minLines: 2,
+                            maxLines: 4,
+                          ),
+                        ] else ...[
+                          Text(
+                            loc.address,
+                            style: const TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                          const SizedBox(height: 5),
+                          AppTextField(
+                            controller: TextEditingController(
+                              text: AddressDisplayHelper.formatProfileAddress(
+                                _addressController.toMap(),
+                                l10n: loc,
                               ),
-                              error: (e, _) => Text("Error: $e"),
-                            );
-                          },
+                            ),
+                            readonly: true,
+                            enabled: false,
+                            minLines: 2,
+                            maxLines: 5,
+                          ),
+                        ],
+                        const SizedBox(height: 10),
+                        SizedBox(
+                          width: double.infinity,
+                          child: OutlinedButton.icon(
+                            onPressed: _openAddressEditor,
+                            icon: const Icon(Icons.edit_location_alt),
+                            label: Text(
+                              AddressDisplayHelper.isGeoAddress(
+                                    _addressController.toMap(),
+                                  )
+                                  ? loc.editLocation
+                                  : loc.editAddress,
+                            ),
+                          ),
                         ),
 
                         const SizedBox(height: 20),

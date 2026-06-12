@@ -119,8 +119,10 @@ class _SendServiceRequestState extends ConsumerState<SendServiceRequest> {
   Future<void> pickImage(ImageSource source) async {
     if (selectedImages.length >= 10) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text("You can only upload up to 10 images"),
+        SnackBar(
+          content: Text(
+            AppLocalizations.of(context)!.maximum10ImagesUpload,
+          ),
           backgroundColor: Colors.red,
         ),
       );
@@ -512,7 +514,8 @@ class _SendServiceRequestState extends ConsumerState<SendServiceRequest> {
                           if (selectedImages.length >= maxImages) {
                             SnackbarHelper.showError(
                               context,
-                              "Max 10 images allowed",
+                              AppLocalizations.of(context)!
+                                  .maximum10ImagesAllowed,
                             );
                             return;
                           }

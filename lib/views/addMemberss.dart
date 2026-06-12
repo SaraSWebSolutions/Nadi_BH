@@ -126,7 +126,8 @@ class _AddmemberssState extends ConsumerState<Addmemberss> {
     } on DioException catch (e) {
       if (!mounted) return;
       setState(() => _isLoading = false);
-      String errorMsg = 'Failed to add member. Please try again.';
+      String errorMsg =
+          AppLocalizations.of(context)!.failedToAddMemberTryAgain;
       if (e.response?.data != null) {
         final data = e.response!.data;
         if (data is Map) {

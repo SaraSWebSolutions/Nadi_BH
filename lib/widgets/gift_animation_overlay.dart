@@ -1,5 +1,6 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
+import 'package:nadi_user_app/l10n/app_localizations.dart';
 
 class GiftAnimationOverlay extends StatefulWidget {
   final int points;
@@ -148,9 +149,9 @@ class _GiftAnimationOverlayState extends State<GiftAnimationOverlay>
                         ],
                         
                         // Premium Typography - Subtitle
-                        const Text(
-                          'Congratulations!',
-                          style: TextStyle(
+                        Text(
+                          AppLocalizations.of(context)!.congratulations,
+                          style: const TextStyle(
                             fontFamily: 'Poppins',
                             fontSize: 16,
                             fontWeight: FontWeight.w600,
@@ -168,7 +169,9 @@ class _GiftAnimationOverlayState extends State<GiftAnimationOverlay>
                             end: Alignment.centerRight,
                           ).createShader(bounds),
                           child: Text(
-                            '+${widget.points} Points',
+                            AppLocalizations.of(context)!.pointsEarnedLabel(
+                              widget.points,
+                            ),
                             style: const TextStyle(
                               fontFamily: 'Poppins',
                               fontSize: 38,
@@ -224,9 +227,9 @@ class _GiftAnimationOverlayState extends State<GiftAnimationOverlay>
                                   borderRadius: BorderRadius.circular(16),
                                 ),
                               ),
-                              child: const Text(
-                                'Claim Reward',
-                                style: TextStyle(
+                              child: Text(
+                                AppLocalizations.of(context)!.claimReward,
+                                style: const TextStyle(
                                   fontFamily: 'Poppins',
                                   fontSize: 16,
                                   fontWeight: FontWeight.bold,

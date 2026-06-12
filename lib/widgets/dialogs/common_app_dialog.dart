@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:nadi_user_app/l10n/app_localizations.dart';
 import 'package:nadi_user_app/widgets/buttons/primary_button.dart';
 
 class CommonAppDialog extends ConsumerWidget {
@@ -44,7 +45,7 @@ class CommonAppDialog extends ConsumerWidget {
             if (showCloseButton) ...[
               const SizedBox(height: 20),
               AppButton(
-                text: "Close",
+                text: AppLocalizations.of(context)!.close,
                 height: 45,
                 width: double.infinity,
                 color: closeButtonColor,

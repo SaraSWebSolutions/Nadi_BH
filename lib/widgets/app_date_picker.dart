@@ -1,17 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:nadi_user_app/core/constants/app_consts.dart';
+import 'package:nadi_user_app/l10n/app_localizations.dart';
 
 class AppDatePicker extends StatelessWidget {
   final TextEditingController controller;
-  final String label;
+  final String? label;
   final DateTime? firstDate;
   final Function(DateTime)? onDateSelected;
 
   const AppDatePicker({
     super.key,
     required this.controller,
-    this.label = "Select Date",
+    this.label,
     this.firstDate,
     this.onDateSelected,
   });
@@ -37,12 +38,13 @@ class AppDatePicker extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return TextField(
       controller: controller,
       readOnly: true,
       onTap: () => _pickDate(context),
       decoration: InputDecoration(
-        labelText: label,
+        labelText: label ?? l10n.selectDate,
           floatingLabelStyle: const TextStyle(color: AppColors.btn_primery),
         suffixIcon: const Icon(Icons.calendar_today),
         border: OutlineInputBorder(

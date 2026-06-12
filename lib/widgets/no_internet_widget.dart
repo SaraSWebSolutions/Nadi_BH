@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:nadi_user_app/l10n/app_localizations.dart';
 
 class NoInternetScreen extends StatelessWidget {
   const NoInternetScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       body: Center(
         child: Padding(
@@ -23,7 +25,7 @@ class NoInternetScreen extends StatelessWidget {
 
               /// TITLE
               Text(
-                "No Internet Connection",
+                l10n.noInternetConnectionTitle,
                 style: TextStyle(
                   fontSize: 22,
                   fontWeight: FontWeight.bold,
@@ -34,7 +36,7 @@ class NoInternetScreen extends StatelessWidget {
 
               /// DESCRIPTION
               Text(
-                "Please check your internet connection and try again.",
+                l10n.noInternetConnectionMessage,
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   fontSize: 16,

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:nadi_user_app/core/constants/app_consts.dart';
+import 'package:nadi_user_app/l10n/app_localizations.dart';
 import 'package:nadi_user_app/routing/app_router.dart';
 import 'package:nadi_user_app/widgets/buttons/primary_button.dart';
 class Servicerequest extends StatelessWidget {
@@ -34,10 +35,11 @@ class Servicerequest extends StatelessWidget {
                 const SizedBox(height: 20),
         
                 // Title
-                const Text(
-                  "Service request\nsubmitted successfully.",
+                Text(
+                  AppLocalizations.of(context)!
+                      .serviceRequestSubmittedSuccess,
                   textAlign: TextAlign.center,
-                  style: TextStyle(
+                  style: const TextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.w700,
                     color: Colors.black87,
@@ -46,16 +48,20 @@ class Servicerequest extends StatelessWidget {
         
                 const SizedBox(height: 10),
         
-                const Text(
-                  "Your request (SRM-001) has been\nreceived and is being processed.",
+                Text(
+                  AppLocalizations.of(context)!
+                      .serviceRequestReceivedProcessing,
                   textAlign: TextAlign.center,
-                  style: TextStyle(fontSize: 14, color: Colors.black54),
+                  style: const TextStyle(
+                    fontSize: 14,
+                    color: Colors.black54,
+                  ),
                 ),
         
                 const SizedBox(height: 25),
         
                 AppButton(
-                  text: "View My Request",
+                  text: AppLocalizations.of(context)!.viewMyRequest,
                   onPressed: () => context.go(RouteNames.bottomnav),
                   color: AppColors.btn_primery,
                   width: double.infinity,

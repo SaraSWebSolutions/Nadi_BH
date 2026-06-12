@@ -386,7 +386,7 @@ class _TimelineTile extends StatelessWidget {
 
     /// rejected admin step
     if (isRejectedStep) {
-      return "Rejected";
+      return l10n.rejected;
     }
 
     /// completed

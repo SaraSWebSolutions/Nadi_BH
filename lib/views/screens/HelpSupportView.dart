@@ -123,7 +123,9 @@ class _HelpSupportViewState extends ConsumerState<HelpSupportView> {
         error: (e, _) => Center(child: Text(e.toString())),
         data: (help) {
           if (help.data.isEmpty) {
-            return const Center(child: Text("No help data available"));
+            return Center(
+              child: Text(AppLocalizations.of(context)!.noHelpDataAvailable),
+            );
           }
 
           final item = help.data.first;

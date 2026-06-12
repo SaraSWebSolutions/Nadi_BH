@@ -177,7 +177,7 @@ class _DashboardState extends ConsumerState<Dashboard> {
     ref.invalidate(fetchadvertisementprovider);
     ref.invalidate(userdashboardprovider);
     ref.invalidate(fetchquestionsdataprovider);
-ref.invalidate(approveTechProvider);
+    ref.invalidate(approveTechProvider);
 
     // await Future.wait([fetchongoinproces(), fetchapprovetechnician()]);
     await fetchongoinproces();
@@ -256,11 +256,12 @@ ref.invalidate(approveTechProvider);
       /// 🔥 force refresh provider (this fixes return-to-page issue)
       ref.invalidate(approveTechProvider);
 
+      final l10n = AppLocalizations.of(context)!;
       SnackbarHelper.ShowSuccess(
         context,
         isApproved
-            ? "Work approved successfully"
-            : "Work rejected successfully",
+            ? l10n.workApprovedSuccessfully
+            : l10n.workRejectedSuccessfully,
       );
     } catch (e) {
       AppLogger.error("Approve error: $e");
@@ -332,7 +333,7 @@ ref.invalidate(approveTechProvider);
     return showGeneralDialog(
       context: context,
       barrierDismissible: false, //  DO NOT CLOSE ON OUTSIDE CLICK
-      barrierLabel: "Question Popup",
+      barrierLabel: AppLocalizations.of(context)!.questionPopupBarrierLabel,
       barrierColor: Colors.black54,
       transitionDuration: const Duration(milliseconds: 300),
       pageBuilder: (context, animation, secondaryAnimation) {
@@ -547,78 +548,92 @@ ref.invalidate(approveTechProvider);
                                       ),
 
                                       data: (dashboard) {
-                                        return Row(
-                                          children: [
-                                            dashboard.image.isEmpty
-                                                ? Container(
-                                                    width: 44,
-                                                    height: 44,
-                                                    decoration: BoxDecoration(
-                                                      shape: BoxShape.circle,
-                                                      border: Border.all(
-                                                        color: AppColors
-                                                            .btn_primery,
-                                                        width: 2,
-                                                      ),
-                                                    ),
-                                                    child: const CircleAvatar(
-                                                      radius: 22,
-                                                      backgroundColor:
-                                                          Colors.blue,
-                                                      child: Icon(
-                                                        Icons.person,
-                                                        color: Colors.white,
-                                                      ),
-                                                    ),
-                                                  )
-                                                : CachedNetworkImage(
-                                                    imageUrl:
-                                                        "${ImageBaseUrl.baseUrl}/${dashboard.image}",
-                                                    imageBuilder:
-                                                        (
-                                                          context,
-                                                          imageProvider,
-                                                        ) => CircleAvatar(
-                                                          radius: 22,
-                                                          backgroundImage:
-                                                              imageProvider,
+                                        return InkWell(
+                                          onTap: () async {
+                                            widget.onTabChange(3);
+
+                                            // if (mounted) {
+                                            //   ref.invalidate(dashboardProvider);
+                                            // }
+                                          },
+                                          borderRadius: BorderRadius.circular(
+                                            12,
+                                          ),
+                                          child: Row(
+                                            children: [
+                                              dashboard.image.isEmpty
+                                                  ? Container(
+                                                      width: 44,
+                                                      height: 44,
+                                                      decoration: BoxDecoration(
+                                                        shape: BoxShape.circle,
+                                                        border: Border.all(
+                                                          color: AppColors
+                                                              .btn_primery,
+                                                          width: 2,
                                                         ),
-                                                    placeholder: (_, __) =>
-                                                        const CircularProgressIndicator(
-                                                          strokeWidth: 2,
-                                                        ),
-                                                    errorWidget: (_, __, ___) =>
-                                                        const Icon(
+                                                      ),
+                                                      child: const CircleAvatar(
+                                                        radius: 22,
+                                                        backgroundColor:
+                                                            Colors.blue,
+                                                        child: Icon(
                                                           Icons.person,
+                                                          color: Colors.white,
                                                         ),
-                                                  ),
+                                                      ),
+                                                    )
+                                                  : CachedNetworkImage(
+                                                      imageUrl:
+                                                          "${ImageBaseUrl.baseUrl}/${dashboard.image}",
+                                                      imageBuilder:
+                                                          (
+                                                            context,
+                                                            imageProvider,
+                                                          ) => CircleAvatar(
+                                                            radius: 22,
+                                                            backgroundImage:
+                                                                imageProvider,
+                                                          ),
+                                                      placeholder: (_, __) =>
+                                                          const CircularProgressIndicator(
+                                                            strokeWidth: 2,
+                                                          ),
+                                                      errorWidget:
+                                                          (_, __, ___) =>
+                                                              const Icon(
+                                                                Icons.person,
+                                                              ),
+                                                    ),
 
-                                            const SizedBox(width: 12),
+                                              const SizedBox(width: 12),
 
-                                            Column(
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.start,
-                                              children: [
-                                                Text(
-                                                  AppLocalizations.of(
-                                                    context,
-                                                  )!.welcome,
-                                                  style: TextStyle(
-                                                    color: Colors.white,
-                                                    fontSize: 13,
+                                              Column(
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.start,
+                                                children: [
+                                                  Text(
+                                                    AppLocalizations.of(
+                                                      context,
+                                                    )!.welcome,
+                                                    style: TextStyle(
+                                                      color: Colors.white,
+                                                      fontSize: 13,
+                                                    ),
                                                   ),
-                                                ),
-                                                Text(
-                                                  dashboard.name,
-                                                  style: const TextStyle(
-                                                    color: Colors.white,
-                                                    fontSize: 16,
-                                                    fontWeight: FontWeight.bold,
+                                                  Text(
+                                                    dashboard.name,
+                                                    style: const TextStyle(
+                                                      color: Colors.white,
+                                                      fontSize: 16,
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                    ),
                                                   ),
-                                                ),
-                                              ],
-                                            ),
-                                          ],
+                                                ],
+                                              ),
+                                            ],
+                                          ),
                                         );
                                       },
                                     ),
@@ -1017,7 +1032,10 @@ ref.invalidate(approveTechProvider);
                                           ),
                                           const SizedBox(height: 4),
                                           Text(
-                                            "Request ID: ${data['requestId']}",
+                                            AppLocalizations.of(context)!
+                                                .requestIdLabel(
+                                              data['requestId'].toString(),
+                                            ),
                                             maxLines: 1,
                                             overflow: TextOverflow.ellipsis,
                                             style: TextStyle(
@@ -1051,7 +1069,13 @@ ref.invalidate(approveTechProvider);
                                             const SizedBox(width: 6),
                                           ],
                                           Text(
-                                            isOngoing ? "ONGOING" : "COMPLETED",
+                                            isOngoing
+                                                ? AppLocalizations.of(
+                                                    context,
+                                                  )!.ongoingStatus
+                                                : AppLocalizations.of(
+                                                    context,
+                                                  )!.completed,
                                             style: TextStyle(
                                               fontSize: 12,
                                               fontWeight: FontWeight.w600,

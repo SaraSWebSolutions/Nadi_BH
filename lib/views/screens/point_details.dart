@@ -170,152 +170,153 @@ class _PointDetailsState extends ConsumerState<PointDetails> {
                           color: Colors.white,
                         ),
                       ),
+                      const SizedBox(width: 40, height: 40),
 
-                      InkWell(
-                        onTap: () async {
-                          final notifications =
-                              ref.read(fetchpointsnodification).value?.data ??
-                              [];
+                      // InkWell(
+                      //   onTap: () async {
+                      //     final notifications =
+                      //         ref.read(fetchpointsnodification).value?.data ??
+                      //         [];
 
-                          DateTime seenTime = DateTime.now().toUtc();
+                      //     DateTime seenTime = DateTime.now().toUtc();
 
-                          if (notifications.isNotEmpty) {
-                            seenTime = notifications
-                                .map((e) => e.time.toUtc())
-                                .reduce((a, b) => a.isAfter(b) ? a : b);
-                          }
+                      //     if (notifications.isNotEmpty) {
+                      //       seenTime = notifications
+                      //           .map((e) => e.time.toUtc())
+                      //           .reduce((a, b) => a.isAfter(b) ? a : b);
+                      //     }
 
-                          // ✅ SAVE GLOBAL LAST SEEN TIME
-                          await AppPreferences.saveLastSeenNotificationTime(
-                            seenTime,
-                          );
+                      //     // ✅ SAVE GLOBAL LAST SEEN TIME
+                      //     await AppPreferences.saveLastSeenNotificationTime(
+                      //       seenTime,
+                      //     );
 
-                          // ✅ UPDATE LOCAL STATE
-                          if (mounted) {
-                            setState(() {
-                              _lastSeenTime = seenTime;
-                            });
-                          }
+                      //     // ✅ UPDATE LOCAL STATE
+                      //     if (mounted) {
+                      //       setState(() {
+                      //         _lastSeenTime = seenTime;
+                      //       });
+                      //     }
 
-                          // ✅ CLEAR APP ICON BADGE
-                          await updateAppBadge(0);
+                      //     // ✅ CLEAR APP ICON BADGE
+                      //     await updateAppBadge(0);
 
-                          // ✅ REFRESH PROVIDERS GLOBALLY
-                          ref.invalidate(fetchpointsnodification);
-                          ref.invalidate(userdashboardprovider);
+                      //     // ✅ REFRESH PROVIDERS GLOBALLY
+                      //     ref.invalidate(fetchpointsnodification);
+                      //     ref.invalidate(userdashboardprovider);
 
-                          // ✅ OPEN NOTIFICATION SCREEN
-                          final result = await context.push(
-                            RouteNames.pointnodification,
-                          );
+                      //     // ✅ OPEN NOTIFICATION SCREEN
+                      //     final result = await context.push(
+                      //       RouteNames.pointnodification,
+                      //     );
 
-                          // ✅ WHEN RETURNING FROM NOTIFICATION PAGE
-                          if (mounted) {
-                            final latestSeen =
-                                await AppPreferences.getLastSeenNotificationTime();
+                      //     // ✅ WHEN RETURNING FROM NOTIFICATION PAGE
+                      //     if (mounted) {
+                      //       final latestSeen =
+                      //           await AppPreferences.getLastSeenNotificationTime();
 
-                            setState(() {
-                              _lastSeenTime = latestSeen;
-                            });
+                      //       setState(() {
+                      //         _lastSeenTime = latestSeen;
+                      //       });
 
-                            // force rebuild
-                            ref.invalidate(fetchpointsnodification);
-                            ref.invalidate(userdashboardprovider);
+                      //       // force rebuild
+                      //       ref.invalidate(fetchpointsnodification);
+                      //       ref.invalidate(userdashboardprovider);
 
-                            ref.invalidate(fetchpointsnodification);
-                            ref.refresh(userdashboardprovider);
-                          }
-                        },
-                        child: Stack(
-                          clipBehavior: Clip.none,
-                          children: [
-                            Container(
-                              height: 40,
-                              width: 40,
-                              decoration: BoxDecoration(
-                                shape: BoxShape.circle,
-                                color: Colors.white.withOpacity(0.3),
-                              ),
-                              child: const Icon(
-                                Icons.notifications,
-                                color: Colors.white,
-                                size: 30,
-                              ),
-                            ),
+                      //       ref.invalidate(fetchpointsnodification);
+                      //       ref.refresh(userdashboardprovider);
+                      //     }
+                      //   },
+                      //   child: Stack(
+                      //     clipBehavior: Clip.none,
+                      //     children: [
+                      //       Container(
+                      //         height: 40,
+                      //         width: 40,
+                      //         decoration: BoxDecoration(
+                      //           shape: BoxShape.circle,
+                      //           color: Colors.white.withOpacity(0.3),
+                      //         ),
+                      //         child: const Icon(
+                      //           Icons.notifications,
+                      //           color: Colors.white,
+                      //           size: 30,
+                      //         ),
+                      //       ),
 
-                            /// ✅ BADGE
-                            notificationCount.when(
-                              data: (response) {
-                                final notifications = response.data;
+                      //       /// ✅ BADGE
+                      //       notificationCount.when(
+                      //         data: (response) {
+                      //           final notifications = response.data;
 
-                                // ✅ SORT NEWEST FIRST
-                                notifications.sort(
-                                  (a, b) => b.time.compareTo(a.time),
-                                );
+                      //           // ✅ SORT NEWEST FIRST
+                      //           notifications.sort(
+                      //             (a, b) => b.time.compareTo(a.time),
+                      //           );
 
-                                int unreadCount = 0;
+                      //           int unreadCount = 0;
 
-                                // ✅ IF NEVER OPENED
-                                if (_lastSeenTime == null) {
-                                  unreadCount = notifications.length;
-                                } else {
-                                  unreadCount = notifications.where((n) {
-                                    return n.time.toUtc().isAfter(
-                                      _lastSeenTime!.toUtc(),
-                                    );
-                                  }).length;
-                                }
+                      //           // ✅ IF NEVER OPENED
+                      //           if (_lastSeenTime == null) {
+                      //             unreadCount = notifications.length;
+                      //           } else {
+                      //             unreadCount = notifications.where((n) {
+                      //               return n.time.toUtc().isAfter(
+                      //                 _lastSeenTime!.toUtc(),
+                      //               );
+                      //             }).length;
+                      //           }
 
-                                // ✅ UPDATE APP BADGE
-                                WidgetsBinding.instance.addPostFrameCallback((
-                                  _,
-                                ) {
-                                  updateAppBadge(unreadCount);
-                                });
+                      //           // ✅ UPDATE APP BADGE
+                      //           WidgetsBinding.instance.addPostFrameCallback((
+                      //             _,
+                      //           ) {
+                      //             updateAppBadge(unreadCount);
+                      //           });
 
-                                // ✅ HIDE IF ZERO
-                                if (unreadCount <= 0) {
-                                  return const SizedBox.shrink();
-                                }
+                      //           // ✅ HIDE IF ZERO
+                      //           if (unreadCount <= 0) {
+                      //             return const SizedBox.shrink();
+                      //           }
 
-                                final countText = unreadCount > 99
-                                    ? "99+"
-                                    : unreadCount.toString();
+                      //           final countText = unreadCount > 99
+                      //               ? "99+"
+                      //               : unreadCount.toString();
 
-                                return Positioned(
-                                  top: -2,
-                                  right: -2,
-                                  child: Container(
-                                    padding: const EdgeInsets.symmetric(
-                                      horizontal: 4,
-                                    ),
-                                    height: 16,
-                                    constraints: const BoxConstraints(
-                                      minWidth: 16,
-                                    ),
-                                    decoration: const BoxDecoration(
-                                      color: Colors.white,
-                                      shape: BoxShape.circle,
-                                    ),
-                                    child: Center(
-                                      child: Text(
-                                        countText,
-                                        style: const TextStyle(
-                                          color: AppColors.gold_coin,
-                                          fontSize: 9,
-                                          fontWeight: FontWeight.bold,
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                );
-                              },
-                              loading: () => const SizedBox(),
-                              error: (_, __) => const SizedBox(),
-                            ),
-                          ],
-                        ),
-                      ),
+                      //           return Positioned(
+                      //             top: -2,
+                      //             right: -2,
+                      //             child: Container(
+                      //               padding: const EdgeInsets.symmetric(
+                      //                 horizontal: 4,
+                      //               ),
+                      //               height: 16,
+                      //               constraints: const BoxConstraints(
+                      //                 minWidth: 16,
+                      //               ),
+                      //               decoration: const BoxDecoration(
+                      //                 color: Colors.white,
+                      //                 shape: BoxShape.circle,
+                      //               ),
+                      //               child: Center(
+                      //                 child: Text(
+                      //                   countText,
+                      //                   style: const TextStyle(
+                      //                     color: AppColors.gold_coin,
+                      //                     fontSize: 9,
+                      //                     fontWeight: FontWeight.bold,
+                      //                   ),
+                      //                 ),
+                      //               ),
+                      //             ),
+                      //           );
+                      //         },
+                      //         loading: () => const SizedBox(),
+                      //         error: (_, __) => const SizedBox(),
+                      //       ),
+                      //     ],
+                      //   ),
+                      // ),
                     ],
                   ),
                 ),
@@ -421,7 +422,9 @@ class _PointDetailsState extends ConsumerState<PointDetails> {
                                           ),
                                           Text(
                                             userName.isEmpty
-                                                ? "Loading..."
+                                                ? AppLocalizations.of(
+                                                    context,
+                                                  )!.loading
                                                 : userName,
                                             style: const TextStyle(
                                               color: Colors.white,
@@ -632,7 +635,8 @@ class _PointDetailsState extends ConsumerState<PointDetails> {
                   return const SizedBox.shrink(); // show nothing
                 }
                 final image = data['image'] ?? "";
-                final name = data['name'] ?? "Admin";
+                final name =
+                    data['name'] ?? AppLocalizations.of(context)!.admin;
                 return Padding(
                   padding: const EdgeInsets.only(left: 10, bottom: 4),
                   child: Column(

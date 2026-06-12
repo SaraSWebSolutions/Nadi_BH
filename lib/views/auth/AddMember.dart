@@ -7,13 +7,14 @@ import 'package:go_router/go_router.dart';
 import 'package:nadi_user_app/controllers/address_controller.dart';
 import 'package:nadi_user_app/controllers/family_member_controller.dart';
 import 'package:nadi_user_app/core/constants/app_consts.dart';
+import 'package:nadi_user_app/core/utils/address_display_helper.dart';
 import 'package:nadi_user_app/core/utils/logger.dart';
 import 'package:nadi_user_app/core/utils/snackbar_helper.dart';
 import 'package:nadi_user_app/l10n/app_localizations.dart';
 import 'package:nadi_user_app/preferences/preferences.dart';
 import 'package:nadi_user_app/routing/app_router.dart';
 import 'package:nadi_user_app/services/auth_service.dart';
-import 'package:nadi_user_app/views/auth/Address.dart';
+import 'package:nadi_user_app/views/auth/address_screen.dart';
 import 'package:nadi_user_app/widgets/buttons/primary_button.dart';
 import 'package:nadi_user_app/widgets/inputs/app_dropdown.dart';
 import 'package:nadi_user_app/widgets/inputs/app_text_field.dart';
@@ -51,12 +52,14 @@ class Addmember extends StatefulWidget {
   final String accountType;
   final VoidCallback onNext;
   final GlobalKey<FormState> formKey;
+  final Map<String, dynamic>? familyHeadAddress;
 
   const Addmember({
     super.key,
     required this.accountType,
     required this.onNext,
     required this.formKey,
+    this.familyHeadAddress,
   });
 
   @override
@@ -69,11 +72,12 @@ class _AddmemberState extends State<Addmember> {
   final AuthService _authService = AuthService();
   bool _isAddress = false;
   int? _editingIndex;
+
   // bool _isFamilyCountLocked = false;
   // bool _hideBottomButton = false;
-  final GlobalKey<FormState> _addressFormKey = GlobalKey<FormState>();
   final ScrollController _scrollController = ScrollController();
   final FocusNode _nameFocus = FocusNode();
+
   bool _isLoading = false;
   final Map<String, String> genderMap = {'male': 'Male', 'female': 'Female'};
   int _totalMembers = 0;
@@ -82,16 +86,14 @@ class _AddmemberState extends State<Addmember> {
   int? editingIndex;
   int currentIndex = 0;
   bool _showFamilyCountError = false;
-  final GlobalKey _addressSectionKey = GlobalKey();
-  bool _highlightAddress = false;
   bool _isFamilyCountEditable = true;
   final TextEditingController nameController = TextEditingController();
   final TextEditingController mobileController = TextEditingController();
-
   String? selectedGender;
   String? selectedRelationship;
 
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
+  Map<String, dynamic>? _familyHeadAddress;
   String _localizedAccountType(AppLocalizations l10n) {
     switch (widget.accountType) {
       case "Family":
@@ -103,48 +105,67 @@ class _AddmemberState extends State<Addmember> {
     }
   }
 
+  @override
+  void initState() {
+    super.initState();
+
+    if (widget.accountType == "Family" && widget.familyHeadAddress != null) {
+      _familyHeadAddress = widget.familyHeadAddress;
+    }
+  }
+
   void loadMember(int index) {
     currentIndex = index;
 
     final member = familyMembers[index];
 
     controller.fullName.text = member["fullName"] ?? "";
-
     controller.mobile.text = member["mobile"] ?? "";
-
     controller.email.text = member["email"] ?? "";
 
-    controller.relation =
-        member["relation"] == null ||
-            member["relation"].toString().trim().isEmpty
-        ? null
-        : member["relation"];
-
-    controller.gender =
-        member["gender"] == null || member["gender"].toString().trim().isEmpty
-        ? null
-        : member["gender"];
+    controller.relation = member["relation"];
+    controller.gender = member["gender"];
 
     final address = member["address"] ?? {};
 
-    addressController.city.text = address["city"] ?? "";
-
-    addressController.building.text = address["building"] ?? "";
-
-    addressController.aptNo.text = address["aptNo"] ?? "";
-
-    addressController.floor.text = address["floor"] ?? "";
-
-    addressController.block = address["block"];
-
-    addressController.blockId = address["blockId"];
-
-    addressController.road = address["road"];
-
-    addressController.roadId = address["roadId"];
+    addressController.loadAddress(Map<String, dynamic>.from(address));
+    _isAddress = _isAddressDataComplete(Map<String, dynamic>.from(address));
 
     setState(() {});
   }
+
+  bool _isAddressDataComplete(Map<String, dynamic> address) {
+    final source = AddressDisplayHelper.resolveSource(address);
+    switch (source) {
+      case AddressSource.currentLocation:
+        return AddressController.parseIsGeoAddress(address['isGeoAddress']) &&
+            address['latitude'] != null &&
+            address['longitude'] != null &&
+            (address['geoAddress'] ??
+                    address['currentLocationAddress'] ??
+                    address['fullAddress'] ??
+                    '')
+                .toString()
+                .trim()
+                .isNotEmpty &&
+            (address['building'] ?? '').toString().trim().isNotEmpty &&
+            address['blockId'] != null &&
+            address['roadId'] != null;
+      case AddressSource.familyHeader:
+      case AddressSource.manual:
+        return (address['building'] ?? '').toString().trim().isNotEmpty &&
+            address['blockId'] != null &&
+            address['roadId'] != null;
+      default:
+        return addressController.isComplete;
+    }
+  }
+
+  bool get _isLastMember =>
+      _totalMembers > 0 && currentIndex >= _totalMembers - 1;
+
+  String _primaryButtonLabel(AppLocalizations l10n) =>
+      _isLastMember ? l10n.finish : l10n.next;
 
   void nextMember() {
     updateCurrentMember();
@@ -231,25 +252,7 @@ class _AddmemberState extends State<Addmember> {
 
       "gender": controller.gender,
 
-      "address": {
-        "city": addressController.city.text.trim(),
-
-        "building": addressController.building.text.trim(),
-
-        "aptNo": addressController.aptNo.text.trim(),
-
-        "floor": addressController.floor.text.trim(),
-
-        "block": addressController.block,
-
-        "blockId": addressController.blockId,
-
-        "road": addressController.road,
-
-        "roadId": addressController.roadId,
-
-        "addressType": "flat",
-      },
+      "address": addressController.getOnlyAddressMap(addressType: "flat"),
     };
   }
 
@@ -413,152 +416,6 @@ class _AddmemberState extends State<Addmember> {
 
     setState(() {}); // ✅ IMPORTANT FIX
   }
-  // void updateMemberCount(int count) {
-  //   setState(() {
-  //     if (count > members.length) {
-  //       for (int i = members.length; i < count; i++) {
-  //         members.add(FamilyMemberData());
-  //       }
-  //     } else if (count < members.length) {
-  //       members.removeRange(count, members.length);
-  //     }
-
-  //     _totalMembers = count;
-  //   });
-  // }
-  // Future<void> _addMember() async {
-  //   final l10n = AppLocalizations.of(context)!;
-  //   final memberValid = widget.formKey.currentState?.validate() ?? false;
-  // final isMemberValid = widget.formKey.currentState?.validate() ?? false;
-
-  //   /// 1️⃣ FIRST: Validate MEMBER fields
-  //   if (!isMemberValid) {
-  //     ScaffoldMessenger.of(context).showSnackBar(
-  //       SnackBar(
-  //         content: Text(l10n.pleaseFillMemberDetails),
-  //         backgroundColor: Colors.red,
-  //       ),
-  //     );
-  //     return;
-  //   }
-  //   if (!_isAddress) {
-  //     SnackbarHelper.showError(context, l10n.addAddressError);
-  //     return;
-  //   }
-
-  //   final addressValid = _addressFormKey.currentState?.validate() ?? false;
-
-  //   if (!memberValid || !addressValid) return;
-
-  //   // final prefs = await SharedPreferences.getInstance();
-  //   // final userId = prefs.getString("userId");
-  //   final userId = await AppPreferences.getUserId();
-  //   if (userId == null) return;
-
-  //   final body = controller.getApiFamilyMemberBody(
-  //     userId: userId,
-  //     address: _isAddress
-  //         ? addressController.getOnlyAddressMap(addressType: "flat")
-  //         : null,
-  //   );
-
-  //   AppLogger.success("body : $body");
-  //   setState(() => _isLoading = true);
-
-  //   try {
-  //     final response = await _authService.memberdetails(body: body);
-  //     setState(() {
-  //       _isLoading = false;
-  //       // _isFamilyCountLocked = true;
-  //     });
-  //     AppLogger.debug("Member added  ${jsonEncode(response)}");
-  //     savedMembers.add(
-  //       FamilyMemberData()
-  //         ..fullName.text = controller.fullName.text
-  //         ..mobile.text = controller.mobile.text
-  //         ..email.text = controller.email.text
-  //         ..relation = controller.relation
-  //         ..gender = controller.gender,
-  //     );
-  //     // Clear form for next member
-  //     controller.fullName.clear();
-  //     controller.mobile.clear();
-  //     controller.email.clear();
-  //     controller.password.clear();
-  //     controller.relation = null;
-  //     controller.gender = null;
-  //     if (_isAddress) addressController.clear();
-
-  //     // If last member
-  //     if (savedMembers.length >= _totalMembers) {
-  //       if (!context.mounted) return;
-  //       // setState(() {
-  //       //   _hideBottomButton = true;
-  //       // });
-
-  //       // ignore: use_build_context_synchronously
-  //       SnackbarHelper.ShowSuccess(context, l10n.allMembersAdded);
-  //       _resetForm();
-
-  //       // Delay slightly so user sees the snackbar
-  //       Future.delayed(const Duration(seconds: 1), () {
-  //         if (context.mounted)
-  //           context.push(
-  //             RouteNames.accountverfy,
-  //           ); // ignore: use_build_context_synchronously
-  //       });
-  //     } else {
-  //       // Increment member index for next member
-  //       setState(() {
-  //         _currentMemberIndex++;
-  //       });
-
-  //       FocusScope.of(context).unfocus();
-
-  //       WidgetsBinding.instance.addPostFrameCallback((_) {
-  //         if (_scrollController.hasClients) {
-  //           _scrollController.jumpTo(0); // faster than animate
-  //         }
-
-  //         // ✅ THIS IS THE FIX
-  //         _nameFocus.requestFocus();
-  //       });
-  //     }
-  //   } on DioException catch (e) {
-  //     if (!mounted) return;
-  //     setState(() => _isLoading = false);
-  //     String errorMsg = l10n.failedToAddMemberTryAgain;
-  //     if (e.response?.data != null) {
-  //       final data = e.response!.data;
-  //       if (data is Map) {
-  //         errorMsg =
-  //             data['message'] ?? data['error'] ?? data['msg'] ?? errorMsg;
-  //         if (data['errors'] != null && data['errors'] is Map) {
-  //           final errors = data['errors'] as Map;
-  //           final fieldErrors = errors.values
-  //               .map((v) => v is List ? v.first : v.toString())
-  //               .join(', ');
-  //           if (fieldErrors.isNotEmpty) errorMsg = fieldErrors;
-  //         }
-  //       } else if (data is String) {
-  //         errorMsg = data;
-  //       }
-  //     } else if (e.type == DioExceptionType.connectionTimeout ||
-  //         e.type == DioExceptionType.receiveTimeout) {
-  //       errorMsg = l10n.connectionTimeoutTryAgain;
-  //     } else if (e.type == DioExceptionType.connectionError) {
-  //       errorMsg = l10n.noInternetTryAgain;
-  //     }
-  //     SnackbarHelper.showError(context, errorMsg);
-  //   } catch (e) {
-  //     if (!mounted) return;
-  //     setState(() => _isLoading = false);
-  //     SnackbarHelper.showError(
-  //       context,
-  //       '${l10n.somethingWentWrong}: ${e.toString()}',
-  //     );
-  //   }
-  // }
 
   Future<void> _addMember() async {
     final l10n = AppLocalizations.of(context)!;
@@ -593,14 +450,10 @@ class _AddmemberState extends State<Addmember> {
       return;
     }
 
-    if (!_isAddress) {
+    if (!_isAddress || !_isAddressComplete()) {
       SnackbarHelper.showError(context, l10n.addAddressError);
       return;
     }
-
-    final addressValid = _addressFormKey.currentState?.validate() ?? false;
-
-    if (!addressValid) return;
 
     /// SAVE MEMBER
     final newMember = FamilyMemberData(
@@ -645,15 +498,53 @@ class _AddmemberState extends State<Addmember> {
   bool isMemberComplete(Map<String, dynamic> member) {
     final address = member["address"];
 
-    return (member["fullName"] ?? "").toString().trim().isNotEmpty &&
-        (member["mobile"] ?? "").toString().trim().isNotEmpty &&
-        (member["email"] ?? "").toString().trim().isNotEmpty &&
-        member["relation"] != null &&
-        member["gender"] != null &&
-        address != null &&
-        (address["building"] ?? "").toString().trim().isNotEmpty &&
-        address["blockId"] != null &&
-        address["roadId"] != null;
+    if ((member["fullName"] ?? "").toString().trim().isEmpty ||
+        (member["mobile"] ?? "").toString().trim().isEmpty ||
+        (member["email"] ?? "").toString().trim().isEmpty ||
+        member["relation"] == null ||
+        member["gender"] == null ||
+        address == null) {
+      return false;
+    }
+
+    final addr = Map<String, dynamic>.from(address);
+
+    // ✅ GEO ADDRESS CASE
+    if (addr["isGeoAddress"] == true ||
+        (addr["latitude"] != null && addr["longitude"] != null)) {
+      return (addr["geoAddress"] ?? "").toString().trim().isNotEmpty;
+    }
+
+    // ✅ MANUAL / FAMILY HEADER CASE
+    return _isAddressDataComplete(addr);
+  }
+
+  bool _isAddressComplete() => addressController.isComplete;
+
+  Future<void> _openAddressScreen() async {
+    final result = await Navigator.push<Map<String, dynamic>>(
+      context,
+      MaterialPageRoute(
+        builder: (_) => AddressScreen(
+          isFromMemberScreen: true,
+          familyHeaderAddress: _familyHeadAddress,
+          initialAddress: _isAddress ? addressController.toMap() : null,
+        ),
+      ),
+    );
+
+    if (!mounted || result == null) return;
+
+    addressController.loadAddress(result);
+    setState(() => _isAddress = _isAddressComplete());
+    updateCurrentMember();
+  }
+
+  Map<String, dynamic> _memberAddressPayload(dynamic address) {
+    return AddressController.mapToApiAddress(
+      Map<String, dynamic>.from(address as Map),
+      addressType: 'home',
+    );
   }
 
   Future<void> _submitAllMembers() async {
@@ -682,15 +573,7 @@ class _AddmemberState extends State<Addmember> {
             "mobile": int.tryParse(member["mobile"].toString()) ?? 0,
             "email": member["email"],
             "gender": member["gender"]?.toString().toLowerCase(),
-            "address": {
-              "addressType": "home",
-              "city": member["address"]["city"],
-              "building": member["address"]["building"],
-              "floor": member["address"]["floor"],
-              "aptNo": member["address"]["aptNo"],
-              "roadId": member["address"]["roadId"],
-              "blockId": member["address"]["blockId"],
-            },
+            "address": _memberAddressPayload(member["address"]),
           };
         }).toList(),
       };
@@ -726,7 +609,7 @@ class _AddmemberState extends State<Addmember> {
         context,
         e.response?.data?["message"]?.toString() ??
             e.message ??
-            "Something went wrong",
+            AppLocalizations.of(context)!.somethingWentWrong,
       );
     } catch (e) {
       if (!mounted) return;
@@ -735,33 +618,6 @@ class _AddmemberState extends State<Addmember> {
 
       SnackbarHelper.showError(context, e.toString());
     }
-  }
-
-  Future<void> _showAddressSection() async {
-    setState(() {
-      _isAddress = true;
-      _highlightAddress = true;
-    });
-
-    await Future.delayed(const Duration(milliseconds: 100));
-
-    final context = _addressSectionKey.currentContext;
-
-    if (context != null) {
-      Scrollable.ensureVisible(
-        context,
-        duration: const Duration(milliseconds: 500),
-        curve: Curves.easeInOut,
-      );
-    }
-
-    Future.delayed(const Duration(seconds: 2), () {
-      if (mounted) {
-        setState(() {
-          _highlightAddress = false;
-        });
-      }
-    });
   }
 
   void _clearCurrentEditingForm() {
@@ -1044,220 +900,8 @@ class _AddmemberState extends State<Addmember> {
 
                                             return;
                                           }
-                                          // final previousCount = _totalMembers;
-
-                                          // /// User is increasing count
-                                          // if (count > previousCount) {
-                                          //   /// Allow only next member creation
-                                          //   final newCount = previousCount + 1;
-
-                                          //   controller.familyCount.value =
-                                          //       TextEditingValue(
-                                          //         text: newCount.toString(),
-                                          //         selection:
-                                          //             TextSelection.collapsed(
-                                          //               offset: newCount
-                                          //                   .toString()
-                                          //                   .length,
-                                          //             ),
-                                          //       );
-
-                                          //   _handleMemberCountChange(newCount);
-
-                                          //   currentIndex = newCount - 1;
-
-                                          //   loadMember(currentIndex);
-
-                                          //   setState(() {
-                                          //     _currentMemberIndex =
-                                          //         currentIndex + 1;
-                                          //   });
-
-                                          //   WidgetsBinding.instance
-                                          //       .addPostFrameCallback((_) {
-                                          //         _nameFocus.requestFocus();
-                                          //       });
-
-                                          //   return;
-                                          // }
-
-                                          // /// User decreased count
-                                          // _handleMemberCountChange(count);
-
-                                          // if (familyMembers.isNotEmpty) {
-                                          //   currentIndex = currentIndex.clamp(
-                                          //     0,
-                                          //     familyMembers.length - 1,
-                                          //   );
-
-                                          //   loadMember(currentIndex);
-
-                                          //   setState(() {
-                                          //     _currentMemberIndex =
-                                          //         currentIndex + 1;
-                                          //   });
-                                          // }
                                         },
                                       ),
-
-                                      // TextFormField(
-                                      //   // readOnly:
-                                      //   //     familyMembers.isNotEmpty &&
-                                      //   //     !isMemberComplete(
-                                      //   //       familyMembers[currentIndex],
-                                      //   //     ),
-                                      //   controller: controller.familyCount,
-                                      //   keyboardType: TextInputType.number,
-                                      //   textAlign: TextAlign.center,
-                                      //   style: const TextStyle(
-                                      //     fontSize: 22,
-                                      //     fontWeight: FontWeight.w700,
-                                      //   ),
-                                      //   decoration: const InputDecoration(
-                                      //     border: InputBorder.none,
-                                      //     counterText: "",
-                                      //   ),
-                                      //   maxLength: 2,
-                                      //   inputFormatters: [
-                                      //     FilteringTextInputFormatter
-                                      //         .digitsOnly,
-                                      //   ],
-                                      //   onChanged: (val) {
-                                      //     updateCurrentMember();
-
-                                      //     final current =
-                                      //         familyMembers.isNotEmpty
-                                      //         ? familyMembers[currentIndex]
-                                      //         : null;
-
-                                      //     /// Block editing if current member incomplete
-                                      //     if (current != null &&
-                                      //         !isMemberComplete(current)) {
-                                      //       final previousValue = _totalMembers
-                                      //           .toString();
-
-                                      //       controller
-                                      //           .familyCount
-                                      //           .value = TextEditingValue(
-                                      //         text: previousValue,
-                                      //         selection:
-                                      //             TextSelection.collapsed(
-                                      //               offset:
-                                      //                   previousValue.length,
-                                      //             ),
-                                      //       );
-
-                                      //       FocusScope.of(context).unfocus();
-
-                                      //       SnackbarHelper.showError(
-                                      //         context,
-                                      //         "Please fill current member first",
-                                      //       );
-
-                                      //       return;
-                                      //     }
-
-                                      //     final count = int.tryParse(val);
-
-                                      //     if (count == null || count <= 0) {
-                                      //       controller
-                                      //           .familyCount
-                                      //           .value = TextEditingValue(
-                                      //         text: _totalMembers.toString(),
-                                      //         selection:
-                                      //             TextSelection.collapsed(
-                                      //               offset: _totalMembers
-                                      //                   .toString()
-                                      //                   .length,
-                                      //             ),
-                                      //       );
-                                      //       return;
-                                      //     }
-
-                                      //     setState(() {
-                                      //       _showFamilyCountError = false;
-                                      //     });
-
-                                      //     _handleMemberCountChange(count);
-                                      //   },
-                                      //   // onChanged: (val) {
-                                      //   //   updateCurrentMember();
-
-                                      //   //   final count = int.tryParse(val);
-
-                                      //   //   if (count != null &&
-                                      //   //       count > _totalMembers) {
-                                      //   //     final current =
-                                      //   //         familyMembers.isNotEmpty
-                                      //   //         ? familyMembers[currentIndex]
-                                      //   //         : null;
-
-                                      //   //     if (current != null &&
-                                      //   //         !isMemberComplete(current)) {
-                                      //   //       controller.familyCount.text =
-                                      //   //           _totalMembers.toString();
-
-                                      //   //       controller.familyCount.selection =
-                                      //   //           TextSelection.fromPosition(
-                                      //   //             TextPosition(
-                                      //   //               offset: controller
-                                      //   //                   .familyCount
-                                      //   //                   .text
-                                      //   //                   .length,
-                                      //   //             ),
-                                      //   //           );
-
-                                      //   //       FocusScope.of(context).unfocus();
-
-                                      //   //       SnackbarHelper.showError(
-                                      //   //         context,
-                                      //   //         "Please fill current member first",
-                                      //   //       );
-
-                                      //   //       return;
-                                      //   //     }
-                                      //   //   }
-
-                                      //   //   if (count == null || count <= 0) {
-                                      //   //     controller.familyCount.clear();
-
-                                      //   //     setState(() {
-                                      //   //       _totalMembers = 0;
-                                      //   //     });
-
-                                      //   //     return;
-                                      //   //   }
-
-                                      //   //   setState(() {
-                                      //   //     _showFamilyCountError = false;
-                                      //   //   });
-
-                                      //   //   _handleMemberCountChange(count);
-                                      //   // },
-
-                                      //   // validator: (value) => controller
-                                      //   //     .validatefamilycount(value, l10n),
-                                      //   // onChanged: (val) {
-                                      //   //   final count = int.tryParse(val);
-
-                                      //   //   /// Prevent 0
-                                      //   //   if (count == null || count <= 0) {
-                                      //   //     controller.familyCount.clear();
-
-                                      //   //     setState(() {
-                                      //   //       _totalMembers = 0;
-                                      //   //     });
-
-                                      //   //     return;
-                                      //   //   }
-
-                                      //   //   /// VALID
-                                      //   //   setState(() {
-                                      //   //     _showFamilyCountError = false;
-                                      //   //   });
-                                      //   //   _handleMemberCountChange(count);
-                                      //   // },
-                                      // ),
                                     ),
                                   ),
 
@@ -1430,7 +1074,7 @@ class _AddmemberState extends State<Addmember> {
                   const SizedBox(height: 8),
 
                   if (_totalMembers == 0)
-                    Center(child: Text("Enter family count first"))
+                    Center(child: Text(l10n.enterFamilyCountFirst))
                   else ...[
                     const SizedBox(height: 15),
                     AppTextField(
@@ -1542,47 +1186,48 @@ class _AddmemberState extends State<Addmember> {
                             borderRadius: BorderRadius.circular(10),
                           ),
                         ),
-                        onPressed: () {
-                          if (!_isAddress) {
-                            _showAddressSection();
-                          } else {
-                            setState(() {
-                              _isAddress = false;
-                            });
-                          }
-                        },
+                        onPressed: _openAddressScreen,
                         child: Text(
                           _isAddress ? l10n.hideAddress : l10n.addAddress,
                           style: TextStyle(color: AppColors.btn_primery),
                         ),
                       ),
                     ),
-
                     if (_isAddress)
-                      AnimatedContainer(
-                        key: _addressSectionKey,
-                        duration: const Duration(milliseconds: 400),
-                        padding: const EdgeInsets.all(8),
+                      Container(
+                        margin: const EdgeInsets.only(top: 10),
+                        padding: const EdgeInsets.all(12),
                         decoration: BoxDecoration(
+                          color: Colors.grey.shade50,
                           borderRadius: BorderRadius.circular(12),
-                          border: Border.all(
-                            color: _highlightAddress
-                                ? AppColors.button_secondary
-                                : Colors.transparent,
-                            width: 2,
-                          ),
-                          color: _highlightAddress
-                              ? AppColors.button_secondary.withOpacity(.08)
-                              : Colors.transparent,
+                          border: Border.all(color: Colors.grey.shade300),
                         ),
                         child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            const SizedBox(height: 20),
-                            Address(
-                              accountType: "Family",
-                              family: true,
-                              formKey: _addressFormKey,
-                              controller: addressController,
+                            Text(
+                              l10n.addressTypeWithValue(
+                                AddressDisplayHelper.sourceLabel(
+                                  addressController.addressSource,
+                                  l10n: l10n,
+                                ),
+                              ),
+                              style: const TextStyle(
+                                fontWeight: FontWeight.w600,
+                                fontSize: 14,
+                              ),
+                            ),
+                            const SizedBox(height: 8),
+                            Text(
+                              addressController.addressSource ==
+                                      AddressSource.currentLocation
+                                  ? (addressController.geoAddress ??
+                                        addressController.fullAddress ??
+                                        '')
+                                  : AddressDisplayHelper.formatProfileAddress(
+                                      addressController.toMap(),
+                                      l10n: l10n,
+                                    ),
                             ),
                           ],
                         ),
@@ -1599,10 +1244,7 @@ class _AddmemberState extends State<Addmember> {
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 5),
                 child: AppButton(
-                  text: currentIndex + 1 == _totalMembers
-                      ? l10n.finish
-                      : l10n.next,
-
+                  text: _primaryButtonLabel(l10n),
                   isLoading: _isLoading,
 
                   // onPressed: () async {
@@ -1687,17 +1329,11 @@ class _AddmemberState extends State<Addmember> {
 
                     if (!isMemberValid) return;
 
-                    /// Address Section Visible
-                    if (!_isAddress) {
+                    /// Address must be completed via AddressScreen
+                    if (!_isAddress || !_isAddressComplete()) {
                       SnackbarHelper.showError(context, l10n.addAddressError);
                       return;
                     }
-
-                    /// Address Validation
-                    final isAddressValid =
-                        _addressFormKey.currentState?.validate() ?? false;
-
-                    if (!isAddressValid) return;
 
                     /// Save Current Member Locally
                     updateCurrentMember();
@@ -1736,7 +1372,7 @@ class _AddmemberState extends State<Addmember> {
                       if (exists == true) {
                         SnackbarHelper.showError(
                           context,
-                          "Account already exists",
+                          l10n.accountAlreadyExists,
                         );
                         return; //
                       }
@@ -1752,7 +1388,7 @@ class _AddmemberState extends State<Addmember> {
                       SnackbarHelper.showError(
                         context,
                         e.response?.data?["message"]?.toString() ??
-                            "Account already exists",
+                            l10n.accountAlreadyExists,
                       );
 
                       return;

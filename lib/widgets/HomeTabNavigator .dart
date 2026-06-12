@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:nadi_user_app/l10n/app_localizations.dart';
 import 'package:nadi_user_app/views/screens/dashborad.dart';
 import 'package:nadi_user_app/views/screens/point_details.dart';
 
@@ -29,10 +30,10 @@ class HomeTabNavigator extends StatelessWidget {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-            const  Text(
-                "Do you want to exit the app?",
+            Text(
+                AppLocalizations.of(context)!.exitAppConfirmation,
                 textAlign: TextAlign.center,
-                style: TextStyle(
+                style: const TextStyle(
                   fontSize: 16,
                   color: Colors.black87,
                 ),
@@ -49,9 +50,9 @@ class HomeTabNavigator extends StatelessWidget {
                       Navigator.pop(context);
                       exitApp = false;
                     },
-                    child: const Text(
-                      "Cancel",
-                      style: TextStyle(
+                    child: Text(
+                      AppLocalizations.of(context)!.cancel,
+                      style: const TextStyle(
                         fontSize: 12,
                         fontWeight: FontWeight.bold,
                         color: Colors.blue,
@@ -65,9 +66,9 @@ class HomeTabNavigator extends StatelessWidget {
                       Navigator.pop(context);
                       exitApp = true;
                     },
-                    child: const Text(
-                      "Exit",
-                      style: TextStyle(
+                    child: Text(
+                      AppLocalizations.of(context)!.exit,
+                      style: const TextStyle(
                         fontSize: 12,
                         fontWeight: FontWeight.bold,
                         color: Colors.blue,
