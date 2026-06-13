@@ -78,6 +78,7 @@ class _AddressScreenState extends State<AddressScreen> {
           accountType: 'Family',
           family: true,
           formKey: _formKey,
+          isprofile: false,
           controller: _controller,
           isFromMemberScreen: widget.isFromMemberScreen,
           isEditMode: widget.isEditMode,

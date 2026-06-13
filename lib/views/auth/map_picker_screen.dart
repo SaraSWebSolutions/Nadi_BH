@@ -9,7 +9,10 @@ import 'package:nadi_user_app/l10n/app_localizations.dart';
 import 'package:nadi_user_app/widgets/app_back.dart';
 
 class MapPickerScreen extends StatefulWidget {
-  const MapPickerScreen({super.key});
+  final double? latitude;
+  final double? longitude;
+
+  const MapPickerScreen({super.key, this.latitude, this.longitude});
 
   @override
   State<MapPickerScreen> createState() => _MapPickerScreenState();
@@ -23,10 +26,21 @@ class _MapPickerScreenState extends State<MapPickerScreen> {
   String address = "";
   String selectedPlaceName = "";
   final TextEditingController _searchController = TextEditingController();
+
   @override
   void initState() {
     super.initState();
-    _loadCurrentLocation();
+
+    if (widget.latitude != null && widget.longitude != null) {
+      selectedLatLng = LatLng(widget.latitude!, widget.longitude!);
+
+      WidgetsBinding.instance.addPostFrameCallback((_) async {
+        await _reverseGeocode();
+        if (mounted) setState(() {});
+      });
+    } else {
+      _loadCurrentLocation();
+    }
   }
 
   Future<void> _loadCurrentLocation() async {

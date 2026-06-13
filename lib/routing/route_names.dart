@@ -170,9 +170,13 @@ final appRouter = GoRouter(
     GoRoute(
       path: RouteNames.addMember,
       builder: (context, state) {
-        final accountTypeId = state.extra as String;
+        final extra = state.extra as Map<String, dynamic>;
 
-        return Addmemberss(accountTypeId: accountTypeId);
+        return Addmemberss(
+          accountTypeId: extra['accountTypeId'] as String,
+          familyHeadAddress:
+              extra['familyHeadAddress'] as Map<String, dynamic>?,
+        );
       },
     ),
     // GoRoute(

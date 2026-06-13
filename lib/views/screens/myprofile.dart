@@ -560,10 +560,50 @@ class _MyprofileState extends ConsumerState<Myprofile> {
                             SizedBox(
                               width: double.infinity,
                               child: ElevatedButton(
+                                // onPressed: () async {
+                                //   final extraData = {
+                                //     "accountTypeId": accountTypeId,
+                                //     "familyHeadAddress": addresses.isNotEmpty
+                                //         ? Map<String, dynamic>.from(
+                                //             addresses.first,
+                                //           )
+                                //         : null,
+                                //   };
+
+                                //   print("================================");
+                                //   print("ADD MEMBER CLICKED");
+                                //   print("accountTypeId => $accountTypeId");
+                                //   print("addresses => $addresses");
+                                //   print(
+                                //     "familyHeadAddress => ${extraData["familyHeadAddress"]}",
+                                //   );
+                                //   print("extraData => $extraData");
+                                //   print("================================");
+
+                                //   final result = await context.push(
+                                //     RouteNames.addMember,
+                                //     extra: extraData,
+                                //   );
+
+                                //   print("Navigation Result => $result");
+
+                                //   if (result == true && context.mounted) {
+                                //     ref.invalidate(
+                                //       familyMembersVerifiedProvider,
+                                //     );
+                                //     ref.invalidate(profileprovider);
+                                //   }
+                                // },
                                 onPressed: () async {
                                   final result = await context.push(
                                     RouteNames.addMember,
-                                    extra: accountTypeId,
+                                    extra: {
+                                      "accountTypeId": accountTypeId
+                                          ?.toString(),
+                                      "familyHeadAddress": addresses.isNotEmpty
+                                          ? addresses[0]
+                                          : null,
+                                    },
                                   );
 
                                   // refresh family members + profile

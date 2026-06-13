@@ -30,7 +30,7 @@ class Address extends StatefulWidget {
   final bool isEditMode;
   final Map<String, dynamic>? familyHeaderAddress;
   final Map<String, dynamic>? initialAddress;
-
+  final bool isprofile;
   const Address({
     super.key,
     required this.accountType,
@@ -43,6 +43,7 @@ class Address extends StatefulWidget {
     this.isEditMode = false,
     this.familyHeaderAddress,
     this.initialAddress,
+    required this.isprofile,
   });
 
   @override
@@ -72,19 +73,41 @@ class _AddressState extends State<Address> {
   final AuthService _adressservice = AuthService();
   AddressController get controller => widget.controller;
 
+  // @override
+  // void initState() {
+  //   super.initState();
+  //   final initial = widget.initialAddress;
+  //   if (initial != null) {
+  //     WidgetsBinding.instance.addPostFrameCallback((_) {
+  //       if (!mounted) return;
+  //       controller.loadAddress(initial);
+  //       if (controller.addressSource == null) {
+  //         controller.addressSource =
+  //             AddressDisplayHelper.resolveSource(initial) ??
+  //             AddressSource.manual;
+  //       }
+  //       setState(() {});
+  //     });
+  //   }
+  // }
   @override
   void initState() {
     super.initState();
+
     final initial = widget.initialAddress;
+
+    print("INITIAL ADDRESS => $initial");
+
     if (initial != null) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (!mounted) return;
+
         controller.loadAddress(initial);
-        if (controller.addressSource == null) {
-          controller.addressSource =
-              AddressDisplayHelper.resolveSource(initial) ??
-              AddressSource.manual;
-        }
+
+        print("LAT => ${controller.latitude}");
+        print("LNG => ${controller.longitude}");
+        print("SOURCE => ${controller.addressSource}");
+
         setState(() {});
       });
     }
@@ -239,7 +262,9 @@ class _AddressState extends State<Address> {
 
   Future<void> _openMapPicker() async {
     debugPrint("STEP 1");
-
+    debugPrint(
+      "OPENING MAP => lat=${controller.latitude}, lng=${controller.longitude}",
+    );
     bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
 
     final l10n = AppLocalizations.of(context)!;
@@ -272,10 +297,14 @@ class _AddressState extends State<Address> {
 
     try {
       setState(() => _isLocationLoading = true);
-
       final result = await Navigator.push(
         context,
-        MaterialPageRoute(builder: (_) => const MapPickerScreen()),
+        MaterialPageRoute(
+          builder: (_) => MapPickerScreen(
+            latitude: controller.latitude,
+            longitude: controller.longitude,
+          ),
+        ),
       );
 
       if (result is LocationResult) {
@@ -342,8 +371,7 @@ class _AddressState extends State<Address> {
     final resolvedBlock = matchedBlock;
 
     setState(() {
-      controller.blockId ??=
-          AddressController.sanitizeId(resolvedBlock['_id']);
+      controller.blockId ??= AddressController.sanitizeId(resolvedBlock['_id']);
       controller.roadsForSelectedBlock = List<Map<String, dynamic>>.from(
         resolvedBlock['roads'] ?? [],
       );
@@ -400,13 +428,21 @@ class _AddressState extends State<Address> {
       return false;
     }
 
-    if (AddressController.sanitizeId(controller.roadId) == null) {
-      SnackbarHelper.showError(context, l10n.pleaseSelectRoad);
+    final hasValidBlock =
+        AddressController.sanitizeId(controller.blockId) != null ||
+        (isOtherBlockSelected && otherBlockController.text.trim().isNotEmpty);
+
+    final hasValidRoad =
+        AddressController.sanitizeId(controller.roadId) != null ||
+        (isOtherRoadSelected && otherRoadController.text.trim().isNotEmpty);
+
+    if (!hasValidBlock) {
+      SnackbarHelper.showError(context, l10n.pleaseSelectBlock);
       return false;
     }
 
-    if (AddressController.sanitizeId(controller.blockId) == null) {
-      SnackbarHelper.showError(context, l10n.pleaseSelectBlock);
+    if (!hasValidRoad) {
+      SnackbarHelper.showError(context, l10n.pleaseSelectRoad);
       return false;
     }
 
@@ -1134,7 +1170,7 @@ class _AddressState extends State<Address> {
               //     );
               //   },
               // ),
-              if (widget.family && _canContinue)
+              if (!widget.isprofile && widget.family && _canContinue)
                 AppButton(
                   text: l10n.continueBtn,
                   isLoading: _isLoading,
@@ -1142,11 +1178,11 @@ class _AddressState extends State<Address> {
                   color: AppColors.btn_primery,
                   width: double.infinity,
                 ),
-              if (!widget.family && _canContinue)
+              if (!widget.isprofile && !widget.family && _canContinue)
                 AppButton(
                   text: widget.accountType == "Family"
                       ? l10n.continueBtn
-                      : l10n.signIn,
+                      : l10n.continueBtn,
                   isLoading: _isLoading,
                   onPressed: () {
                     if (!_validateManualForm() || !controller.isComplete) {

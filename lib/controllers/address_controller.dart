@@ -125,6 +125,8 @@ class AddressController {
   }
 
   void loadAddress(Map<String, dynamic> address) {
+    print("LOAD ADDRESS DATA => $address");
+
     isGeoAddress = parseIsGeoAddress(address['isGeoAddress']);
     geoAddress =
         address['geoAddress']?.toString() ??
@@ -200,20 +202,37 @@ class AddressController {
     }
 
     if (isManualMode) {
+      final hasBlock =
+          sanitizeId(blockId) != null || (blockId == null && block == null);
+
+      final hasRoad =
+          sanitizeId(roadId) != null || (roadId == null && road == null);
+
       return city.text.trim().isNotEmpty &&
           building.text.trim().isNotEmpty &&
-          sanitizeId(blockId) != null &&
-          sanitizeId(roadId) != null;
+          hasBlock &&
+          hasRoad;
     }
 
     return false;
+  }
+
+  bool isManualAddressComplete({
+    bool allowCustomBlock = false,
+    bool allowCustomRoad = false,
+  }) {
+    return city.text.trim().isNotEmpty &&
+        building.text.trim().isNotEmpty &&
+        (sanitizeId(blockId) != null || allowCustomBlock) &&
+        (sanitizeId(roadId) != null || allowCustomRoad);
   }
 
   bool get isReadOnly => addressSource == AddressSource.familyHeader;
 
   bool get showsManualForm => isManualMode && addressSource != null;
 
-  bool get showsLocationCard => isGeoMode && (geoAddress?.trim().isNotEmpty ?? false);
+  bool get showsLocationCard =>
+      isGeoMode && (geoAddress?.trim().isNotEmpty ?? false);
 
   Map<String, dynamic> buildAddressPayload({
     required String addressType,

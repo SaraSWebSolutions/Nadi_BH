@@ -19,8 +19,13 @@ import 'package:nadi_user_app/l10n/app_localizations.dart';
 
 class Addmemberss extends ConsumerStatefulWidget {
   final String accountTypeId;
+  final Map<String, dynamic>? familyHeadAddress;
 
-  const Addmemberss({super.key, required this.accountTypeId});
+  const Addmemberss({
+    super.key,
+    required this.accountTypeId,
+    this.familyHeadAddress,
+  });
 
   @override
   ConsumerState<Addmemberss> createState() => _AddmemberssState();
@@ -41,6 +46,25 @@ class _AddmemberssState extends ConsumerState<Addmemberss> {
   String? gender;
   bool _isLoading = false;
   bool _showAddress = false;
+  @override
+  void initState() {
+    super.initState();
+
+    try {
+      print("familyHeadAddress => ${widget.familyHeadAddress}");
+
+      if (widget.familyHeadAddress != null) {
+        addressController.loadAddress(widget.familyHeadAddress!);
+
+        addressController.addressSource = AddressSource.familyHeader;
+
+        _showAddress = true;
+      }
+    } catch (e, s) {
+      print("INIT ERROR => $e");
+      print(s);
+    }
+  }
 
   // ADD MEMBER API
   Future<void> _addMember() async {
@@ -126,8 +150,7 @@ class _AddmemberssState extends ConsumerState<Addmemberss> {
     } on DioException catch (e) {
       if (!mounted) return;
       setState(() => _isLoading = false);
-      String errorMsg =
-          AppLocalizations.of(context)!.failedToAddMemberTryAgain;
+      String errorMsg = AppLocalizations.of(context)!.failedToAddMemberTryAgain;
       if (e.response?.data != null) {
         final data = e.response!.data;
         if (data is Map) {
@@ -408,8 +431,11 @@ class _AddmemberssState extends ConsumerState<Addmemberss> {
                     children: [
                       const SizedBox(height: 20),
                       Address(
+                        isFromMemberScreen: true,
+                        familyHeaderAddress: widget.familyHeadAddress,
                         accountType: "Family",
                         family: true,
+                        isprofile: true,
                         formKey: _addressFormKey,
                         controller: addressController,
                       ),
