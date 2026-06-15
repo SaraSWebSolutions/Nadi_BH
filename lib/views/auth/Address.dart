@@ -303,6 +303,7 @@ class _AddressState extends State<Address> {
           builder: (_) => MapPickerScreen(
             latitude: controller.latitude,
             longitude: controller.longitude,
+            savedAddress: controller.geoAddress,
           ),
         ),
       );

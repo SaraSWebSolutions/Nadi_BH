@@ -207,11 +207,8 @@ class AddressController {
 
       final hasRoad =
           sanitizeId(roadId) != null || (roadId == null && road == null);
-
-      return city.text.trim().isNotEmpty &&
-          building.text.trim().isNotEmpty &&
-          hasBlock &&
-          hasRoad;
+      // city.text.trim().isNotEmpty &&
+      return building.text.trim().isNotEmpty && hasBlock && hasRoad;
     }
 
     return false;

@@ -11,8 +11,13 @@ import 'package:nadi_user_app/widgets/app_back.dart';
 class MapPickerScreen extends StatefulWidget {
   final double? latitude;
   final double? longitude;
-
-  const MapPickerScreen({super.key, this.latitude, this.longitude});
+  final String? savedAddress;
+  const MapPickerScreen({
+    super.key,
+    this.latitude,
+    this.longitude,
+    this.savedAddress,
+  });
 
   @override
   State<MapPickerScreen> createState() => _MapPickerScreenState();
@@ -34,8 +39,9 @@ class _MapPickerScreenState extends State<MapPickerScreen> {
     if (widget.latitude != null && widget.longitude != null) {
       selectedLatLng = LatLng(widget.latitude!, widget.longitude!);
 
-      WidgetsBinding.instance.addPostFrameCallback((_) async {
-        await _reverseGeocode();
+      address = widget.savedAddress ?? "";
+
+      WidgetsBinding.instance.addPostFrameCallback((_) {
         if (mounted) setState(() {});
       });
     } else {
@@ -225,6 +231,20 @@ class _MapPickerScreenState extends State<MapPickerScreen> {
               countries: const ["bh"], // Bahrain only
 
               isLatLngRequired: true,
+              // getPlaceDetailWithLatLng: (prediction) async {
+              //   final lat = double.parse(prediction.lat!);
+              //   final lng = double.parse(prediction.lng!);
+
+              //   selectedLatLng = LatLng(lat, lng);
+
+              //   selectedPlaceName = prediction.description ?? "";
+
+              //   mapController?.animateCamera(
+              //     CameraUpdate.newLatLngZoom(selectedLatLng!, 17),
+              //   );
+
+              //   setState(() {});
+              // },
               getPlaceDetailWithLatLng: (prediction) async {
                 final lat = double.parse(prediction.lat!);
                 final lng = double.parse(prediction.lng!);
@@ -233,13 +253,14 @@ class _MapPickerScreenState extends State<MapPickerScreen> {
 
                 selectedPlaceName = prediction.description ?? "";
 
+                await _reverseGeocode();
+
                 mapController?.animateCamera(
                   CameraUpdate.newLatLngZoom(selectedLatLng!, 17),
                 );
 
                 setState(() {});
               },
-
               itemClick: (prediction) {},
             ),
           ),
