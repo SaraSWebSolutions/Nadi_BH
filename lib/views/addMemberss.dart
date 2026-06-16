@@ -434,6 +434,7 @@ class _AddmemberssState extends ConsumerState<Addmemberss> {
                         isFromMemberScreen: true,
                         familyHeaderAddress: widget.familyHeadAddress,
                         accountType: "Family",
+                        isEditprofile: false,
                         family: true,
                         isprofile: true,
                         formKey: _addressFormKey,

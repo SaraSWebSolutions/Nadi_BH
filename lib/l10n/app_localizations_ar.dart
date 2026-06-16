@@ -384,6 +384,9 @@ class AppLocalizationsAr extends AppLocalizations {
   String get pointHistory => 'سجل النقاط:';
 
   @override
+  String get pointHistorys => 'سجل النقاط';
+
+  @override
   String get noHistoryFound => 'لا يوجد سجل';
 
   @override

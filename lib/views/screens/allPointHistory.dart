@@ -33,7 +33,7 @@ class _AllPointHistoryState extends ConsumerState<AllPointHistory> {
         elevation: 0,
         centerTitle: true,
         title: Text(
-          l10n.pointHistory,
+          l10n.pointHistorys,
           style: const TextStyle(
             color: Colors.white,
             fontSize: 20,

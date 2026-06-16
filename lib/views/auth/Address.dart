@@ -31,6 +31,7 @@ class Address extends StatefulWidget {
   final Map<String, dynamic>? familyHeaderAddress;
   final Map<String, dynamic>? initialAddress;
   final bool isprofile;
+  final bool isEditprofile;
   const Address({
     super.key,
     required this.accountType,
@@ -44,6 +45,7 @@ class Address extends StatefulWidget {
     this.familyHeaderAddress,
     this.initialAddress,
     required this.isprofile,
+    required this.isEditprofile,
   });
 
   @override
@@ -69,6 +71,7 @@ class _AddressState extends State<Address> {
   bool isOtherRoadSelected = false;
   String? otherBlockError;
   String? otherRoadError;
+
   // GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final AuthService _adressservice = AuthService();
   AddressController get controller => widget.controller;
@@ -346,6 +349,15 @@ class _AddressState extends State<Address> {
 
   Future<void> _fillAddressFromFamilyHeader() async {
     final address = widget.familyHeaderAddress;
+    // final isCustomBlock =
+    //     controller.blockId == null &&
+    //     (controller.block?.isNotEmpty == true ||
+    //         controller.blockName?.isNotEmpty == true);
+
+    // final isCustomRoad =
+    //     controller.roadId == null &&
+    //     (controller.road?.isNotEmpty == true ||
+    //         controller.roadName?.isNotEmpty == true);
     if (address == null) return;
 
     setState(() {
@@ -431,12 +443,13 @@ class _AddressState extends State<Address> {
 
     final hasValidBlock =
         AddressController.sanitizeId(controller.blockId) != null ||
-        (isOtherBlockSelected && otherBlockController.text.trim().isNotEmpty);
+        (controller.block?.trim().isNotEmpty ?? false) ||
+        (controller.customBlockName?.trim().isNotEmpty ?? false);
 
     final hasValidRoad =
         AddressController.sanitizeId(controller.roadId) != null ||
-        (isOtherRoadSelected && otherRoadController.text.trim().isNotEmpty);
-
+        (controller.road?.trim().isNotEmpty ?? false) ||
+        (controller.customRoadName?.trim().isNotEmpty ?? false);
     if (!hasValidBlock) {
       SnackbarHelper.showError(context, l10n.pleaseSelectBlock);
       return false;
@@ -701,7 +714,7 @@ class _AddressState extends State<Address> {
         Consumer(
           builder: (context, ref, child) {
             final blockAsync = ref.watch(getBlockProvider);
-
+            final isEditable = widget.isEditprofile || !controller.isReadOnly;
             return blockAsync.when(
               data: (blocks) {
                 if (controller.block != null &&
@@ -738,76 +751,96 @@ class _AddressState extends State<Address> {
                 final roadValue = matchedRoad.isNotEmpty
                     ? matchedRoad.first['name']
                     : null;
+                final isCustomBlock =
+                    controller.blockId == null &&
+                    controller.block != null &&
+                    matchedBlock.isEmpty;
+
+                final isCustomRoad =
+                    controller.roadId == null &&
+                    controller.road != null &&
+                    matchedRoad.isEmpty;
                 return Column(
                   children: [
-                    AppDropdown(
-                      label: l10n.selectBlock,
-                      enabled: fieldsEnabled,
-                      items: [
-                        ...blocks.map((b) => b['name'] as String),
-                        if (!controller.isReadOnly) l10n.others,
-                      ],
+                    if (isCustomBlock) ...[
+                      AppTextField(
+                        controller: TextEditingController(
+                          text: controller.block,
+                        ),
+                        label: l10n.enterBlockName,
+                        readonly: true,
+                        enabled: false,
+                      ),
+                    ] else ...[
+                      AppDropdown(
+                        label: l10n.selectBlock,
+                        enabled: fieldsEnabled,
+                        items: [
+                          ...blocks.map((b) => b['name'] as String),
+                          if (!controller.isReadOnly) l10n.others,
+                        ],
 
-                      value: blockValue,
-                      // onChanged: (val) {
-                      //   _onAddressChanged();
+                        value: blockValue,
+                        // onChanged: (val) {
+                        //   _onAddressChanged();
 
-                      //   setState(() {
-                      //     final block = blocks.firstWhere(
-                      //       (b) => b['name'] == val,
-                      //     );
+                        //   setState(() {
+                        //     final block = blocks.firstWhere(
+                        //       (b) => b['name'] == val,
+                        //     );
 
-                      //     controller.block = block['name'];
-                      //     controller.blockId = block['_id'];
+                        //     controller.block = block['name'];
+                        //     controller.blockId = block['_id'];
 
-                      //     controller.road = null;
-                      //     controller.roadId = null;
+                        //     controller.road = null;
+                        //     controller.roadId = null;
 
-                      //     controller.roadsForSelectedBlock =
-                      //         List<Map<String, dynamic>>.from(block['roads']);
-                      //   });
-                      // },
-                      onChanged: (val) {
-                        _onAddressChanged();
+                        //     controller.roadsForSelectedBlock =
+                        //         List<Map<String, dynamic>>.from(block['roads']);
+                        //   });
+                        // },
+                        onChanged: (val) {
+                          _onAddressChanged();
 
-                        if (val == l10n.others) {
+                          if (val == l10n.others) {
+                            setState(() {
+                              isOtherBlockSelected = true;
+
+                              controller.block = null;
+                              controller.blockId = null;
+
+                              controller.road = null;
+                              controller.roadId = null;
+                              controller.customBlockName = '';
+                              controller.roadsForSelectedBlock.clear();
+                            });
+
+                            return;
+                          }
+
                           setState(() {
-                            isOtherBlockSelected = true;
+                            isOtherBlockSelected = false;
 
-                            controller.block = null;
-                            controller.blockId = null;
+                            final block = blocks.firstWhere(
+                              (b) => b['name'] == val,
+                            );
+
+                            controller.block = block['name'];
+                            controller.blockId = AddressController.sanitizeId(
+                              block['_id'],
+                            );
 
                             controller.road = null;
                             controller.roadId = null;
 
-                            controller.roadsForSelectedBlock.clear();
+                            controller.roadsForSelectedBlock =
+                                List<Map<String, dynamic>>.from(block['roads']);
                           });
-
-                          return;
-                        }
-
-                        setState(() {
-                          isOtherBlockSelected = false;
-
-                          final block = blocks.firstWhere(
-                            (b) => b['name'] == val,
-                          );
-
-                          controller.block = block['name'];
-                          controller.blockId = AddressController.sanitizeId(
-                            block['_id'],
-                          );
-
-                          controller.road = null;
-                          controller.roadId = null;
-
-                          controller.roadsForSelectedBlock =
-                              List<Map<String, dynamic>>.from(block['roads']);
-                        });
-                      },
-                      validator: (val) =>
-                          val == null ? l10n.pleaseSelectBlock : null,
-                    ),
+                        },
+                        validator: (val) =>
+                            val == null ? l10n.pleaseSelectBlock : null,
+                      ),
+                    ],
 
                     const SizedBox(height: 15),
                     if (isOtherBlockSelected) ...[
@@ -824,10 +857,14 @@ class _AddressState extends State<Address> {
                           }
                           return null;
                         },
-                        onChanged: (_) {
+                        onChanged: (value) {
+                          controller.customBlockName = value.trim();
+
                           if (otherBlockError != null) {
                             setState(() => otherBlockError = null);
                           }
+
+                          setState(() {}); // refresh _canContinue
                         },
                       ),
 
@@ -847,78 +884,95 @@ class _AddressState extends State<Address> {
                         ),
                     ],
                     const SizedBox(height: 15),
+
                     // if (!isOtherBlockSelected)
-                    AppDropdown(
-                      label: l10n.selectRoad,
-                      enabled: fieldsEnabled,
-                      items: [
-                        ...controller.roadsForSelectedBlock.map(
-                          (r) => r['name'] as String,
-                        ),
-                        if (!controller.isReadOnly) l10n.others,
-                      ],
-                      value: roadValue,
-                      // onChanged: (val) {
-                      //   _onAddressChanged();
-
-                      //   setState(() {
-                      //     final road = controller.roadsForSelectedBlock
-                      //         .firstWhere((r) => r['name'] == val);
-
-                      //     controller.road = road['name'];
-                      //     controller.roadId = road['_id'];
-                      //   });
-                      // },
-                      onChanged: (val) {
-                        _onAddressChanged();
-
-                        if (val == l10n.others) {
-                          setState(() {
-                            isOtherRoadSelected = true;
-
-                            controller.road = null;
-                            controller.roadId = null;
-                          });
-                          return;
-                        }
-
-                        setState(() {
-                          isOtherRoadSelected = false;
-
-                          final road = controller.roadsForSelectedBlock
-                              .firstWhere((r) => r['name'] == val);
-
-                          controller.road = road['name'];
-                          controller.roadId = AddressController.sanitizeId(
-                            road['_id'],
-                          );
-                        });
-                      },
-                      validator: (val) =>
-                          val == null ? l10n.pleaseSelectRoad : null,
-                    ),
-                    const SizedBox(height: 15),
-
-                    if (isOtherRoadSelected) ...[
+                    if (isCustomRoad) ...[
                       AppTextField(
-                        controller: otherRoadController,
+                        controller: TextEditingController(
+                          text: controller.road,
+                        ),
                         label: l10n.enterRoadName,
-                        keyboardType: TextInputType.number,
-                        readonly: controller.isReadOnly,
-                        enabled: fieldsEnabled,
-                        validator: (value) {
-                          if (isOtherRoadSelected &&
-                              (value == null || value.trim().isEmpty)) {
-                            return l10n.pleaseEnterRoadName;
-                          }
-                          return null;
-                        },
-                        onChanged: (_) {
-                          if (otherRoadError != null) {
-                            setState(() => otherRoadError = null);
-                          }
-                        },
+                        readonly: true,
+                        enabled: false,
                       ),
+                    ] else ...[
+                      AppDropdown(
+                        label: l10n.selectRoad,
+                        enabled: fieldsEnabled,
+                        items: [
+                          ...controller.roadsForSelectedBlock.map(
+                            (r) => r['name'] as String,
+                          ),
+                          if (!controller.isReadOnly) l10n.others,
+                        ],
+                        value: roadValue,
+                        // onChanged: (val) {
+                        //   _onAddressChanged();
+
+                        //   setState(() {
+                        //     final road = controller.roadsForSelectedBlock
+                        //         .firstWhere((r) => r['name'] == val);
+
+                        //     controller.road = road['name'];
+                        //     controller.roadId = road['_id'];
+                        //   });
+                        // },
+                        onChanged: (val) {
+                          _onAddressChanged();
+
+                          if (val == l10n.others) {
+                            setState(() {
+                              isOtherRoadSelected = true;
+                              controller.customRoadName = '';
+
+                              controller.road = null;
+                              controller.roadId = null;
+                            });
+                            return;
+                          }
+
+                          setState(() {
+                            isOtherRoadSelected = false;
+
+                            final road = controller.roadsForSelectedBlock
+                                .firstWhere((r) => r['name'] == val);
+
+                            controller.road = road['name'];
+                            controller.roadId = AddressController.sanitizeId(
+                              road['_id'],
+                            );
+                          });
+                        },
+                        validator: (val) =>
+                            val == null ? l10n.pleaseSelectRoad : null,
+                      ),
+                      const SizedBox(height: 15),
+
+                      if (isOtherRoadSelected) ...[
+                        AppTextField(
+                          controller: otherRoadController,
+                          label: l10n.enterRoadName,
+                          keyboardType: TextInputType.number,
+                          readonly: controller.isReadOnly,
+                          enabled: fieldsEnabled,
+                          validator: (value) {
+                            if (isOtherRoadSelected &&
+                                (value == null || value.trim().isEmpty)) {
+                              return l10n.pleaseEnterRoadName;
+                            }
+                            return null;
+                          },
+                          onChanged: (value) {
+                            controller.customRoadName = value.trim();
+
+                            if (otherRoadError != null) {
+                              setState(() => otherRoadError = null);
+                            }
+
+                            setState(() {}); // refresh _canContinue
+                          },
+                        ),
+                      ],
 
                       if (otherRoadError != null)
                         Padding(
@@ -984,10 +1038,16 @@ class _AddressState extends State<Address> {
 
   bool get _canContinue =>
       controller.addressSource != null && controller.isComplete;
-
+  bool get canEditBlockRoad => widget.isEditprofile;
   @override
   Widget build(BuildContext context) {
+    print("isComplete => ${controller.isComplete}");
+    print("_canContinue => $_canContinue");
+    print("customBlockName => ${controller.customBlockName}");
+    print("customRoadName => ${controller.customRoadName}");
     final l10n = AppLocalizations.of(context)!;
+    final showAddressOptions_normal = !widget.isEditprofile;
+    final showAddressOptions_profile = widget.isEditprofile;
     return Form(
       key: widget.formKey,
       autovalidateMode: AutovalidateMode.disabled,
@@ -1025,9 +1085,16 @@ class _AddressState extends State<Address> {
                 ),
                 const SizedBox(height: 17),
               ],
+
+              // if (showAddressOptions_profile)
+              //   if (widget.isEditMode)
+              //     _buildAddressModeOptions()
+              //   else if (controller.addressSource == null)
+              //     _buildAddressModeOptions(),
+
+              // if (showAddressOptions_normal)
               if (!widget.isEditMode || controller.addressSource == null)
                 _buildAddressModeOptions(),
-
               const SizedBox(height: 20),
 
               if (controller.showsLocationCard) _buildCurrentLocationView(),

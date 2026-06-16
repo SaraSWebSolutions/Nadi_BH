@@ -10,13 +10,14 @@ class AddressScreen extends StatefulWidget {
   final bool isEditMode;
   final Map<String, dynamic>? familyHeaderAddress;
   final Map<String, dynamic>? initialAddress;
-
+  final bool isEditprofile;
   const AddressScreen({
     super.key,
     this.isFromMemberScreen = false,
     this.isEditMode = false,
     this.familyHeaderAddress,
     this.initialAddress,
+    this.isEditprofile = true,
   });
 
   @override
@@ -79,6 +80,7 @@ class _AddressScreenState extends State<AddressScreen> {
           family: true,
           formKey: _formKey,
           isprofile: false,
+          isEditprofile: widget.isEditprofile,
           controller: _controller,
           isFromMemberScreen: widget.isFromMemberScreen,
           isEditMode: widget.isEditMode,

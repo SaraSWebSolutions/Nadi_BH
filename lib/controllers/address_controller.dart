@@ -18,6 +18,8 @@ class AddressController {
   double? latitude;
   double? longitude;
   String? fullAddress;
+  String? customBlockName;
+  String? customRoadName;
   bool isGeoAddress = false;
   String? geoAddress;
   AddressSource? addressSource;
@@ -102,6 +104,8 @@ class AddressController {
     isGeoAddress = false;
     geoAddress = null;
     addressSource = null;
+    customBlockName = null;
+    customRoadName = null;
     roadsForSelectedBlock.clear();
   }
 
@@ -155,11 +159,35 @@ class AddressController {
     building.text = address['building']?.toString() ?? '';
     aptNo.text = address['aptNo']?.toString() ?? '';
     floor.text = address['floor']?.toString() ?? '';
-    block = address['block'] ?? address['blockName'];
-    blockId = sanitizeId(address['blockId']);
-    road = address['road'] ?? address['roadName'];
-    roadId = sanitizeId(address['roadId']);
+    // block = address['block'] ?? address['blockName'];
+    // blockId = sanitizeId(address['blockId']);
+    // road = address['road'] ?? address['roadName'];
+    // roadId = sanitizeId(address['roadId']);
+    if (address['blockId'] is Map) {
+      block = address['blockId']['name']?.toString();
+    } else {
+      block = address['block']?.toString() ?? address['blockName']?.toString();
+    }
 
+    if (address['roadId'] is Map) {
+      road = address['roadId']['name']?.toString();
+    } else {
+      road = address['road']?.toString() ?? address['roadName']?.toString();
+    }
+    // customBlockName = blockId == null
+    //     ? (address['blockName']?.toString() ?? '')
+    //     : '';
+
+    // customRoadName = roadId == null
+    //     ? (address['roadName']?.toString() ?? '')
+    //     : '';
+    customBlockName =
+        address['customBlockName']?.toString() ??
+        (blockId == null ? address['blockName']?.toString() : '');
+
+    customRoadName =
+        address['customRoadName']?.toString() ??
+        (roadId == null ? address['roadName']?.toString() : '');
     roadsForSelectedBlock = List<Map<String, dynamic>>.from(
       address['roads'] ?? [],
     );
@@ -167,6 +195,12 @@ class AddressController {
 
   void applyFamilyHeader(Map<String, dynamic> address) {
     loadAddress(address);
+    debugPrint("FAMILY HEADER => $address");
+    debugPrint("block => $block");
+    debugPrint("blockId => $blockId");
+
+    debugPrint("road => $road");
+    debugPrint("roadId => $roadId");
     addressSource = AddressSource.familyHeader;
 
     if (isGeoAddress) {
@@ -202,11 +236,31 @@ class AddressController {
     }
 
     if (isManualMode) {
+      // final hasBlock =
+      //     sanitizeId(blockId) != null || (blockId == null && block == null);
+
+      // final hasRoad =
+      //     sanitizeId(roadId) != null || (roadId == null && road == null);
       final hasBlock =
-          sanitizeId(blockId) != null || (blockId == null && block == null);
+          sanitizeId(blockId) != null ||
+          (customBlockName?.trim().isNotEmpty ?? false);
 
       final hasRoad =
-          sanitizeId(roadId) != null || (roadId == null && road == null);
+          sanitizeId(roadId) != null ||
+          (customRoadName?.trim().isNotEmpty ?? false);
+      debugPrint("customBlockName: '$customBlockName'");
+      debugPrint("road: $road");
+      debugPrint("roadId: $roadId");
+      debugPrint("customRoadName: '$customRoadName'");
+      debugPrint("hasBlock: $hasBlock");
+      debugPrint("hasRoad: $hasRoad");
+      // bool hasValue(dynamic value) {
+      //   return value != null && value.toString().trim().isNotEmpty;
+      // }
+
+      // final hasBlock = sanitizeId(blockId) != null || hasValue(block);
+
+      // final hasRoad = sanitizeId(roadId) != null || hasValue(road);
       // city.text.trim().isNotEmpty &&
       return building.text.trim().isNotEmpty && hasBlock && hasRoad;
     }
@@ -214,15 +268,20 @@ class AddressController {
     return false;
   }
 
-  bool isManualAddressComplete({
-    bool allowCustomBlock = false,
-    bool allowCustomRoad = false,
-  }) {
-    return city.text.trim().isNotEmpty &&
-        building.text.trim().isNotEmpty &&
-        (sanitizeId(blockId) != null || allowCustomBlock) &&
-        (sanitizeId(roadId) != null || allowCustomRoad);
+  bool isManualAddressComplete() {
+    return building.text.trim().isNotEmpty &&
+        (sanitizeId(blockId) != null || (block?.trim().isNotEmpty ?? false)) &&
+        (sanitizeId(roadId) != null || (road?.trim().isNotEmpty ?? false));
   }
+  // bool isManualAddressComplete({
+  //   bool allowCustomBlock = false,
+  //   bool allowCustomRoad = false,
+  // }) {
+  //   return city.text.trim().isNotEmpty &&
+  //       building.text.trim().isNotEmpty &&
+  //       (sanitizeId(blockId) != null || allowCustomBlock) &&
+  //       (sanitizeId(roadId) != null || allowCustomRoad);
+  // }
 
   bool get isReadOnly => addressSource == AddressSource.familyHeader;
 
@@ -279,6 +338,8 @@ class AddressController {
       'roadId': sanitizedRoadId,
       'blockName': resolvedBlockName,
       'roadName': resolvedRoadName,
+      'customBlockName': customBlockName,
+      'customRoadName': customRoadName,
     });
 
     return payload;
@@ -348,10 +409,54 @@ class AddressController {
     final blockId = sanitizeId(address['blockId']);
     final roadId = sanitizeId(address['roadId']);
 
+    final blockName =
+        (address['block'] ??
+                address['blockName'] ??
+                address['customBlockName'] ??
+                '')
+            .toString()
+            .trim();
+
+    final roadName =
+        (address['road'] ??
+                address['roadName'] ??
+                address['customRoadName'] ??
+                '')
+            .toString()
+            .trim();
+
     return (address['building'] ?? '').toString().trim().isNotEmpty &&
-        blockId != null &&
-        roadId != null;
+        (blockId != null || blockName.isNotEmpty) &&
+        (roadId != null || roadName.isNotEmpty);
   }
+  // static bool isAddressDataComplete(Map<String, dynamic> address) {
+  //   if (isGeoAddressMap(address)) {
+  //     return toDouble(address['latitude']) != null &&
+  //         toDouble(address['longitude']) != null &&
+  //         (address['geoAddress'] ??
+  //                 address['currentLocationAddress'] ??
+  //                 address['fullAddress'] ??
+  //                 '')
+  //             .toString()
+  //             .trim()
+  //             .isNotEmpty;
+  //   }
+
+  //   final blockId = sanitizeId(address['blockId']);
+  //   final roadId = sanitizeId(address['roadId']);
+
+  //   final blockName = (address['block'] ?? address['blockName'] ?? '')
+  //       .toString()
+  //       .trim();
+
+  //   final roadName = (address['road'] ?? address['roadName'] ?? '')
+  //       .toString()
+  //       .trim();
+
+  //   return (address['building'] ?? '').toString().trim().isNotEmpty &&
+  //       (blockId != null || blockName.isNotEmpty) &&
+  //       (roadId != null || roadName.isNotEmpty);
+  // }
 
   String? validateBuilding(String? value, AppLocalizations l10n) {
     if (value == null || value.trim().isEmpty) {

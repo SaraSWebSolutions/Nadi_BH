@@ -151,6 +151,8 @@
   "showMore": "عرض المزيد",
   "adminRequests": "طلبات المدير:",
   "pointHistory": "سجل النقاط:",
+    "pointHistorys": "سجل النقاط",
+
   "noHistoryFound": "لا يوجد سجل",
   "noFamilyPointsFound": "لا توجد نقاط عائلية",
   "familyPoints": "نقاط العائلة", 

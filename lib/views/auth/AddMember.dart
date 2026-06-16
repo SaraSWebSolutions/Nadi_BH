@@ -514,9 +514,11 @@ class _AddmemberState extends State<Addmember> {
         (addr["latitude"] != null && addr["longitude"] != null)) {
       return (addr["geoAddress"] ?? "").toString().trim().isNotEmpty;
     }
-
+    return AddressController.isAddressDataComplete(
+      Map<String, dynamic>.from(address),
+    );
     // ✅ MANUAL / FAMILY HEADER CASE
-    return _isAddressDataComplete(addr);
+    // return _isAddressDataComplete(addr);
   }
 
   bool _isAddressComplete() => addressController.isComplete;

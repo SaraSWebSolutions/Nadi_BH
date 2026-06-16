@@ -156,6 +156,8 @@
   "showMore": "Show More",
   "adminRequests": "Admin Requests:",
   "pointHistory": "Point History:",
+    "pointHistorys": "Point History",
+
   "noHistoryFound": "No History Found",
   "noFamilyPointsFound": "No Family Points Found",
   "familyPoints": "Family Points", 

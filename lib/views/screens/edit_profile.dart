@@ -159,12 +159,15 @@ class _EditProfileState extends ConsumerState<EditProfile> {
       context,
       MaterialPageRoute(
         builder: (_) => AddressScreen(
-          isEditMode: true,
+          isEditMode: false,
           isFromMemberScreen: false,
-          familyHeaderAddress: _addressSource == AddressSource.familyHeader
-              ? initial
-              : null,
           initialAddress: initial,
+          isEditprofile: true,
+          //currentLocation: _addressController.isGeoMode,
+          // familyHeaderAddress: _addressSource == AddressSource.familyHeader
+          //     ? initial
+          //     : null,
+          // initialAddress: initial,
         ),
       ),
     );
@@ -219,7 +222,7 @@ class _EditProfileState extends ConsumerState<EditProfile> {
       };
     }
 
-    return {
+    final payload = <String, dynamic>{
       "isGeoAddress": false,
       "propertyType": propertyType,
       "building": buildingController.text.trim(),
@@ -227,10 +230,19 @@ class _EditProfileState extends ConsumerState<EditProfile> {
       "floor": floorController.text.trim(),
       "aptNo": apartmentController.text.trim(),
 
-      // ⚠️ IMPORTANT: send ONLY IDs
-      "blockId": selectedBlockId,
-      "roadId": selectedRoadId,
+      "blockName": _addressController.customBlockName,
+      "roadName": _addressController.customRoadName,
     };
+
+    if (selectedBlockId != null && selectedBlockId!.isNotEmpty) {
+      payload["blockId"] = selectedBlockId;
+    }
+
+    if (selectedRoadId != null && selectedRoadId!.isNotEmpty) {
+      payload["roadId"] = selectedRoadId;
+    }
+
+    return payload;
   }
 
   @override
@@ -283,6 +295,8 @@ class _EditProfileState extends ConsumerState<EditProfile> {
     //   setState(() => _isLoading = false); // ✅ FIX
     //   return;
     // }
+    final addressPayload = _buildAddressPayload(propertyType.toString());
+    print("ADDRESS PAYLOAD => $addressPayload");
     // Build payload as Map (not JSON string)
     final Map<String, dynamic> payload = {
       "userId": userId,
@@ -316,8 +330,9 @@ class _EditProfileState extends ConsumerState<EditProfile> {
 
     try {
       final response = await _profileService.editProfile(formData: formData);
-
-      // Update local cache
+      print("EDIT PROFILE RESPONSE => $response");
+      // Update local cacheprint
+      //("Custom Block: ${_addressController.customBlockName.text}");
       final updatedProfile = {
         "data": {
           "basicInfo": {
@@ -334,9 +349,22 @@ class _EditProfileState extends ConsumerState<EditProfile> {
             "floor": floorController.text.trim(),
             "aptNo": apartmentController.text.trim(),
 
-            "blockId": {"_id": selectedBlockId, "name": selectedBlock},
+            // "blockId": {"_id": selectedBlockId, "name": selectedBlock},
 
-            "roadId": {"_id": selectedRoadId, "name": selectedRoad},
+            // "roadId": {"_id": selectedRoadId, "name": selectedRoad},
+            "blockId": {
+              "_id": selectedBlockId,
+              "name": selectedBlock == "Others"
+                  ? _addressController.customBlockName
+                  : selectedBlock,
+            },
+
+            "roadId": {
+              "_id": selectedRoadId,
+              "name": selectedRoad == "Others"
+                  ? _addressController.customRoadName
+                  : selectedRoad,
+            },
           },
         ],
         "familyMembers": familyMembers,
@@ -704,6 +732,7 @@ class _EditProfileState extends ConsumerState<EditProfile> {
                             controller: TextEditingController(
                               text: AddressDisplayHelper.formatProfileAddress(
                                 _addressController.toMap(),
+                                // Map<String, dynamic>.from(addresses[0]),
                                 l10n: loc,
                               ),
                             ),

@@ -386,6 +386,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get pointHistory => 'Point History:';
 
   @override
+  String get pointHistorys => 'Point History';
+
+  @override
   String get noHistoryFound => 'No History Found';
 
   @override

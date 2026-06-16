@@ -82,6 +82,7 @@ class _AccountStepperState extends State<AccountStepper> {
         return Address(
           key: const ValueKey(1),
           isprofile: false,
+          isEditprofile: false,
           accountType: widget.accountType,
           formKey: _formKeyAddress,
           controller: addressController,

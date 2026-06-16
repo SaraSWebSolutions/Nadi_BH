@@ -824,6 +824,12 @@ abstract class AppLocalizations {
   /// **'Point History:'**
   String get pointHistory;
 
+  /// No description provided for @pointHistorys.
+  ///
+  /// In en, this message translates to:
+  /// **'Point History'**
+  String get pointHistorys;
+
   /// No description provided for @noHistoryFound.
   ///
   /// In en, this message translates to:
