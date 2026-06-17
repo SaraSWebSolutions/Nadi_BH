@@ -222,7 +222,30 @@ class _MapPickerScreenState extends State<MapPickerScreen> {
               googleAPIKey: "AIzaSyAX0FMPV_cS4VOBRoJTKgw3SttVjKBeu6I",
 
               inputDecoration: InputDecoration(
-                hintText: AppLocalizations.of(context)!.searchAddress,
+                isDense: true,
+                contentPadding: const EdgeInsets.symmetric(
+                  vertical: 14,
+                  horizontal: 12,
+                ),
+
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: BorderSide.none,
+                ),
+
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: BorderSide.none,
+                ),
+
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: BorderSide.none,
+                ),
+
+                filled: true,
+                fillColor: Colors.white,
+
                 prefixIcon: const Icon(Icons.search),
               ),
 

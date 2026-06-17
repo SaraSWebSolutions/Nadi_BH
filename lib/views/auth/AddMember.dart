@@ -118,6 +118,7 @@ class _AddmemberState extends State<Addmember> {
     currentIndex = index;
 
     final member = familyMembers[index];
+    debugPrint("LOAD MEMBER[$index] => ${jsonEncode(member)}");
 
     controller.fullName.text = member["fullName"] ?? "";
     controller.mobile.text = member["mobile"] ?? "";
@@ -126,10 +127,11 @@ class _AddmemberState extends State<Addmember> {
     controller.relation = member["relation"];
     controller.gender = member["gender"];
 
-    final address = member["address"] ?? {};
+    final address = Map<String, dynamic>.from(member["address"] ?? {});
 
-    addressController.loadAddress(Map<String, dynamic>.from(address));
-    _isAddress = _isAddressDataComplete(Map<String, dynamic>.from(address));
+    addressController.loadAddress(address);
+
+    _isAddress = address.isNotEmpty;
 
     setState(() {});
   }
@@ -241,18 +243,21 @@ class _AddmemberState extends State<Addmember> {
   void updateCurrentMember() {
     if (familyMembers.isEmpty) return;
 
+    final existingMember = familyMembers[currentIndex];
+
+    final newAddress = addressController.getOnlyAddressMap(addressType: "flat");
+
     familyMembers[currentIndex] = {
       "fullName": controller.fullName.text.trim(),
-
       "mobile": controller.mobile.text.trim(),
-
       "email": controller.email.text.trim(),
-
       "relation": controller.relation,
-
       "gender": controller.gender,
 
-      "address": addressController.getOnlyAddressMap(addressType: "flat"),
+      // Keep old address if controller returns empty
+      "address": newAddress.isNotEmpty
+          ? newAddress
+          : (existingMember["address"] ?? {}),
     };
   }
 
@@ -295,6 +300,46 @@ class _AddmemberState extends State<Addmember> {
     }
 
     return false;
+  }
+
+  Future<bool> _checkCurrentMemberAccount() async {
+    final l10n = AppLocalizations.of(context)!;
+
+    updateCurrentMember();
+
+    final current = familyMembers.isNotEmpty
+        ? familyMembers[currentIndex]
+        : null;
+
+    if (current == null) return false;
+
+    try {
+      setState(() => _isLoading = true);
+
+      final response = await _authService.checkAccount(
+        email: current["email"].toString(),
+        mobile: current["mobile"].toString(),
+      );
+
+      final exists = response["exists"] ?? false;
+
+      if (exists) {
+        SnackbarHelper.showError(context, l10n.accountAlreadyExists);
+        return false;
+      }
+
+      return true;
+    } on DioException catch (e) {
+      SnackbarHelper.showError(
+        context,
+        e.response?.data?["message"]?.toString() ?? l10n.accountAlreadyExists,
+      );
+      return false;
+    } finally {
+      if (mounted) {
+        setState(() => _isLoading = false);
+      }
+    }
   }
   // void _handleMemberCountChange(int count) {
   //   if (count <= 0) return;
@@ -346,7 +391,7 @@ class _AddmemberState extends State<Addmember> {
     if (count <= 0) return;
 
     updateCurrentMember();
-
+    debugPrint("AFTER REMOVE => ${jsonEncode(familyMembers)}");
     setState(() {
       _totalMembers = count;
 
@@ -912,17 +957,15 @@ class _AddmemberState extends State<Addmember> {
                                   /// PLUS BUTTON
                                   InkWell(
                                     borderRadius: BorderRadius.circular(14),
-
-                                    /// PLUS
-                                    onTap: () {
+                                    onTap: () async {
                                       updateCurrentMember();
 
                                       final current = familyMembers.isNotEmpty
                                           ? familyMembers[currentIndex]
                                           : null;
 
-                                      /// 1. If current form is empty → DO NOT MOVE
-                                      if (current != null &&
+                                      /// 1. Validate current member first
+                                      if (current == null ||
                                           !isMemberComplete(current)) {
                                         SnackbarHelper.showError(
                                           context,
@@ -931,9 +974,20 @@ class _AddmemberState extends State<Addmember> {
                                         return;
                                       }
 
-                                      /// 2. Save current before moving
+                                      /// 2. Check local duplicates
+                                      if (_hasDuplicateEmailOrMobile()) {
+                                        return;
+                                      }
 
-                                      /// 3. Increase count
+                                      /// 3. Check account from API
+                                      final accountOk =
+                                          await _checkCurrentMemberAccount();
+
+                                      if (!accountOk) {
+                                        return;
+                                      }
+
+                                      /// 4. Increase count
                                       final currentCount =
                                           int.tryParse(
                                             controller.familyCount.text.trim(),
@@ -947,25 +1001,75 @@ class _AddmemberState extends State<Addmember> {
 
                                       _handleMemberCountChange(newCount);
 
-                                      /// 4. Move to new form only if needed
-                                      if (familyMembers.length < newCount) {
-                                        familyMembers.add({
-                                          "fullName": "",
-                                          "mobile": "",
-                                          "email": "",
-                                          "relation": null,
-                                          "gender": null,
-                                          "address": {},
-                                        });
-                                      }
-
                                       currentIndex = newCount - 1;
+
                                       loadMember(currentIndex);
 
                                       setState(() {
                                         _currentMemberIndex = currentIndex + 1;
                                       });
                                     },
+
+                                    /// PLUS
+                                    // onTap: () async {
+                                    //   if (_hasDuplicateEmailOrMobile()) {
+                                    //     return;
+                                    //   }
+
+                                    //   final accountOk =
+                                    //       await _checkCurrentMemberAccount();
+                                    //   if (!accountOk) return;
+                                    //   updateCurrentMember();
+
+                                    //   final current = familyMembers.isNotEmpty
+                                    //       ? familyMembers[currentIndex]
+                                    //       : null;
+
+                                    //   /// 1. If current form is empty → DO NOT MOVE
+                                    //   if (current != null &&
+                                    //       !isMemberComplete(current)) {
+                                    //     SnackbarHelper.showError(
+                                    //       context,
+                                    //       l10n.pleaseFillCurrentMemberFirst,
+                                    //     );
+                                    //     return;
+                                    //   }
+
+                                    //   /// 2. Save current before moving
+
+                                    //   /// 3. Increase count
+                                    //   final currentCount =
+                                    //       int.tryParse(
+                                    //         controller.familyCount.text.trim(),
+                                    //       ) ??
+                                    //       0;
+
+                                    //   final newCount = currentCount + 1;
+
+                                    //   controller.familyCount.text = newCount
+                                    //       .toString();
+
+                                    //   _handleMemberCountChange(newCount);
+
+                                    //   /// 4. Move to new form only if needed
+                                    //   if (familyMembers.length < newCount) {
+                                    //     familyMembers.add({
+                                    //       "fullName": "",
+                                    //       "mobile": "",
+                                    //       "email": "",
+                                    //       "relation": null,
+                                    //       "gender": null,
+                                    //       "address": {},
+                                    //     });
+                                    //   }
+
+                                    //   currentIndex = newCount - 1;
+                                    //   loadMember(currentIndex);
+
+                                    //   setState(() {
+                                    //     _currentMemberIndex = currentIndex + 1;
+                                    //   });
+                                    // },
                                     child: Container(
                                       width: 48,
                                       height: 48,
