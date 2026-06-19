@@ -1478,4 +1478,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String roadWithValue(Object value) {
     return 'الطريق $value';
   }
+
+  @override
+  String get invalidMobileNumber => 'يرجى إدخال رقم هاتف صحيح';
 }

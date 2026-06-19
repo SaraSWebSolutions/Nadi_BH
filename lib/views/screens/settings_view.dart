@@ -29,6 +29,8 @@ class SettingsView extends ConsumerStatefulWidget {
 class _SettingsViewState extends ConsumerState<SettingsView> {
   bool isToggleOn = true; // default — overwritten immediately from cache
   bool isLoadingToggle = true;
+  bool _isLogoutLoading = false;
+  bool _isDeleteLoading = false;
   final LockoutService _lockoutService = LockoutService();
   final NotificationToggleService _notificationService =
       NotificationToggleService();
@@ -182,6 +184,11 @@ class _SettingsViewState extends ConsumerState<SettingsView> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!; // ✅ ADD THIS
     Future<void> logout(BuildContext context) async {
+      if (_isLogoutLoading) return;
+
+      setState(() {
+        _isLogoutLoading = true;
+      });
       try {
         /// 1. Get stored FCM token (NOT fresh one)
         final fcmToken = await AppPreferences.getfcmToken();
@@ -215,6 +222,12 @@ class _SettingsViewState extends ConsumerState<SettingsView> {
         if (context.mounted) {
           context.go(RouteNames.login);
         }
+      } finally {
+        if (mounted) {
+          setState(() {
+            _isLogoutLoading = false;
+          });
+        }
       }
     }
 
@@ -224,7 +237,7 @@ class _SettingsViewState extends ConsumerState<SettingsView> {
     String? selectedReasonId;
     bool isLoadingReasons = false;
 
-    Future<void> showDeleteAccountDialog(BuildContext context) async {
+    Future<void> showDeleteAccountDialog(BuildContext parentContext) async {
       setState(() {
         isLoadingReasons = true;
       });
@@ -335,34 +348,93 @@ class _SettingsViewState extends ConsumerState<SettingsView> {
                             ),
                             onPressed: () async {
                               if (selectedReasonId == null) {
-                                ScaffoldMessenger.of(context).showSnackBar(
+                                ScaffoldMessenger.of(
+                                  parentContext,
+                                ).showSnackBar(
                                   SnackBar(
                                     content: Text(l10n.pleaseSelectReason),
                                   ),
                                 );
                                 return;
                               }
-                              // final selectedReason = deleteReasons.firstWhere(
-                              //   (e) => e["_id"] == selectedReasonId,
-                              // );
 
-                              // debugPrint(
-                              //   "Selected ID: ${selectedReason["_id"]}",
-                              // );
-                              // debugPrint(
-                              //   "Selected Reason: ${selectedReason["reason"]}",
-                              // );
-                              await accountDelete.fetchdeleteaccount(
-                                reasonId: selectedReasonId!,
-                              );
+                              Navigator.pop(context); // close dialog
 
-                              await AppPreferences.clearAll();
-                              await AppPreferences.setLoggedIn(false);
+                              setState(() {
+                                _isDeleteLoading = true;
+                              });
 
-                              if (context.mounted) {
-                                context.go(RouteNames.login);
+                              try {
+                                await accountDelete.fetchdeleteaccount(
+                                  reasonId: selectedReasonId!,
+                                );
+
+                                await AppPreferences.clearAll();
+                                await AppPreferences.setLoggedIn(false);
+
+                                ref.invalidate(profileprovider);
+                                ref.invalidate(serviceListProvider);
+                                ref.invalidate(fetchpointsnodification);
+
+                                if (mounted) {
+                                  parentContext.go(RouteNames.login);
+                                }
+                              } finally {
+                                if (mounted) {
+                                  setState(() {
+                                    _isDeleteLoading = false;
+                                  });
+                                }
                               }
                             },
+                            // onPressed: () async {
+                            //   if (selectedReasonId == null) {
+                            //     ScaffoldMessenger.of(context).showSnackBar(
+                            //       SnackBar(
+                            //         content: Text(l10n.pleaseSelectReason),
+                            //       ),
+                            //     );
+                            //     return;
+                            //   }
+                            //   // final selectedReason = deleteReasons.firstWhere(
+                            //   //   (e) => e["_id"] == selectedReasonId,
+                            //   // );
+
+                            //   // debugPrint(
+                            //   //   "Selected ID: ${selectedReason["_id"]}",
+                            //   // );
+                            //   // debugPrint(
+                            //   //   "Selected Reason: ${selectedReason["reason"]}",
+                            //   // );
+                            //   await accountDelete.fetchdeleteaccount(
+                            //     reasonId: selectedReasonId!,
+                            //   );
+
+                            //   await AppPreferences.clearAll();
+                            //   await AppPreferences.setLoggedIn(false);
+
+                            //   if (context.mounted) {
+                            //     context.go(RouteNames.login);
+                            //   }
+                            // },
+                            // child: _isDeleteLoading
+                            //     ? const SizedBox(
+                            //         width: 22,
+                            //         height: 22,
+                            //         child: CircularProgressIndicator(
+                            //           strokeWidth: 2,
+                            //           color: Colors.white,
+                            //         ),
+                            //       )
+                            //     : Text(
+                            //         l10n.delete,
+                            //         textAlign: TextAlign.center,
+                            //         style: const TextStyle(
+                            //           fontWeight: FontWeight.w600,
+                            //           fontSize: 16,
+                            //           height: 1.2,
+                            //         ),
+                            //       ),
                             child: Text(
                               l10n.delete,
                               textAlign: TextAlign.center,
@@ -534,202 +606,214 @@ class _SettingsViewState extends ConsumerState<SettingsView> {
       );
     }
 
-    return Scaffold(
-      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+    return Stack(
+      children: [
+        Scaffold(
+          backgroundColor: Theme.of(context).scaffoldBackgroundColor,
 
-      appBar: AppBar(
-        backgroundColor: AppColors.app_background_clr,
-        elevation: 0,
-        centerTitle: true,
+          appBar: AppBar(
+            backgroundColor: AppColors.app_background_clr,
+            elevation: 0,
+            centerTitle: true,
 
-        title: Text(
-          AppLocalizations.of(context)!.settings,
-          style: const TextStyle(
-            color: Colors.white,
-            fontSize: 20,
-            fontWeight: FontWeight.w600,
-            fontFamily: 'Poppins',
-          ),
-        ),
+            title: Text(
+              AppLocalizations.of(context)!.settings,
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 20,
+                fontWeight: FontWeight.w600,
+                fontFamily: 'Poppins',
+              ),
+            ),
 
-        leadingWidth: 60,
+            leadingWidth: 60,
 
-        leading: Padding(
-          padding: const EdgeInsets.only(left: 10),
-          child: Align(
-            alignment: Alignment.centerLeft,
-            child: SizedBox(
-              width: 38,
-              height: 38,
-              child: FittedBox(
-                // child: AppCircleIconButton(
-                //   icon: Icons.arrow_back,
-                //   onPressed: () => context.pop(),
-                // ),
+            leading: Padding(
+              padding: const EdgeInsets.only(left: 10),
+              child: Align(
+                alignment: Alignment.centerLeft,
+                child: SizedBox(
+                  width: 38,
+                  height: 38,
+                  child: FittedBox(
+                    // child: AppCircleIconButton(
+                    //   icon: Icons.arrow_back,
+                    //   onPressed: () => context.pop(),
+                    // ),
+                  ),
+                ),
               ),
             ),
           ),
+
+          body: SingleChildScrollView(
+            padding: const EdgeInsets.symmetric(vertical: 16),
+            child: Column(
+              children: [
+                /// GENERAL
+                settingsSection(
+                  title: l10n.settingsSectionGeneral,
+                  children: [
+                    settingsTile(
+                      title: l10n.aboutApp,
+                      icon: Image.asset("assets/icons/i.png"),
+                      onTap: () => context.push(RouteNames.aboutscreen),
+                    ),
+                    dividerItem(),
+                    settingsTile(
+                      title: l10n.helpSupport,
+                      icon: Image.asset("assets/icons/help.png"),
+                      onTap: () => context.push(RouteNames.helpSupport),
+                    ),
+                    dividerItem(),
+                    settingsTile(
+                      title: l10n.history,
+                      icon: Image.asset("assets/icons/menu.png"),
+                      onTap: () => context.push(RouteNames.viewalllogs),
+                    ),
+                  ],
+                ),
+
+                const SizedBox(height: 24),
+
+                /// PREFERENCES
+                settingsSection(
+                  title: l10n.settingsSectionPreferences,
+                  children: [
+                    settingsTile(
+                      title: l10n.notification,
+                      icon: Image.asset("assets/icons/noti.png"),
+                      onTap: notificationToggle,
+                      trailing: Switch(
+                        value: isToggleOn,
+                        onChanged: (_) => notificationToggle(),
+                      ),
+                    ),
+
+                    dividerItem(),
+
+                    settingsTile(
+                      title: l10n.changeLanguage,
+                      icon: Image.asset("assets/icons/global.png"),
+                      onTap: () {},
+                      trailing: Container(
+                        padding: const EdgeInsets.all(3),
+                        decoration: BoxDecoration(
+                          color: const Color(0xffE8EBFF),
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            languageOption("BH"),
+                            languageOption("ENG"),
+                          ],
+                        ),
+                      ),
+                    ),
+
+                    dividerItem(),
+
+                    settingsTile(
+                      title: l10n.theme,
+                      icon: Image.asset("assets/icons/idea.png"),
+                      onTap: () {},
+                      trailing: Container(
+                        padding: const EdgeInsets.all(3),
+                        decoration: BoxDecoration(
+                          color: const Color(0xffE8EBFF),
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            GestureDetector(
+                              onTap: () {
+                                ref
+                                    .read(themeProvider.notifier)
+                                    .changeTheme(ThemeMode.light);
+                              },
+                              child: themeOption("Light"),
+                            ),
+                            GestureDetector(
+                              onTap: () {
+                                ref
+                                    .read(themeProvider.notifier)
+                                    .changeTheme(ThemeMode.dark);
+                              },
+                              child: themeOption("Dark"),
+                            ),
+                            GestureDetector(
+                              onTap: () {
+                                ref
+                                    .read(themeProvider.notifier)
+                                    .changeTheme(ThemeMode.system);
+                              },
+                              child: themeOption("System"),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+
+                    dividerItem(),
+
+                    settingsTile(
+                      title: l10n.privacyPolicy,
+                      icon: Image.asset("assets/icons/policy.png"),
+                      onTap: () => context.push(RouteNames.privacyPolicy),
+                    ),
+                  ],
+                ),
+
+                const SizedBox(height: 24),
+
+                /// ACCOUNT
+                settingsSection(
+                  title: l10n.settingsSectionAccount,
+                  children: [
+                    settingsTile(
+                      title: l10n.logout,
+                      icon: Image.asset("assets/icons/logout.png"),
+                      onTap: () async {
+                        final confirmed = await showConfirmDialog(
+                          context,
+                          title: l10n.logoutTitle,
+                          message: l10n.logoutMessage,
+                          confirmText: l10n.logout,
+                          icon: Icons.logout_rounded,
+                          destructive: true,
+                        );
+
+                        if (confirmed == true) {
+                          logout(context);
+                        }
+                      },
+                    ),
+
+                    dividerItem(),
+
+                    settingsTile(
+                      title: l10n.accountDelete,
+                      icon: Image.asset("assets/icons/accout_delete.png"),
+                      onTap: () {
+                        showDeleteAccountDialog(context);
+                      },
+                    ),
+                  ],
+                ),
+
+                const SizedBox(height: 30),
+              ],
+            ),
+          ),
         ),
-      ),
-
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.symmetric(vertical: 16),
-        child: Column(
-          children: [
-            /// GENERAL
-            settingsSection(
-              title: l10n.settingsSectionGeneral,
-              children: [
-                settingsTile(
-                  title: l10n.aboutApp,
-                  icon: Image.asset("assets/icons/i.png"),
-                  onTap: () => context.push(RouteNames.aboutscreen),
-                ),
-                dividerItem(),
-                settingsTile(
-                  title: l10n.helpSupport,
-                  icon: Image.asset("assets/icons/help.png"),
-                  onTap: () => context.push(RouteNames.helpSupport),
-                ),
-                dividerItem(),
-                settingsTile(
-                  title: l10n.history,
-                  icon: Image.asset("assets/icons/menu.png"),
-                  onTap: () => context.push(RouteNames.viewalllogs),
-                ),
-              ],
-            ),
-
-            const SizedBox(height: 24),
-
-            /// PREFERENCES
-            settingsSection(
-              title: l10n.settingsSectionPreferences,
-              children: [
-                settingsTile(
-                  title: l10n.notification,
-                  icon: Image.asset("assets/icons/noti.png"),
-                  onTap: notificationToggle,
-                  trailing: Switch(
-                    value: isToggleOn,
-                    onChanged: (_) => notificationToggle(),
-                  ),
-                ),
-
-                dividerItem(),
-
-                settingsTile(
-                  title: l10n.changeLanguage,
-                  icon: Image.asset("assets/icons/global.png"),
-                  onTap: () {},
-                  trailing: Container(
-                    padding: const EdgeInsets.all(3),
-                    decoration: BoxDecoration(
-                      color: const Color(0xffE8EBFF),
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [languageOption("BH"), languageOption("ENG")],
-                    ),
-                  ),
-                ),
-
-                dividerItem(),
-
-                settingsTile(
-                  title: l10n.theme,
-                  icon: Image.asset("assets/icons/idea.png"),
-                  onTap: () {},
-                  trailing: Container(
-                    padding: const EdgeInsets.all(3),
-                    decoration: BoxDecoration(
-                      color: const Color(0xffE8EBFF),
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        GestureDetector(
-                          onTap: () {
-                            ref
-                                .read(themeProvider.notifier)
-                                .changeTheme(ThemeMode.light);
-                          },
-                          child: themeOption("Light"),
-                        ),
-                        GestureDetector(
-                          onTap: () {
-                            ref
-                                .read(themeProvider.notifier)
-                                .changeTheme(ThemeMode.dark);
-                          },
-                          child: themeOption("Dark"),
-                        ),
-                        GestureDetector(
-                          onTap: () {
-                            ref
-                                .read(themeProvider.notifier)
-                                .changeTheme(ThemeMode.system);
-                          },
-                          child: themeOption("System"),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-
-                dividerItem(),
-
-                settingsTile(
-                  title: l10n.privacyPolicy,
-                  icon: Image.asset("assets/icons/policy.png"),
-                  onTap: () => context.push(RouteNames.privacyPolicy),
-                ),
-              ],
-            ),
-
-            const SizedBox(height: 24),
-
-            /// ACCOUNT
-            settingsSection(
-              title: l10n.settingsSectionAccount,
-              children: [
-                settingsTile(
-                  title: l10n.logout,
-                  icon: Image.asset("assets/icons/logout.png"),
-                  onTap: () async {
-                    final confirmed = await showConfirmDialog(
-                      context,
-                      title: l10n.logoutTitle,
-                      message: l10n.logoutMessage,
-                      confirmText: l10n.logout,
-                      icon: Icons.logout_rounded,
-                      destructive: true,
-                    );
-
-                    if (confirmed == true) {
-                      logout(context);
-                    }
-                  },
-                ),
-
-                dividerItem(),
-
-                settingsTile(
-                  title: l10n.accountDelete,
-                  icon: Image.asset("assets/icons/accout_delete.png"),
-                  onTap: () {
-                    showDeleteAccountDialog(context);
-                  },
-                ),
-              ],
-            ),
-
-            const SizedBox(height: 30),
-          ],
-        ),
-      ),
+        if (_isLogoutLoading || _isDeleteLoading)
+          Container(
+            color: Colors.black26,
+            child: const Center(child: CircularProgressIndicator()),
+          ),
+      ],
     );
   }
 }

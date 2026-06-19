@@ -42,11 +42,30 @@ class SignupController {
     }
     return null;
   }
+  // String? validateMobile(String? v, AppLocalizations l10n) {
+  //   if (v == null || v.trim().isEmpty) {
+  //     return l10n.enterMobile;
+  //   }
 
+  //   if (!RegExp(r'^[0-9]{8}$').hasMatch(v)) {
+  //     return l10n.mobileMustBe8Digits;
+  //   }
+
+  //   if (RegExp(r'^(\d)\1{7}$').hasMatch(v)) {
+  //     return "Please enter a valid mobile number";
+  //   }
+
+  //   if (!RegExp(r'^[367]\d{7}$').hasMatch(v)) {
+  //     return "Please enter a valid Bahrain mobile number";
+  //   }
+
+  //   return null;
+  // }
   String? validateMobile(String? v, AppLocalizations l10n) {
     if (v == null || v.isEmpty) return l10n.enterMobile;
     if (v.length != 8) return l10n.mobileMustBe8Digits;
     if (!RegExp(r'^[0-9]+$').hasMatch(v)) return l10n.onlyDigitsAllowed;
+    if (v == '00000000') return l10n.invalidMobileNumber;
     return null;
   }
 

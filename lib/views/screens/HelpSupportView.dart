@@ -206,6 +206,11 @@ class _HelpSupportViewState extends ConsumerState<HelpSupportView> {
                             return loc.invalidPhoneLength;
                           }
 
+                          // Block 00000000
+                          if (digits == '00000000') {
+                            return loc.invalidMobileNumber;
+                          }
+
                           return null;
                         },
                       ),

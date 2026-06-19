@@ -672,6 +672,9 @@ class _EditProfileState extends ConsumerState<EditProfile> {
                             if (value.length != 8) {
                               return loc.phoneMustBe8Digits;
                             }
+                            if (value == '00000000') {
+                              return loc.invalidMobileNumber;
+                            }
 
                             return null;
                           },

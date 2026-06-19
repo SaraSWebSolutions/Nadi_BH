@@ -607,6 +607,7 @@
     "placeholders": {
       "value": {}
     }
-  }
+  },
+   "invalidMobileNumber": "يرجى إدخال رقم هاتف صحيح"
 
 }

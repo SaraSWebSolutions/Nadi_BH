@@ -2881,6 +2881,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Road {value}'**
   String roadWithValue(Object value);
+
+  /// No description provided for @invalidMobileNumber.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter a valid mobile number'**
+  String get invalidMobileNumber;
 }
 
 class _AppLocalizationsDelegate

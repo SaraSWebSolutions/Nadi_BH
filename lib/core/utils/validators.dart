@@ -38,7 +38,9 @@ class Validators {
     if (!RegExp(r'^[0-9]+$').hasMatch(value)) {
       return l10n.onlyDigitsAllowed;
     }
-
+    if (value == '00000000') {
+      return l10n.invalidMobileNumber;
+    }
     return null;
   }
 }

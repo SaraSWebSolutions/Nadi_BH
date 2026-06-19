@@ -344,7 +344,9 @@ class _AddmemberssState extends ConsumerState<Addmemberss> {
                   if (v.trim().length != 8) {
                     return loc.mobileNumberMustBe8Digits;
                   }
-
+                  if (v == '00000000') {
+                    return loc.invalidMobileNumber;
+                  }
                   return null;
                 },
               ),

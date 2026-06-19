@@ -1489,4 +1489,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String roadWithValue(Object value) {
     return 'Road $value';
   }
+
+  @override
+  String get invalidMobileNumber => 'Please enter a valid mobile number';
 }

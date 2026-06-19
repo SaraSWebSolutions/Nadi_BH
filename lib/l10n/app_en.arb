@@ -643,6 +643,8 @@
     "placeholders": {
       "value": {}
     }
-  }
+  },
+    "invalidMobileNumber": "Please enter a valid mobile number"
+
 
 }
