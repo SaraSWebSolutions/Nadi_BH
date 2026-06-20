@@ -39,8 +39,25 @@ class FamilyMemberController {
   }
 
   String? validateemail(String? value, AppLocalizations l10n) {
-    return Validators.email(value, l10n);
+    final email = value?.trim() ?? '';
+
+    if (email.isEmpty) {
+      return l10n.enterEmail;
+    }
+
+    final emailRegex = RegExp(
+      r'^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$',
+    );
+
+    if (!emailRegex.hasMatch(email)) {
+      return l10n.enterValidEmail;
+    }
+
+    return null;
   }
+  // String? validateemail(String? value, AppLocalizations l10n) {
+  //   return Validators.email(value, l10n);
+  // }
 
   Map<String, dynamic> getApiFamilyMemberBody({
     required String userId,

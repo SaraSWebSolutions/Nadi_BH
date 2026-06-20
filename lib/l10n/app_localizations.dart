@@ -2885,8 +2885,20 @@ abstract class AppLocalizations {
   /// No description provided for @invalidMobileNumber.
   ///
   /// In en, this message translates to:
-  /// **'Please enter a valid mobile number'**
+  /// **'Enter a valid mobile number'**
   String get invalidMobileNumber;
+
+  /// No description provided for @sessionExpired.
+  ///
+  /// In en, this message translates to:
+  /// **'Account Deleted'**
+  String get sessionExpired;
+
+  /// No description provided for @userNotFoundOrSessionExpired.
+  ///
+  /// In en, this message translates to:
+  /// **'Your account could not be found.Please contact support or login with a different account'**
+  String get userNotFoundOrSessionExpired;
 }
 
 class _AppLocalizationsDelegate

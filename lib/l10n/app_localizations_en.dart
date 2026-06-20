@@ -1491,5 +1491,12 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get invalidMobileNumber => 'Please enter a valid mobile number';
+  String get invalidMobileNumber => 'Enter a valid mobile number';
+
+  @override
+  String get sessionExpired => 'Account Deleted';
+
+  @override
+  String get userNotFoundOrSessionExpired =>
+      'Your account could not be found.Please contact support or login with a different account';
 }

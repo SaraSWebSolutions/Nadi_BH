@@ -608,6 +608,10 @@
       "value": {}
     }
   },
-   "invalidMobileNumber": "يرجى إدخال رقم هاتف صحيح"
+   "invalidMobileNumber":"أدخل رقم هاتف محمول صالحاً",
+ "sessionExpired": "تم حذف الحساب",
+"userNotFoundOrSessionExpired":
+    "تعذر العثور على حسابك. يرجى التواصل مع فريق الدعم أو تسجيل الدخول باستخدام حساب آخر."
+
 
 }

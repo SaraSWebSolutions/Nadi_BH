@@ -203,7 +203,7 @@ class _AddressState extends State<Address> {
       } else {
         if (!context.mounted) return;
 
-        /// ✅ CLEAR ALL FIELDS HERE
+        // ✅ CLEAR ALL FIELDS HERE
         controller.city.clear();
         controller.building.clear();
         controller.aptNo.clear();
@@ -233,15 +233,21 @@ class _AddressState extends State<Address> {
         });
 
         _resetAll();
-
+        // Future.delayed(const Duration(seconds: 1), () {
+        //   if (context.mounted) context.push(RouteNames.accountverfy);
+        // });
+        // SnackbarHelper.ShowSuccess(
+        //   context,
+        //   AppLocalizations.of(context)!.accountCreatedSuccessfully,
+        // );
         SnackbarHelper.ShowSuccess(
           context,
           AppLocalizations.of(context)!.accountCreatedSuccessfully,
         );
-        //_resetAll();
-        Future.delayed(const Duration(seconds: 1), () {
-          if (context.mounted) context.push(RouteNames.accountverfy);
-        });
+
+        if (context.mounted) {
+          context.push(RouteNames.accountverfy);
+        }
       }
     } catch (e) {
       if (!context.mounted) return;

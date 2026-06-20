@@ -617,7 +617,7 @@ class _AddmemberState extends State<Addmember> {
           return {
             "fullName": member["fullName"],
             "relation": member["relation"]?.toString().toLowerCase(),
-            "mobile": int.tryParse(member["mobile"].toString()) ?? 0,
+            "mobile": member["mobile"].toString(),
             "email": member["email"],
             "gender": member["gender"]?.toString().toLowerCase(),
             "address": _memberAddressPayload(member["address"]),

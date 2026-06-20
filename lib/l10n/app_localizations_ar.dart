@@ -1480,5 +1480,12 @@ class AppLocalizationsAr extends AppLocalizations {
   }
 
   @override
-  String get invalidMobileNumber => 'يرجى إدخال رقم هاتف صحيح';
+  String get invalidMobileNumber => 'أدخل رقم هاتف محمول صالحاً';
+
+  @override
+  String get sessionExpired => 'تم حذف الحساب';
+
+  @override
+  String get userNotFoundOrSessionExpired =>
+      'تعذر العثور على حسابك. يرجى التواصل مع فريق الدعم أو تسجيل الدخول باستخدام حساب آخر.';
 }

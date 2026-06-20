@@ -23,8 +23,7 @@ class ForceLogout {
       await AppPreferences.clearAll();
       await AppPreferences.setLoggedIn(false);
 
-      final context =
-          appRouter.routerDelegate.navigatorKey.currentContext;
+      final context = appRouter.routerDelegate.navigatorKey.currentContext;
       if (context == null) return;
 
       appRouter.go(RouteNames.login);
@@ -39,51 +38,81 @@ class ForceLogout {
     }
   }
 
-  static void _showReasonDialog(BuildContext context, ForceLogoutReason reason) {
+  static void _showReasonDialog(
+    BuildContext context,
+    ForceLogoutReason reason,
+  ) {
     final loc = AppLocalizations.of(context)!;
     final isDisabled = reason == ForceLogoutReason.disabled;
     final isRejected = reason == ForceLogoutReason.rejected;
+    String title;
+    String message;
+    IconData iconData;
+    Color iconColor;
+    Color iconBg;
 
-    final title = isDisabled
-        ? loc.accountDisabled
-        : isRejected
-            ? loc.accountRejected
-            : loc.sessionEnded;
-    final message = isDisabled
-        ? loc.accountDisabledSupportMessage
-        : isRejected
-            ? loc.accountRejectedSupportMessage
-            : loc.sessionEndedMessage;
-    final iconData = isDisabled
-        ? Icons.block
-        : isRejected
-            ? Icons.cancel_outlined
-            : Icons.lock_outline;
-    final iconColor = isDisabled
-        ? Colors.red.shade600
-        : isRejected
-            ? Colors.orange.shade700
-            : Colors.blueGrey.shade700;
-    final iconBg = isDisabled
-        ? Colors.red.shade50
-        : isRejected
-            ? Colors.orange.shade50
-            : Colors.blueGrey.shade50;
+    switch (reason) {
+      case ForceLogoutReason.disabled:
+        title = loc.accountDisabled;
+        message = loc.accountDisabledSupportMessage;
+        iconData = Icons.block;
+        iconColor = Colors.red.shade600;
+        iconBg = Colors.red.shade50;
+        break;
+
+      case ForceLogoutReason.rejected:
+        title = loc.accountRejected;
+        message = loc.accountRejectedSupportMessage;
+        iconData = Icons.cancel_outlined;
+        iconColor = Colors.orange.shade700;
+        iconBg = Colors.orange.shade50;
+        break;
+
+      case ForceLogoutReason.unauthorized:
+        title = loc.sessionExpired;
+        message = loc.userNotFoundOrSessionExpired;
+        iconData = Icons.lock_outline;
+        iconColor = Colors.blueGrey.shade700;
+        iconBg = Colors.blueGrey.shade50;
+        break;
+    }
+
+    // final title = isDisabled
+    //     ? loc.accountDisabled
+    //     : isRejected
+    //         ? loc.accountRejected
+    //         : loc.sessionEnded;
+    // final message = isDisabled
+    //     ? loc.accountDisabledSupportMessage
+    //     : isRejected
+    //         ? loc.accountRejectedSupportMessage
+    //         : loc.sessionEndedMessage;
+    // final iconData = isDisabled
+    //     ? Icons.block
+    //     : isRejected
+    //         ? Icons.cancel_outlined
+    //         : Icons.lock_outline;
+    // final iconColor = isDisabled
+    //     ? Colors.red.shade600
+    //     : isRejected
+    //         ? Colors.orange.shade700
+    //         : Colors.blueGrey.shade700;
+    // final iconBg = isDisabled
+    //     ? Colors.red.shade50
+    //     : isRejected
+    //         ? Colors.orange.shade50
+    //         : Colors.blueGrey.shade50;
 
     showDialog(
       context: context,
       barrierDismissible: false,
       builder: (ctx) => AlertDialog(
-        shape:
-            RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         title: Row(
           children: [
             Container(
               padding: const EdgeInsets.all(8),
-              decoration: BoxDecoration(
-                color: iconBg,
-                shape: BoxShape.circle,
-              ),
+              decoration: BoxDecoration(color: iconBg, shape: BoxShape.circle),
               child: Icon(iconData, color: iconColor, size: 28),
             ),
             const SizedBox(width: 12),

@@ -644,7 +644,11 @@
       "value": {}
     }
   },
-    "invalidMobileNumber": "Please enter a valid mobile number"
+    "invalidMobileNumber": "Enter a valid mobile number",
+    "sessionExpired": "Account Deleted",
+  "userNotFoundOrSessionExpired":
+      "Your account could not be found. Please contact support or login with a different account"
+
 
 
 }
