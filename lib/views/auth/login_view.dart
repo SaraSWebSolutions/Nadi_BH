@@ -592,7 +592,9 @@ class _LoginViewState extends State<LoginView> {
             Container(
               padding: const EdgeInsets.all(14),
               decoration: BoxDecoration(
-                color: Colors.grey.shade100,
+                color: Theme.of(context).brightness == Brightness.dark
+                    ? Colors.grey.shade900
+                    : Colors.grey.shade100,
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Column(
@@ -608,9 +610,10 @@ class _LoginViewState extends State<LoginView> {
                       Expanded(
                         child: Text(
                           AppLocalizations.of(context)!.supportPhoneNumber,
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontSize: 14,
                             fontWeight: FontWeight.w600,
+                            color: Theme.of(context).colorScheme.onSurface,
                           ),
                         ),
                       ),
@@ -628,9 +631,10 @@ class _LoginViewState extends State<LoginView> {
                       Expanded(
                         child: Text(
                           AppLocalizations.of(context)!.supportEmail,
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontSize: 14,
                             fontWeight: FontWeight.w600,
+                            color: Theme.of(context).colorScheme.onSurface,
                           ),
                         ),
                       ),

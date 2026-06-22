@@ -385,6 +385,8 @@ class _AddressState extends State<Address> {
 
   Future<void> _fillAddressFromFamilyHeader() async {
     final address = widget.familyHeaderAddress;
+    print("FAMILY HEADER ADDRESS => $address");
+    print("ADDRESS TYPE => ${address?['addressType']}");
     // final isCustomBlock =
     //     controller.blockId == null &&
     //     (controller.block?.isNotEmpty == true ||
@@ -398,6 +400,9 @@ class _AddressState extends State<Address> {
 
     setState(() {
       controller.applyFamilyHeader(address);
+      final addressType = address['addressType']?.toString().toLowerCase();
+
+      selected = addressType == 'villa' ? 'Villa' : 'Flat';
       _resetLocalAddressState();
     });
 

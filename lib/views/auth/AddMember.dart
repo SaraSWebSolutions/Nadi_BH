@@ -1301,7 +1301,7 @@ class _AddmemberState extends State<Addmember> {
                         ),
                         onPressed: _openAddressScreen,
                         child: Text(
-                          _isAddress ? l10n.hideAddress : l10n.addAddress,
+                          _isAddress ? l10n.addAddress : l10n.addAddress,
                           style: TextStyle(
                             color: colors.primary,
                             fontWeight: FontWeight.w600,
