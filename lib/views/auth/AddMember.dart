@@ -701,6 +701,8 @@ class _AddmemberState extends State<Addmember> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final completed = completedMembers;
+    final theme = Theme.of(context);
+    final colors = theme.colorScheme;
     return Form(
       key: widget.formKey,
       child: SingleChildScrollView(
@@ -726,14 +728,14 @@ class _AddmemberState extends State<Addmember> {
                         child: Container(
                           padding: const EdgeInsets.all(8),
                           decoration: BoxDecoration(
-                            color: Colors.white,
+                            color: colors.surface,
                             borderRadius: BorderRadius.circular(18),
                             border: Border.all(
-                              color: AppColors.btn_primery.withOpacity(.12),
+                              color: colors.outline.withOpacity(.3),
                             ),
                             boxShadow: [
                               BoxShadow(
-                                color: Colors.black.withOpacity(.04),
+                                color: colors.shadow.withOpacity(.08),
                                 blurRadius: 10,
                                 offset: const Offset(0, 4),
                               ),
@@ -788,7 +790,7 @@ class _AddmemberState extends State<Addmember> {
                                       height: 48,
                                       decoration: BoxDecoration(
                                         borderRadius: BorderRadius.circular(14),
-                                        color: Colors.grey.shade100,
+                                        color: colors.surfaceContainerHighest,
                                       ),
                                       child: const Icon(Icons.remove),
                                     ),
@@ -804,8 +806,7 @@ class _AddmemberState extends State<Addmember> {
                                       decoration: BoxDecoration(
                                         borderRadius: BorderRadius.circular(14),
                                         border: Border.all(
-                                          color: AppColors.btn_primery
-                                              .withOpacity(.15),
+                                          color: colors.outline.withOpacity(.3),
                                         ),
                                       ),
                                       child: TextFormField(
@@ -1111,7 +1112,8 @@ class _AddmemberState extends State<Addmember> {
                                         ? 0
                                         : (completedMembers / _totalMembers),
                                     minHeight: 8,
-                                    backgroundColor: Colors.grey.shade200,
+                                    backgroundColor:
+                                        colors.surfaceContainerHighest,
                                     valueColor: AlwaysStoppedAnimation(
                                       AppColors.btn_primery,
                                     ),
@@ -1129,7 +1131,7 @@ class _AddmemberState extends State<Addmember> {
                                       "${AppLocalizations.of(context)!.ofText} $_totalMembers",
                                       style: TextStyle(
                                         fontSize: 13,
-                                        color: Colors.grey.shade700,
+                                        color: colors.onSurfaceVariant,
                                         fontWeight: FontWeight.w500,
                                       ),
                                     ),
@@ -1180,7 +1182,12 @@ class _AddmemberState extends State<Addmember> {
                   const SizedBox(height: 8),
 
                   if (_totalMembers == 0)
-                    Center(child: Text(l10n.enterFamilyCountFirst))
+                    Center(
+                      child: Text(
+                        l10n.enterFamilyCountFirst,
+                        style: TextStyle(color: colors.onSurfaceVariant),
+                      ),
+                    )
                   else ...[
                     const SizedBox(height: 15),
                     AppTextField(
@@ -1295,7 +1302,10 @@ class _AddmemberState extends State<Addmember> {
                         onPressed: _openAddressScreen,
                         child: Text(
                           _isAddress ? l10n.hideAddress : l10n.addAddress,
-                          style: TextStyle(color: AppColors.btn_primery),
+                          style: TextStyle(
+                            color: colors.primary,
+                            fontWeight: FontWeight.w600,
+                          ),
                         ),
                       ),
                     ),
@@ -1304,10 +1314,13 @@ class _AddmemberState extends State<Addmember> {
                         margin: const EdgeInsets.only(top: 10),
                         padding: const EdgeInsets.all(12),
                         decoration: BoxDecoration(
-                          color: Colors.grey.shade50,
+                          color: colors.surfaceContainerLowest,
                           borderRadius: BorderRadius.circular(12),
-                          border: Border.all(color: Colors.grey.shade300),
+                          border: Border.all(
+                            color: colors.outline.withOpacity(.3),
+                          ),
                         ),
+
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
@@ -1318,9 +1331,10 @@ class _AddmemberState extends State<Addmember> {
                                   l10n: l10n,
                                 ),
                               ),
-                              style: const TextStyle(
+                              style: TextStyle(
                                 fontWeight: FontWeight.w600,
                                 fontSize: 14,
+                                color: colors.onSurface,
                               ),
                             ),
                             const SizedBox(height: 8),
@@ -1334,6 +1348,7 @@ class _AddmemberState extends State<Addmember> {
                                       addressController.toMap(),
                                       l10n: l10n,
                                     ),
+                              style: TextStyle(color: colors.onSurfaceVariant),
                             ),
                           ],
                         ),

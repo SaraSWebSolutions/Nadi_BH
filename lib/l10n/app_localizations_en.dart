@@ -1498,5 +1498,5 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get userNotFoundOrSessionExpired =>
-      'Your account could not be found.Please contact support or login with a different account';
+      'Your account could not be found. Please contact support or login with a different account';
 }

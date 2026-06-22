@@ -39,7 +39,7 @@ class _AddressScreenState extends State<AddressScreen> {
     final l10n = AppLocalizations.of(context)!;
 
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: Theme.of(context).colorScheme.surface,
       appBar: AppBar(
         backgroundColor: AppColors.app_background_clr,
         elevation: 0,

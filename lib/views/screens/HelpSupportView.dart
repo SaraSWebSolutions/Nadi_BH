@@ -170,12 +170,27 @@ class _HelpSupportViewState extends ConsumerState<HelpSupportView> {
                         keyboardType: TextInputType.emailAddress,
                         textInputAction: TextInputAction.next,
                         validator: (value) {
-                          if (value!.isEmpty) return loc.emailValidation;
-                          if (!RegExp(r'\S+@\S+\.\S+').hasMatch(value)) {
+                          if (value == null || value.trim().isEmpty) {
+                            return loc.emailValidation;
+                          }
+
+                          final emailRegex = RegExp(
+                            r'^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$',
+                          );
+
+                          if (!emailRegex.hasMatch(value.trim())) {
                             return loc.emailInvalid;
                           }
+
                           return null;
                         },
+                        // validator: (value) {
+                        //   if (value!.isEmpty) return loc.emailValidation;
+                        //   if (!RegExp(r'\S+@\S+\.\S+').hasMatch(value)) {
+                        //     return loc.emailInvalid;
+                        //   }
+                        //   return null;
+                        // },
                       ),
                       const SizedBox(height: 12),
                       AppTextField(

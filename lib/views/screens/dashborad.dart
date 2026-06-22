@@ -724,9 +724,7 @@ class _DashboardState extends ConsumerState<Dashboard> {
                                     width: double.infinity,
                                     decoration: BoxDecoration(
                                       borderRadius: BorderRadius.circular(30),
-                                      color: Theme.of(
-                                        context,
-                                      ).colorScheme.surface,
+                                      color: AppColors.app_background_clr,
                                     ),
                                     padding: const EdgeInsets.symmetric(
                                       horizontal: 16,
@@ -746,7 +744,7 @@ class _DashboardState extends ConsumerState<Dashboard> {
                                               fontSize: 16,
                                               color: isDark
                                                   ? Colors.white
-                                                  : Colors.black, // 👈 ADD THIS
+                                                  : Colors.white, // 👈 ADD THIS
                                             ),
                                           ),
                                         ),
@@ -1032,8 +1030,9 @@ class _DashboardState extends ConsumerState<Dashboard> {
                                           ),
                                           const SizedBox(height: 4),
                                           Text(
-                                            AppLocalizations.of(context)!
-                                                .requestIdLabel(
+                                            AppLocalizations.of(
+                                              context,
+                                            )!.requestIdLabel(
                                               data['requestId'].toString(),
                                             ),
                                             maxLines: 1,

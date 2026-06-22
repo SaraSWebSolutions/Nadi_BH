@@ -2897,7 +2897,7 @@ abstract class AppLocalizations {
   /// No description provided for @userNotFoundOrSessionExpired.
   ///
   /// In en, this message translates to:
-  /// **'Your account could not be found.Please contact support or login with a different account'**
+  /// **'Your account could not be found. Please contact support or login with a different account'**
   String get userNotFoundOrSessionExpired;
 }
 

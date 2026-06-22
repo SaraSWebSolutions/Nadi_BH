@@ -107,9 +107,39 @@ class _AddressState extends State<Address> {
 
         controller.loadAddress(initial);
 
+        // Restore custom Block
+        final hasCustomBlock =
+            controller.blockId == null &&
+            (controller.customBlockName?.isNotEmpty ?? false);
+
+        if (hasCustomBlock) {
+          isOtherBlockSelected = true;
+
+          otherBlockController.text = controller.customBlockName ?? '';
+        }
+
+        // Restore custom Road
+        final hasCustomRoad =
+            controller.roadId == null &&
+            (controller.customRoadName?.isNotEmpty ?? false);
+
+        if (hasCustomRoad) {
+          isOtherRoadSelected = true;
+
+          otherRoadController.text = controller.customRoadName ?? '';
+        }
+
         print("LAT => ${controller.latitude}");
         print("LNG => ${controller.longitude}");
         print("SOURCE => ${controller.addressSource}");
+
+        print("BLOCK => ${controller.block}");
+        print("BLOCK ID => ${controller.blockId}");
+        print("CUSTOM BLOCK => ${controller.customBlockName}");
+
+        print("ROAD => ${controller.road}");
+        print("ROAD ID => ${controller.roadId}");
+        print("CUSTOM ROAD => ${controller.customRoadName}");
 
         setState(() {});
       });
@@ -520,7 +550,7 @@ class _AddressState extends State<Address> {
           margin: const EdgeInsets.symmetric(horizontal: 4),
           decoration: BoxDecoration(
             color: isSelected
-                ? AppColors.btn_primery
+                ? Theme.of(context).colorScheme.primaryContainer
                 : Theme.of(context).colorScheme.surface,
             borderRadius: BorderRadius.circular(14),
             border: Border.all(
@@ -537,7 +567,7 @@ class _AddressState extends State<Address> {
                   height: 23,
                   width: 23,
                   color: isSelected
-                      ? Colors.white
+                      ? Theme.of(context).colorScheme.onPrimary
                       : Theme.of(context).colorScheme.onSurfaceVariant,
                 ),
                 const SizedBox(width: 8),
@@ -549,7 +579,7 @@ class _AddressState extends State<Address> {
                     fontWeight: FontWeight.w600,
                     height: 1,
                     color: isSelected
-                        ? Colors.white
+                        ? Theme.of(context).colorScheme.onPrimary
                         : Theme.of(context).colorScheme.onSurface,
                   ),
                 ),
@@ -567,12 +597,15 @@ class _AddressState extends State<Address> {
     required AddressSource source,
     required bool isSelected,
   }) {
+    final theme = Theme.of(context);
+    final colors = theme.colorScheme;
+
     return Padding(
       padding: const EdgeInsets.only(bottom: 10),
       child: Material(
         color: isSelected
-            ? AppColors.btn_primery.withOpacity(0.08)
-            : Theme.of(context).colorScheme.surface,
+            ? colors.primary.withValues(alpha: 0.08)
+            : colors.surface,
         borderRadius: BorderRadius.circular(12),
         child: InkWell(
           borderRadius: BorderRadius.circular(12),
@@ -583,18 +616,14 @@ class _AddressState extends State<Address> {
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(12),
               border: Border.all(
-                color: isSelected
-                    ? AppColors.btn_primery
-                    : Colors.grey.shade300,
+                color: isSelected ? colors.primary : colors.outline,
               ),
             ),
             child: Row(
               children: [
                 Icon(
                   icon,
-                  color: isSelected
-                      ? AppColors.btn_primery
-                      : Theme.of(context).colorScheme.onSurfaceVariant,
+                  color: isSelected ? colors.primary : colors.onSurfaceVariant,
                 ),
                 const SizedBox(width: 12),
                 Expanded(
@@ -603,18 +632,19 @@ class _AddressState extends State<Address> {
                     style: TextStyle(
                       fontSize: 15,
                       fontWeight: FontWeight.w600,
-                      color: isSelected
-                          ? AppColors.btn_primery
-                          : Theme.of(context).colorScheme.onSurface,
+                      color: isSelected ? colors.primary : colors.onSurface,
                     ),
                   ),
                 ),
                 if (_isLocationLoading &&
                     source == AddressSource.currentLocation)
-                  const SizedBox(
+                  SizedBox(
                     width: 20,
                     height: 20,
-                    child: CircularProgressIndicator(strokeWidth: 2),
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2,
+                      color: colors.primary,
+                    ),
                   ),
               ],
             ),
@@ -743,10 +773,14 @@ class _AddressState extends State<Address> {
                           b['name'].toString() == controller.block?.toString(),
                     )
                     .toList();
-
-                final blockValue = matchedBlock.isNotEmpty
-                    ? matchedBlock.first['name']
-                    : null;
+                final blockValue = isOtherBlockSelected
+                    ? l10n.others
+                    : controller.block;
+                // final blockValue = isOtherBlockSelected
+                //     ? l10n.others
+                //     : matchedBlock.isNotEmpty
+                //     ? matchedBlock.first['name']
+                //     : null;
                 final matchedRoad = controller.roadsForSelectedBlock
                     .where(
                       (r) =>
@@ -754,15 +788,21 @@ class _AddressState extends State<Address> {
                     )
                     .toList();
 
-                final roadValue = matchedRoad.isNotEmpty
+                final roadValue = isOtherRoadSelected
+                    ? l10n.others
+                    : matchedRoad.isNotEmpty
                     ? matchedRoad.first['name']
                     : null;
                 final isCustomBlock =
+                    !isOtherBlockSelected &&
                     controller.blockId == null &&
-                    controller.block != null &&
-                    matchedBlock.isEmpty;
+                    (controller.customBlockName?.isNotEmpty ?? false);
+                // final isCustomBlock =
+                //     controller.blockId == null &&
+                //     (controller.customBlockName?.isNotEmpty ?? false);
 
                 final isCustomRoad =
+                    !isOtherRoadSelected &&
                     controller.roadId == null &&
                     controller.road != null &&
                     matchedRoad.isEmpty;
@@ -812,12 +852,14 @@ class _AddressState extends State<Address> {
                             setState(() {
                               isOtherBlockSelected = true;
 
-                              controller.block = null;
+                              controller.block = l10n.others;
                               controller.blockId = null;
 
                               controller.road = null;
                               controller.roadId = null;
+                              otherBlockController.clear();
                               controller.customBlockName = '';
+                              isOtherBlockSelected = true;
                               controller.roadsForSelectedBlock.clear();
                             });
 
@@ -881,8 +923,8 @@ class _AddressState extends State<Address> {
                             alignment: Alignment.centerLeft,
                             child: Text(
                               otherBlockError!,
-                              style: const TextStyle(
-                                color: Colors.red,
+                              style: TextStyle(
+                                color: Theme.of(context).colorScheme.error,
                                 fontSize: 12,
                               ),
                             ),
@@ -911,8 +953,9 @@ class _AddressState extends State<Address> {
                           ),
                           if (!controller.isReadOnly) l10n.others,
                         ],
-                        value: roadValue,
-                        // onChanged: (val) {
+                        value: isOtherRoadSelected
+                            ? l10n.others
+                            : roadValue, // onChanged: (val) {
                         //   _onAddressChanged();
 
                         //   setState(() {
@@ -931,8 +974,11 @@ class _AddressState extends State<Address> {
                               isOtherRoadSelected = true;
                               controller.customRoadName = '';
 
-                              controller.road = null;
+                              controller.road = l10n.others;
                               controller.roadId = null;
+
+                              controller.customRoadName = '';
+                              otherRoadController.clear();
                             });
                             return;
                           }
@@ -1009,25 +1055,31 @@ class _AddressState extends State<Address> {
 
   Widget _buildCurrentLocationView() {
     final l10n = AppLocalizations.of(context)!;
+    final theme = Theme.of(context);
+
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.green.shade50,
+        color: theme.colorScheme.surfaceContainerLowest,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.green.shade200),
+        border: Border.all(color: theme.colorScheme.outline),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
             l10n.selectedAddressLabel,
-            style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 14),
+            style: TextStyle(
+              fontWeight: FontWeight.w600,
+              fontSize: 14,
+              color: theme.colorScheme.onSurface,
+            ),
           ),
           const SizedBox(height: 10),
           Text(
             controller.geoAddress ?? controller.fullAddress ?? '',
-            style: const TextStyle(fontSize: 15),
+            style: TextStyle(fontSize: 15, color: theme.colorScheme.onSurface),
           ),
           if (!controller.isReadOnly) ...[
             const SizedBox(height: 12),
@@ -1041,6 +1093,40 @@ class _AddressState extends State<Address> {
       ),
     );
   }
+  // Widget _buildCurrentLocationView() {
+  //   final l10n = AppLocalizations.of(context)!;
+  //   return Container(
+  //     width: double.infinity,
+  //     padding: const EdgeInsets.all(16),
+  //     decoration: BoxDecoration(
+  //       color: Colors.green.shade50,
+  //       borderRadius: BorderRadius.circular(12),
+  //       border: Border.all(color: Colors.green.shade200),
+  //     ),
+  //     child: Column(
+  //       crossAxisAlignment: CrossAxisAlignment.start,
+  //       children: [
+  //         Text(
+  //           l10n.selectedAddressLabel,
+  //           style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 14),
+  //         ),
+  //         const SizedBox(height: 10),
+  //         Text(
+  //           controller.geoAddress ?? controller.fullAddress ?? '',
+  //           style: const TextStyle(fontSize: 15),
+  //         ),
+  //         if (!controller.isReadOnly) ...[
+  //           const SizedBox(height: 12),
+  //           OutlinedButton.icon(
+  //             onPressed: _isLocationLoading ? null : _openMapPicker,
+  //             icon: const Icon(Icons.edit_location_alt),
+  //             label: Text(l10n.editLocation),
+  //           ),
+  //         ],
+  //       ],
+  //     ),
+  //   );
+  // }
 
   bool get _canContinue =>
       controller.addressSource != null && controller.isComplete;
@@ -1081,16 +1167,6 @@ class _AddressState extends State<Address> {
               //   SizedBox(height: 17),
               // ],
               SizedBox(height: 15),
-              if (controller.showsManualForm) ...[
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    buildType(l10n.flat, 'assets/icons/Flat.png'),
-                    buildType(l10n.villa, 'assets/icons/villa.png'),
-                  ],
-                ),
-                const SizedBox(height: 17),
-              ],
 
               // if (showAddressOptions_profile)
               //   if (widget.isEditMode)
@@ -1102,7 +1178,16 @@ class _AddressState extends State<Address> {
               if (!widget.isEditMode || controller.addressSource == null)
                 _buildAddressModeOptions(),
               const SizedBox(height: 20),
-
+              if (controller.showsManualForm) ...[
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    buildType(l10n.flat, 'assets/icons/Flat.png'),
+                    buildType(l10n.villa, 'assets/icons/villa.png'),
+                  ],
+                ),
+                const SizedBox(height: 17),
+              ],
               if (controller.showsLocationCard) _buildCurrentLocationView(),
 
               if (controller.showsManualForm) _buildManualAddressForm(),

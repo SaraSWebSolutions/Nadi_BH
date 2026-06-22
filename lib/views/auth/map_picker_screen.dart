@@ -178,6 +178,7 @@ class _MapPickerScreenState extends State<MapPickerScreen> {
     if (selectedLatLng == null) {
       return const Scaffold(body: Center(child: CircularProgressIndicator()));
     }
+    final theme = Theme.of(context);
 
     return Scaffold(
       appBar: AppBar(
@@ -227,53 +228,44 @@ class _MapPickerScreenState extends State<MapPickerScreen> {
                   vertical: 14,
                   horizontal: 12,
                 ),
+                filled: true,
+                fillColor: theme.colorScheme.surface,
+
+                hintStyle: TextStyle(color: theme.colorScheme.onSurfaceVariant),
+
+                prefixIcon: Icon(
+                  Icons.search,
+                  color: theme.colorScheme.onSurfaceVariant,
+                ),
 
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
-                  borderSide: BorderSide.none,
+                  borderSide: BorderSide(color: theme.colorScheme.outline),
                 ),
 
                 enabledBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
-                  borderSide: BorderSide.none,
+                  borderSide: BorderSide(color: theme.colorScheme.outline),
                 ),
 
                 focusedBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
-                  borderSide: BorderSide.none,
+                  borderSide: BorderSide(
+                    color: theme.colorScheme.primary,
+                    width: 1.5,
+                  ),
                 ),
-
-                filled: true,
-                fillColor: Colors.white,
-
-                prefixIcon: const Icon(Icons.search),
               ),
 
               debounceTime: 600,
-
-              countries: const ["bh"], // Bahrain only
-
+              countries: const ["bh"],
               isLatLngRequired: true,
-              // getPlaceDetailWithLatLng: (prediction) async {
-              //   final lat = double.parse(prediction.lat!);
-              //   final lng = double.parse(prediction.lng!);
 
-              //   selectedLatLng = LatLng(lat, lng);
-
-              //   selectedPlaceName = prediction.description ?? "";
-
-              //   mapController?.animateCamera(
-              //     CameraUpdate.newLatLngZoom(selectedLatLng!, 17),
-              //   );
-
-              //   setState(() {});
-              // },
               getPlaceDetailWithLatLng: (prediction) async {
                 final lat = double.parse(prediction.lat!);
                 final lng = double.parse(prediction.lng!);
 
                 selectedLatLng = LatLng(lat, lng);
-
                 selectedPlaceName = prediction.description ?? "";
 
                 await _reverseGeocode();
@@ -284,9 +276,10 @@ class _MapPickerScreenState extends State<MapPickerScreen> {
 
                 setState(() {});
               },
+
               itemClick: (prediction) {},
             ),
-          ),
+          ), // <-- Padding closed here
 
           Expanded(
             child: GoogleMap(
@@ -300,8 +293,6 @@ class _MapPickerScreenState extends State<MapPickerScreen> {
               },
               onTap: (latLng) async {
                 selectedLatLng = latLng;
-
-                // Clear searched location name
                 selectedPlaceName = "";
 
                 await _reverseGeocode();
@@ -319,29 +310,23 @@ class _MapPickerScreenState extends State<MapPickerScreen> {
 
           Container(
             padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: theme.colorScheme.surface,
+              border: Border(top: BorderSide(color: theme.colorScheme.outline)),
+            ),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // if (selectedPlaceName.isNotEmpty) ...[
                 Text(
                   selectedPlaceName.isNotEmpty ? selectedPlaceName : address,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontWeight: FontWeight.bold,
                     fontSize: 16,
+                    color: theme.colorScheme.onSurface,
                   ),
                 ),
-                const SizedBox(height: 4),
 
-                // ] else ...[
-                //   Text(
-                //     address,
-                //     style: const TextStyle(
-                //       fontWeight: FontWeight.bold,
-                //       fontSize: 16,
-                //     ),
-                //   ),
-                // ],
                 const SizedBox(height: 16),
 
                 SizedBox(
@@ -356,6 +341,158 @@ class _MapPickerScreenState extends State<MapPickerScreen> {
           ),
         ],
       ),
+      //       body: Column(
+      //         children: [
+      //           Padding(
+      //             padding: const EdgeInsets.all(16),
+      //             child: GooglePlaceAutoCompleteTextField(
+      //   textEditingController: _searchController,
+      //               googleAPIKey: "AIzaSyAX0FMPV_cS4VOBRoJTKgw3SttVjKBeu6I",
+
+      //   inputDecoration: InputDecoration(
+      //     isDense: true,
+      //     contentPadding: const EdgeInsets.symmetric(
+      //       vertical: 14,
+      //       horizontal: 12,
+      //     ),
+
+      //     filled: true,
+      //     fillColor: theme.colorScheme.surface,
+
+      //     // hintText: AppLocalizations.of(context)!.searchLocation,
+      //     hintStyle: TextStyle(
+      //       color: theme.colorScheme.onSurfaceVariant,
+      //     ),
+
+      //     prefixIcon: Icon(
+      //       Icons.search,
+      //       color: theme.colorScheme.onSurfaceVariant,
+      //     ),
+
+      //     border: OutlineInputBorder(
+      //       borderRadius: BorderRadius.circular(12),
+      //       borderSide: BorderSide(
+      //         color: theme.colorScheme.outline,
+      //       ),
+      //     ),
+
+      //     enabledBorder: OutlineInputBorder(
+      //       borderRadius: BorderRadius.circular(12),
+      //       borderSide: BorderSide(
+      //         color: theme.colorScheme.outline,
+      //       ),
+      //     ),
+
+      //     focusedBorder: OutlineInputBorder(
+      //       borderRadius: BorderRadius.circular(12),
+      //       borderSide: BorderSide(
+      //         color: theme.colorScheme.primary,
+      //         width: 1.5,
+      //       ),
+      //     ),
+      //   ),
+
+      //   debounceTime: 600,
+      //   countries: const ["bh"],
+      //   isLatLngRequired: true,
+
+      //   getPlaceDetailWithLatLng: (prediction) async {
+      //     final lat = double.parse(prediction.lat!);
+      //     final lng = double.parse(prediction.lng!);
+
+      //     selectedLatLng = LatLng(lat, lng);
+      //     selectedPlaceName = prediction.description ?? "";
+
+      //     await _reverseGeocode();
+
+      //     mapController?.animateCamera(
+      //       CameraUpdate.newLatLngZoom(selectedLatLng!, 17),
+      //     );
+
+      //     setState(() {});
+      //   },
+      //   itemClick: (prediction) {},
+      // ),
+
+      //           Expanded(
+      //             child: GoogleMap(
+      //               initialCameraPosition: CameraPosition(
+      //                 target: selectedLatLng!,
+      //                 zoom: 16,
+      //               ),
+      //               myLocationEnabled: true,
+      //               onMapCreated: (controller) {
+      //                 mapController = controller;
+      //               },
+      //               onTap: (latLng) async {
+      //                 selectedLatLng = latLng;
+
+      //                 // Clear searched location name
+      //                 selectedPlaceName = "";
+
+      //                 await _reverseGeocode();
+
+      //                 setState(() {});
+      //               },
+      //               markers: {
+      //                 Marker(
+      //                   markerId: const MarkerId("selected"),
+      //                   position: selectedLatLng!,
+      //                 ),
+      //               },
+      //             ),
+      //           ),
+
+      //           Container(
+      //             padding: const EdgeInsets.all(16),
+      //              decoration: BoxDecoration(
+      //     color: Theme.of(context).colorScheme.surface,
+      //     border: Border(
+      //       top: BorderSide(
+      //         color: Theme.of(context).colorScheme.outline,
+      //       ),
+      //     ),
+      //   ),
+      //             child: Column(
+      //               mainAxisSize: MainAxisSize.min,
+      //               crossAxisAlignment: CrossAxisAlignment.start,
+      //               children: [
+      //                 // if (selectedPlaceName.isNotEmpty) ...[
+      //                 Text(
+      //                   selectedPlaceName.isNotEmpty ? selectedPlaceName : address,
+      //                   style:  TextStyle(
+      //                     fontWeight: FontWeight.bold,
+      //                     fontSize: 16,
+      //                               color: Theme.of(context).colorScheme.onSurface,
+
+      //                   ),
+      //                 ),
+      //                 const SizedBox(height: 4),
+
+      //                 // ] else ...[
+      //                 //   Text(
+      //                 //     address,
+      //                 //     style: const TextStyle(
+      //                 //       fontWeight: FontWeight.bold,
+      //                 //       fontSize: 16,
+      //                 //     ),
+      //                 //   ),
+      //                 // ],
+      //                 const SizedBox(height: 16),
+
+      //                 SizedBox(
+      //                   width: double.infinity,
+      //                   child: ElevatedButton(
+      //                     onPressed: _confirmLocation,
+      //                     child: Text(AppLocalizations.of(context)!.confirmLocation),
+      //                   ),
+      //                 ),
+      //               ],
+      //             ),
+      //           ),
+      //           ),
+      //         ],
+      //       ),
     );
   }
 }
